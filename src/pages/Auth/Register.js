@@ -1,11 +1,11 @@
 import React from 'react'
 import Axios from 'axios'
 import {Link} from 'react-router-dom'
+import { withRouter } from "react-router";
 
+const URL_STRING = "/v1/oauth/register"
 
-const URL_STRING = "https://cors-anywhere.herokuapp.com/http://rest-api.deplaza.id/v1/oauth/register"
-
-export default class Register extends React.Component {
+class Register extends React.Component {
     state = {
         email: '',
         password: '',
@@ -14,17 +14,18 @@ export default class Register extends React.Component {
         username: '',
     }
 
+    // fungsi untuk register
     register = () => {
         const { email, password, fullname, phone, username } = this.state
         const data = {email, password, fullname, phone, username}
        
-        let config = {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/form-data'
-            }
-          }
-        Axios.post(URL_STRING, data, config)
+        // let config = {
+        //     headers: {
+        //         'Access-Control-Allow-Origin': '*',
+        //         'Content-Type': 'application/form-data'
+        //     }
+        //   }
+        Axios.post(URL_STRING, data)
             .then(res => {
                this.props.history.push('/home')
                console.log(res);
@@ -141,3 +142,4 @@ export default class Register extends React.Component {
     }
 
 }
+export default withRouter(Register)

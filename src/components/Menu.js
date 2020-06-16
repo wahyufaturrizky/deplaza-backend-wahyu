@@ -1,13 +1,16 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Menu() {
+    const data = localStorage.getItem('dataUser');
+    const dataUser = JSON.parse(data)
     return (
         /* Main Sidebar Container */
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
             {/* Brand Logo */}
             <a href="index3.html" className="brand-link">
                 <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" className="brand-image img-circle elevation-3" style={{ opacity: '.8' }} />
-                <span className="brand-text font-weight-light">AdminLTE 3</span>
+                <span className="brand-text font-weight-light">DeplazaAdmin</span>
             </a>
             {/* Sidebar */}
             <div className="sidebar">
@@ -17,7 +20,7 @@ export default function Menu() {
                         <img src="dist/img/user2-160x160.jpg" className="img-circle elevation-2" alt="User Image" />
                     </div>
                     <div className="info">
-                        <a href="#" className="d-block">Alexander Pierce</a>
+                        <a href="#" className="d-block">{dataUser.fullname}</a>
                     </div>
                 </div>
                 {/* Sidebar Menu */}
@@ -30,40 +33,59 @@ export default function Menu() {
                                 <i className="nav-icon fas fa-tachometer-alt" />
                                 <p>
                                     Dashboard
-              <i className="right fas fa-angle-left" />
+             
                                 </p>
                             </a>
-                            <ul className="nav nav-treeview">
-                                <li className="nav-item">
-                                    <a href="./index.html" className="nav-link">
-                                        <i className="far fa-circle nav-icon" />
-                                        <p>Dashboard v1</p>
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a href="./index2.html" className="nav-link active">
-                                        <i className="far fa-circle nav-icon" />
-                                        <p>Dashboard v2</p>
-                                    </a>
-                                </li>
-                                <li className="nav-item">
-                                    <a href="./index3.html" className="nav-link">
-                                        <i className="far fa-circle nav-icon" />
-                                        <p>Dashboard v3</p>
-                                    </a>
-                                </li>
-                            </ul>
                         </li>
                         <li className="nav-item">
                             <a href="pages/widgets.html" className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
-                                    Widgets
-              <span className="right badge badge-danger">New</span>
+                                    Menu Produk
                                 </p>
                             </a>
                         </li>
-                        <li className="nav-item has-treeview">
+                        <li className="nav-item">
+                            <a href="pages/widgets.html" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Produk
+                                </p>
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a href="pages/widgets.html" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Seller
+                                </p>
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a href="pages/widgets.html" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Data Buyer
+                                </p>
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <a href="pages/widgets.html" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                   Informasi Penjualan
+                                </p>
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/category" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Kategori
+                                </p>
+                            </Link>
+                        </li>
+                        {/* <li className="nav-item has-treeview">
                             <a href="#" className="nav-link">
                                 <i className="nav-icon fas fa-copy" />
                                 <p>
@@ -116,7 +138,7 @@ export default function Menu() {
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
                         <li className="nav-item has-treeview">
                             <a href="#" className="nav-link">
                                 <i className="nav-icon fas fa-chart-pie" />

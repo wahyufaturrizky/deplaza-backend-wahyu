@@ -28,8 +28,8 @@ class Register extends React.Component {
         Axios.post(URL_STRING, data)
             .then(res => {
                this.props.history.push('/home')
+               localStorage.setItem('dataUser', JSON.stringify(res.data.data));
                console.log(res);
-               
             })
     }
 

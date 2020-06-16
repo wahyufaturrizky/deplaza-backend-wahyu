@@ -9,7 +9,7 @@ import { ProtectedRoute } from "./route/protectedRoute";
 import Home from './pages/Home'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
-import Category from './pages/Category'
+import Category from './pages/Category/index'
 
 export default function App() {
   return (

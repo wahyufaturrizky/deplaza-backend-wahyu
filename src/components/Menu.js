@@ -1,9 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Menu() {
+export default function Menu(props) {
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
+
+    const logout = () => {
+        localStorage.removeItem('dataUser')
+        props.history.push('/')
+    }
+
     return (
         /* Main Sidebar Container */
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -84,6 +90,14 @@ export default function Menu() {
                                     Menu Kategori
                                 </p>
                             </Link>
+                        </li>
+                        <li className="nav-item">
+                            <a onClick={() => logout()} className="nav-link">
+                                <i className="nav-icon fas fa-arrow-left" />
+                                <p>
+                                   Logout
+                                </p>
+                            </a>
                         </li>
                         {/* <li className="nav-item has-treeview">
                             <a href="#" className="nav-link">

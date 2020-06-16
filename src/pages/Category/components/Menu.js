@@ -1,13 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export default function Menu(props) {
+export default function Menu() {
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
 
     const logout = () => {
         localStorage.removeItem('dataUser')
-        props.history.push('/')
     }
     return (
         /* Main Sidebar Container */

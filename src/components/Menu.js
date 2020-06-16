@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import {withRouter} from 'react-router';
 
-export default function Menu(props) {
+function Menu(props) {
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
 
@@ -594,3 +595,5 @@ export default function Menu(props) {
 
     )
 }
+
+export default withRouter(Menu)

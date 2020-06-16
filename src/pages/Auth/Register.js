@@ -18,17 +18,10 @@ class Register extends React.Component {
     register = () => {
         const { email, password, fullname, phone, username } = this.state
         const data = {email, password, fullname, phone, username}
-       
-        // let config = {
-        //     headers: {
-        //         'Access-Control-Allow-Origin': '*',
-        //         'Content-Type': 'application/form-data'
-        //     }
-        //   }
         Axios.post(URL_STRING, data)
             .then(res => {
+                localStorage.setItem('dataUser', JSON.stringify(res.data.data));
                this.props.history.push('/home')
-               localStorage.setItem('dataUser', JSON.stringify(res.data.data));
                console.log(res);
             })
     }

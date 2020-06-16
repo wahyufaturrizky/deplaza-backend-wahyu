@@ -109,7 +109,7 @@ const DataTable = () => {
                                     <td>{comment.name}</td>
                                     <td>{comment.email}</td>
                                     <td>{comment.name}</td>
-                                    <div style={{flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around'}}> 
+                                    <div style={{flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10}}> 
                                     <button type="button" style={{width: 80, marginTop: 10}} class="btn btn-block btn-success ">Lihat</button>
                                     <button type="button" style={{width: 80}} class="btn btn-block btn-success ">Ubah</button>
                                     <button type="button" style={{width: 80}} class="btn btn-block btn-danger ">Hapus</button>

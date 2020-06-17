@@ -14,6 +14,7 @@ const DataTable = () => {
     const [sorting, setSorting] = useState({ field: "", order: "" });
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
+    const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
     const headers = [
@@ -72,10 +73,27 @@ const DataTable = () => {
     }, [comments, currentPage, search, sorting.field, sorting.order]);
     console.log(commentsData)
 
+    const showModalEdit = (id) => {
+        console.log(id)
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(`${URL_POST}/${id}`, config)
+            .then(res => {
+                setDetail(res.data.data)
+            })
+        setId(id)
+        window.$('#modal-edit').modal('show');
+    }
+
     const hideModal = hideModalInfo => {
         window.$('#modal-lg').modal('hide');
     };
 
+    // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
         let config = {
@@ -97,6 +115,7 @@ const DataTable = () => {
             })
     }
 
+    // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
         let config = {
             headers: {
@@ -105,11 +124,45 @@ const DataTable = () => {
             }
         }
         Axios.get(`${URL_POST}/${id}`, config)
-        .then(res => {
-            setDetail(res.data.data)
-        })
+            .then(res => {
+                setDetail(res.data.data)
+            })
         window.$('#modal-detail').modal('show');
-       
+    }
+
+    // fungsi untuk ubah data
+    const changeData = () => {
+        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.post(`${URL_POST}/${id}`, data, config)
+            .then(res => {
+                let categoryData = [...comments]
+                categoryData.push(res.data)
+                setComments(categoryData)
+                alert('success')
+                window.$('#modal-edit').modal('hide');
+                setId(0)
+            })
+    }
+
+    // fungsi untuk delete data
+    const deleteData = (id) => {
+        const data = { _method: 'delete' }
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.post(`${URL_POST}/${id}`, data, config)
+            .then(res => {
+                alert('success')
+            })
     }
     return (
         <div className="content-wrapper">
@@ -176,8 +229,8 @@ const DataTable = () => {
                                                     <td>{comment.name}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => categoryDetail(comment.id)}>Lihat</button>
-                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-success ">Ubah</button>
-                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger ">Hapus</button>
+                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-success" onClick={() => showModalEdit(comment.id)}>Ubah</button>
+                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
                                             ))}
@@ -248,14 +301,49 @@ const DataTable = () => {
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
-                        <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
                     </div>
-                    </div>
-                   
                 </div>
                 {/* /.modal-content */}
             </div>
             {/* /.modal-dialog */}
+            <div className="modal fade" id="modal-edit">
+                <div className="modal-dialog modal-edit">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h4 className="modal-title">Ubah Kategori</h4>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="card-body">
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Judul Kategori</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1"  placeholder={detail.name} onChange={(e) => {
+                                        setTitle(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">File input</label>
+                                    <div className="input-group">
+                                        <div className="custom-file">
+                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
+                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal-footer justify-content-between">
+                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
+                            <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
+                        </div>
+                    </div>
+                    {/* /.modal-content */}
+                </div>
+            </div>
         </div>
 
     );

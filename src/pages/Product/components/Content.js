@@ -1,11 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
+import { trackPromise } from 'react-promise-tracker';
+import { usePromiseTracker } from "react-promise-tracker";
+import { Spinner } from '../../../components/spinner'
 import Axios from 'axios';
 import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router'
 
-const URL_STRING = '/v1/product';
-const URL_POST = 'v1/product/category'
+const URL_STRING = '/v1/products';
+const URL_DETAIL = 'v1/product/'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -15,13 +18,14 @@ const DataTable = (props) => {
     const [sorting, setSorting] = useState({ field: "", order: "" });
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
         { name: "Gambar Produk", field: "name", sortable: true },
-        { name: "Nama Produk", field: "email", sortable: true },
+        { name: "Nama Produk", field: "name", sortable: true },
         { name: "Kategori", field: "name", sortable: false },
         { name: "Brand", field: "email", sortable: true },
         { name: "Harga Pokok Produk", field: "email", sortable: true },
@@ -30,22 +34,33 @@ const DataTable = (props) => {
         { name: "Aksi", field: "body", sortable: false }
     ];
 
-    useEffect(() => {
-        const getData = () => {
-            let config = {
-                headers: {
-                    Authorization: `Bearer ${Auth()}`,
-                    'Access-Control-Allow-Origin': '*',
-                }
-            }
-            Axios.get(URL_STRING, config)
-                .then(json => {
-                    setProducts(json.data.data);
-                })
-        };
 
-        getData();
+
+    useEffect(() => {
+        getProduct();
     }, []);
+
+
+    const onLoadTables = () => {
+        setProducts([])
+    }
+
+
+    const getProduct = () => {
+        setLoading(true)
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(URL_STRING, config)
+            .then(json => {
+                setProducts(json.data.data);
+                setLoading(false)
+            })
+    }
+
 
     const productsData = useMemo(() => {
         let computedProducts = products;
@@ -86,7 +101,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        await Axios.get(`${URL_POST}/${idData}`, config)
+        await Axios.get(`${URL_DETAIL}/${idData}`, config)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -107,7 +122,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.post(URL_POST, data, config)
+        Axios.post(URL_DETAIL, data, config)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -128,7 +143,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.get(`${URL_POST}/${id}`, config)
+        Axios.get(`${URL_DETAIL}/${id}`, config)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -145,7 +160,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.post(`${URL_POST}/${id}`, data, config)
+        Axios.post(`${URL_DETAIL}/${id}`, data, config)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -170,7 +185,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.post(`${URL_POST}/${id}`, data, config)
+        Axios.post(`${URL_DETAIL}/${id}`, data, config)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)
@@ -197,7 +212,6 @@ const DataTable = (props) => {
                     </div>{/* /.row */}
                 </div>{/* /.container-fluid */}
             </div>
-
             {/* Main content */}
             <section className="content">
                 <div className="container-fluid">
@@ -232,21 +246,25 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {productsData.length > 1 ? productsData.map(comment => (
+                                            {loading === true ? <Spinner /> : productsData.map(product => (
                                                 <tr>
-                                                    <th scope="row" key={comment.id}>
-                                                        {comment.id}
+                                                    <th scope="row" key={product.id}>
+                                                        {product.id}
                                                     </th>
-                                                    <td>{comment.name}</td>
-                                                    <td>{comment.email}</td>
-                                                    <td>{comment.name}</td>
+                                                    <td>{product.name}</td>
+                                                    <td>{product.name}</td>
+                                                    <td>{product.category_id}</td>
+                                                    <td>{product.brand}</td>
+                                                    <td>{product.price_basic}</td>
+                                                    <td>{product.price_benefit}</td>
+                                                    <td>{product.price_commission}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => categoryDetail(comment.id)}>Lihat</button>
-                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-success" onClick={() => showModalEdit(comment.id)}>Ubah</button>
-                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => showModalEdit(product.id)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => deleteData(product.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
-                                            )) : <div>Data kosong</div>}
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
@@ -303,13 +321,47 @@ const DataTable = (props) => {
                         </div>
                         <div className="modal-body">
                             <div className="card-body">
+                            <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Gambar Produk</label>
+                                    <div>
+                                    <img src={detail.images}/>
+                                    </div>
+                                </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
+                                    <label htmlFor="exampleInputEmail1">Nama Produk</label>
                                     <h4>{detail.name}</h4>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Slug</label>
-                                    <h4>{detail.name}</h4>
+                                    <label htmlFor="exampleInputFile">Kategori</label>
+                                    <h4>{detail.category_id}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Brand</label>
+                                    <h4>{detail.brand}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Harga Pokok Produk</label>
+                                    <h4>{detail.price_basic}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Benefit Deplaza</label>
+                                    <h4>{detail.price_benefit}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Komisi</label>
+                                    <h4>{detail.price_commission}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Stock</label>
+                                    <h4>{detail.stock}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Variasi</label>
+                                    <h4>{detail.variation}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputFile">Deskripsi</label>
+                                    <h4>{detail.description}</h4>
                                 </div>
                             </div>
                         </div>

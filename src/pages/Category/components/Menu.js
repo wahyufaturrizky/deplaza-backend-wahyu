@@ -33,29 +33,21 @@ export default function Menu() {
                         {/* Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library */}
                         <li className="nav-item">
-                            <a href="#" className="nav-link">
+                            <Link to="/home"   className="nav-link">
                                 <i className="nav-icon fas fa-tachometer-alt" />
                                 <p>
                                     Dashboard
              
                                 </p>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <a href="pages/widgets.html" className="nav-link">
+                            <Link to="/product"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Produk
                                 </p>
-                            </a>
-                        </li>
-                        <li className="nav-item">
-                            <a href="pages/widgets.html" className="nav-link">
-                                <i className="nav-icon fas fa-th" />
-                                <p>
-                                    Menu Produk
-                                </p>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <a href="pages/widgets.html" className="nav-link">

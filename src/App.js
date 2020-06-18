@@ -10,6 +10,7 @@ import Home from './pages/Home'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import Category from './pages/Category/index'
+import Product from './pages/Product/index'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route exact path="/register" component={Register} />
         <ProtectedRoute exact path="/home" component={Home} />
         <ProtectedRoute exact path="/category" component={Category} />
+        <ProtectedRoute exact path="/product" component={Product} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

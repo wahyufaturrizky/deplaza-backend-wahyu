@@ -1,16 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import {withRouter} from 'react-router';
 
-function Menu(props) {
+export default function Menu() {
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
 
     const logout = () => {
         localStorage.removeItem('dataUser')
-        props.history.push('/')
     }
-
     return (
         /* Main Sidebar Container */
         <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -35,8 +32,8 @@ function Menu(props) {
                     <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         {/* Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library */}
-                        <li className="nav-item has-treeview menu-open">
-                            <Link to="/home"  className="nav-link active">
+                        <li className="nav-item">
+                            <Link to="/home"  className="nav-link">
                                 <i className="nav-icon fas fa-tachometer-alt" />
                                 <p>
                                     Dashboard
@@ -45,7 +42,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/product" className="nav-link">
+                            <Link to="/product" className="nav-link active">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Produk
@@ -587,5 +584,3 @@ function Menu(props) {
 
     )
 }
-
-export default withRouter(Menu)

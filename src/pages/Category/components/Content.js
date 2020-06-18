@@ -2,11 +2,12 @@ import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
 import Axios from 'axios';
 import { Auth } from '../../../utils/auth';
+import {withRouter} from 'react-router'
 
 const URL_STRING = '/v1/product/categories';
 const URL_POST = 'v1/product/category'
 
-const DataTable = () => {
+const DataTable = (props) => {
     const [comments, setComments] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -73,19 +74,20 @@ const DataTable = () => {
     }, [comments, currentPage, search, sorting.field, sorting.order]);
     console.log(commentsData)
 
-    const showModalEdit = (id) => {
-        console.log(id)
+    const showModalEdit = async (idData) => {
+        console.log(idData);
+
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.get(`${URL_POST}/${id}`, config)
+        await Axios.get(`${URL_POST}/${idData}`, config)
             .then(res => {
                 setDetail(res.data.data)
             })
-        setId(id)
+        setId(idData)
         window.$('#modal-edit').modal('show');
     }
 
@@ -130,6 +132,7 @@ const DataTable = () => {
         window.$('#modal-detail').modal('show');
     }
 
+
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
@@ -141,9 +144,14 @@ const DataTable = () => {
         }
         Axios.post(`${URL_POST}/${id}`, data, config)
             .then(res => {
-                let categoryData = [...comments]
-                categoryData.push(res.data)
-                setComments(categoryData)
+                // let categoryData = [...comments]; // copying the old datas array
+                // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
+                // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
+                // setComments(categoryData); // ??
+                // let categoryData = comments.findIndex((obj => obj.id === id));
+                // categoryData = comments[categoryData] = res.data.data
+                // setComments([...comments, categoryData])
+                props.history.push('/category')
                 alert('success')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
@@ -160,7 +168,9 @@ const DataTable = () => {
             }
         }
         Axios.post(`${URL_POST}/${id}`, data, config)
-            .then(res => {
+            .then(() => {
+                const categoryData = comments.filter(category => category.id !== id)
+                setComments(categoryData)
                 alert('success')
             })
     }
@@ -321,7 +331,7 @@ const DataTable = () => {
                             <div className="card-body">
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Kategori</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1"  placeholder={detail.name} onChange={(e) => {
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
@@ -349,4 +359,4 @@ const DataTable = () => {
     );
 };
 
-export default DataTable;
+export default withRouter(DataTable);

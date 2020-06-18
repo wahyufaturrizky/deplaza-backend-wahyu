@@ -1,12 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import {withRouter} from 'react-router';
 
-export default function Menu() {
+
+function Menu(props) {
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
 
     const logout = () => {
         localStorage.removeItem('dataUser')
+        props.history.push('/')
     }
     return (
         /* Main Sidebar Container */
@@ -82,7 +85,7 @@ export default function Menu() {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <a onClick={() => logout()} className="nav-link">
+                            <a onClick={logout} className="nav-link">
                                 <i className="nav-icon fas fa-arrow-left" />
                                 <p>
                                    Logout
@@ -584,3 +587,5 @@ export default function Menu() {
 
     )
 }
+
+export default withRouter(Menu)

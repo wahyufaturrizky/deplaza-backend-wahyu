@@ -7,7 +7,7 @@ const URL_STRING = "/v1/oauth/login"
 
 export default class Login extends React.Component {
     state = {
-        username: 'achmadtest2',
+        username: 'achmadtest',
         password: '12345',
     }
 

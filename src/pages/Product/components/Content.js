@@ -2,13 +2,13 @@ import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
 import Axios from 'axios';
 import { Auth } from '../../../utils/auth';
-import {withRouter} from 'react-router'
+import { withRouter } from 'react-router'
 
-const URL_STRING = '/v1/product/categories';
+const URL_STRING = '/v1/product';
 const URL_POST = 'v1/product/category'
 
 const DataTable = (props) => {
-    const [comments, setComments] = useState([]);
+    const [products, setProducts] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -20,9 +20,13 @@ const DataTable = (props) => {
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
-        { name: "Judul Kategori", field: "name", sortable: true },
-        { name: "Gambar", field: "email", sortable: true },
+        { name: "Gambar Produk", field: "name", sortable: true },
+        { name: "Nama Produk", field: "email", sortable: true },
         { name: "Kategori", field: "name", sortable: false },
+        { name: "Brand", field: "email", sortable: true },
+        { name: "Harga Pokok Produk", field: "email", sortable: true },
+        { name: "Benefit Deplaza", field: "email", sortable: true },
+        { name: "Komisi", field: "email", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -36,43 +40,42 @@ const DataTable = (props) => {
             }
             Axios.get(URL_STRING, config)
                 .then(json => {
-                    setComments(json.data.data);
-
+                    setProducts(json.data.data);
                 })
         };
 
         getData();
     }, []);
 
-    const commentsData = useMemo(() => {
-        let computedComments = comments;
+    const productsData = useMemo(() => {
+        let computedProducts = products;
 
         if (search) {
-            computedComments = computedComments.filter(
-                comment =>
-                    comment.name.toLowerCase().includes(search.toLowerCase()) ||
-                    comment.slug.toLowerCase().includes(search.toLowerCase())
+            computedProducts = computedProducts.filter(
+                product =>
+                    product.name.toLowerCase().includes(search.toLowerCase()) ||
+                    product.slug.toLowerCase().includes(search.toLowerCase())
             );
         }
 
-        setTotalItems(computedComments.length);
+        setTotalItems(computedProducts.length);
 
-        //Sorting comments
+        //Sorting products
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
-            computedComments = computedComments.sort(
+            computedProducts = computedProducts.sort(
                 (a, b) =>
                     reversed * a[sorting.field].localeCompare(b[sorting.field])
             );
         }
 
         //Current Page slice
-        return computedComments.slice(
+        return computedProducts.slice(
             (currentPage - 1) * ITEMS_PER_PAGE,
             (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
         );
-    }, [comments, currentPage, search, sorting.field, sorting.order]);
-    console.log(commentsData)
+    }, [products, currentPage, search, sorting.field, sorting.order]);
+    console.log(productsData)
 
     const showModalEdit = async (idData) => {
         console.log(idData);
@@ -109,9 +112,9 @@ const DataTable = (props) => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
                 // tanpa di reload
-                let categoryData = [...comments]
+                let categoryData = [...products]
                 categoryData.push(res.data.data)
-                setComments(categoryData)
+                setProducts(categoryData)
                 alert('success')
                 hideModal()
             })
@@ -169,8 +172,8 @@ const DataTable = (props) => {
         }
         Axios.post(`${URL_POST}/${id}`, data, config)
             .then(() => {
-                const categoryData = comments.filter(category => category.id !== id)
-                setComments(categoryData)
+                const categoryData = products.filter(category => category.id !== id)
+                setProducts(categoryData)
                 alert('success')
             })
     }
@@ -229,7 +232,7 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {commentsData.map(comment => (
+                                            {productsData.length > 1 ? productsData.map(comment => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
                                                         {comment.id}
@@ -243,7 +246,7 @@ const DataTable = (props) => {
                                                         <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
-                                            ))}
+                                            )) : <div>Data kosong</div>}
                                         </tbody>
                                     </table>
                                 </div>

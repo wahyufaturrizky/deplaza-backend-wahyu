@@ -8,7 +8,7 @@ const URL_STRING = '/v1/product/categories';
 const URL_POST = 'v1/product/category'
 
 const DataTable = (props) => {
-    const [comments, setComments] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -36,7 +36,7 @@ const DataTable = (props) => {
             }
             Axios.get(URL_STRING, config)
                 .then(json => {
-                    setComments(json.data.data);
+                    setCategories(json.data.data);
 
                 })
         };
@@ -44,35 +44,35 @@ const DataTable = (props) => {
         getData();
     }, []);
 
-    const commentsData = useMemo(() => {
-        let computedComments = comments;
+    const categoriesData = useMemo(() => {
+        let computedCategories = categories;
 
         if (search) {
-            computedComments = computedComments.filter(
+            computedCategories = computedCategories.filter(
                 comment =>
                     comment.name.toLowerCase().includes(search.toLowerCase()) ||
                     comment.slug.toLowerCase().includes(search.toLowerCase())
             );
         }
 
-        setTotalItems(computedComments.length);
+        setTotalItems(computedCategories.length);
 
         //Sorting comments
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
-            computedComments = computedComments.sort(
+            computedCategories = computedCategories.sort(
                 (a, b) =>
                     reversed * a[sorting.field].localeCompare(b[sorting.field])
             );
         }
 
         //Current Page slice
-        return computedComments.slice(
+        return computedCategories.slice(
             (currentPage - 1) * ITEMS_PER_PAGE,
             (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
         );
-    }, [comments, currentPage, search, sorting.field, sorting.order]);
-    console.log(commentsData)
+    }, [categories, currentPage, search, sorting.field, sorting.order]);
+    console.log(categoriesData)
 
     const showModalEdit = async (idData) => {
         console.log(idData);
@@ -109,9 +109,9 @@ const DataTable = (props) => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
                 // tanpa di reload
-                let categoryData = [...comments]
+                let categoryData = [...categories]
                 categoryData.push(res.data.data)
-                setComments(categoryData)
+                setCategories(categoryData)
                 alert('success')
                 hideModal()
             })
@@ -146,11 +146,11 @@ const DataTable = (props) => {
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
-                // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
-                // setComments(categoryData); // ??
+                // setCategories(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
+                // setCategories(categoryData); // ??
                 // let categoryData = comments.findIndex((obj => obj.id === id));
                 // categoryData = comments[categoryData] = res.data.data
-                // setComments([...comments, categoryData])
+                // setCategories([...comments, categoryData])
                 props.history.push('/category')
                 alert('success')
                 window.$('#modal-edit').modal('hide');
@@ -169,8 +169,8 @@ const DataTable = (props) => {
         }
         Axios.post(`${URL_POST}/${id}`, data, config)
             .then(() => {
-                const categoryData = comments.filter(category => category.id !== id)
-                setComments(categoryData)
+                const categoryData = categories.filter(category => category.id !== id)
+                setCategories(categoryData)
                 alert('success')
             })
     }
@@ -229,7 +229,7 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {commentsData.map(comment => (
+                                            {categoriesData > 1 ? categoriesData.map(comment => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
                                                         {comment.id}
@@ -243,7 +243,7 @@ const DataTable = (props) => {
                                                         <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
-                                            ))}
+                                            )): <div>Data Kosong</div>}
                                         </tbody>
                                     </table>
                                 </div>

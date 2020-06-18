@@ -259,7 +259,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Tambah Kategori</h4>
+                            <h4 className="modal-title">Tambah Produk</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -267,8 +267,8 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Kategori</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul kategori" onChange={(e) => {
+                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
@@ -296,7 +296,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Detail Kategori</h4>
+                            <h4 className="modal-title">Detail Produk</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -304,7 +304,7 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Kategori</label>
+                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
                                     <h4>{detail.name}</h4>
                                 </div>
                                 <div className="form-group">
@@ -325,7 +325,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Ubah Kategori</h4>
+                            <h4 className="modal-title">Ubah Produk</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -333,7 +333,7 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Kategori</label>
+                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
                                     <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
                                         setTitle(e.target.value)
                                     }} />

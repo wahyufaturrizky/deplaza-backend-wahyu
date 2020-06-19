@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
 import Axios from 'axios';
+import { Spinner } from '../../../components/spinner'
 import { Auth } from '../../../utils/auth';
 import {withRouter} from 'react-router'
 
@@ -15,6 +16,7 @@ const DataTable = (props) => {
     const [sorting, setSorting] = useState({ field: "", order: "" });
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
@@ -27,22 +29,24 @@ const DataTable = (props) => {
     ];
 
     useEffect(() => {
-        const getData = () => {
-            let config = {
-                headers: {
-                    Authorization: `Bearer ${Auth()}`,
-                    'Access-Control-Allow-Origin': '*',
-                }
-            }
-            Axios.get(URL_STRING, config)
-                .then(json => {
-                    setCategories(json.data.data);
-
-                })
-        };
-
         getData();
     }, []);
+
+
+    const getData = () => {
+        setLoading(true)
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(URL_STRING, config)
+            .then(json => {
+                setCategories(json.data.data);
+                setLoading(false)
+            })
+    };
 
     const categoriesData = useMemo(() => {
         let computedCategories = categories;
@@ -229,7 +233,7 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {categoriesData > 1 ? categoriesData.map(comment => (
+                                            {loading === true ? <Spinner /> : categoriesData.map(comment => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
                                                         {comment.id}
@@ -243,7 +247,7 @@ const DataTable = (props) => {
                                                         <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
-                                            )): <div>Data Kosong</div>}
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>

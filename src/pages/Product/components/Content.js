@@ -5,10 +5,11 @@ import { usePromiseTracker } from "react-promise-tracker";
 import { Spinner } from '../../../components/spinner'
 import Axios from 'axios';
 import { Auth } from '../../../utils/auth';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
+import AddProductComponent from './AddProduct'
 
 const URL_STRING = '/v1/products';
-const URL_DETAIL = 'v1/product/'
+const URL_DETAIL = 'v1/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -19,6 +20,7 @@ const DataTable = (props) => {
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [addProduct, setAddProduct] = useState(true);
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
@@ -113,6 +115,10 @@ const DataTable = (props) => {
         window.$('#modal-lg').modal('hide');
     };
 
+    const testAdd = () => {
+        setAddProduct(true)
+    }
+
     // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
@@ -200,7 +206,7 @@ const DataTable = (props) => {
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Produk</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Produk</button>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Tambah Produk</button>
                             <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -213,6 +219,7 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
+            {addProduct ? <AddProductComponent/> :
             <section className="content">
                 <div className="container-fluid">
                     <div className="row">
@@ -273,6 +280,7 @@ const DataTable = (props) => {
                     </div>
                 </div>
             </section>
+}
             <div className="modal fade" id="modal-lg">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">

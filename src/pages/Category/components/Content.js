@@ -157,6 +157,7 @@ const DataTable = (props) => {
                 // setCategories([...comments, categoryData])
                 props.history.push('/category')
                 alert('success')
+                getData();
                 window.$('#modal-edit').modal('hide');
                 setId(0)
             })

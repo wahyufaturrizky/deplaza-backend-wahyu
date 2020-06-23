@@ -11,6 +11,7 @@ import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import Category from './pages/Category/index'
 import Product from './pages/Product/index'
+import AddProduct from './pages/Product/AddProduct'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <ProtectedRoute exact path="/home" component={Home} />
         <ProtectedRoute exact path="/category" component={Category} />
         <ProtectedRoute exact path="/product" component={Product} />
+        <ProtectedRoute exact path="/addProduct" component={AddProduct} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

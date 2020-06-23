@@ -20,7 +20,7 @@ const DataTable = (props) => {
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [addProduct, setAddProduct] = useState(true);
+    const [addProduct, setAddProduct] = useState(false);
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
@@ -116,7 +116,7 @@ const DataTable = (props) => {
     };
 
     const testAdd = () => {
-        setAddProduct(true)
+        props.history.push('/addProduct')
     }
 
     // fungsi untuk menambah data
@@ -258,7 +258,7 @@ const DataTable = (props) => {
                                                     <th scope="row" key={product.id}>
                                                         {product.id}
                                                     </th>
-                                                    <td>{product.name}</td>
+                                                    <td><img style={{ width: 100, height: 100}} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                     <td>{product.name}</td>
                                                     <td>{product.category_id}</td>
                                                     <td>{product.brand}</td>
@@ -332,7 +332,7 @@ const DataTable = (props) => {
                             <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Gambar Produk</label>
                                     <div>
-                                    <img src={detail.images}/>
+                                    <td><img style={{ width: 100, height: 100}} src={detail.image > 0 ? detail.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                     </div>
                                 </div>
                                 <div className="form-group">

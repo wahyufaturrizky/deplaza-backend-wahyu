@@ -1,45 +1,122 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import Axios from 'axios'
 import { Auth } from '../../../utils/auth';
-
+import Select from 'react-select';
+import { withRouter} from 'react-router-dom'
 
 const URL_POST = 'v1/product'
+const URL_GET_CITY = 'v1/shipment/cities'
+const URL_GET_CATEGORY = '/v1/category';
 
-
-export default function AddProduct() {
+function AddProduct(props) {
     let fileObj = [];
     let fileArray = [];
     const [file, setFile] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [categoryId, setCategoryId] = useState('');
+    const [categoryId, setCategoryId] = useState(0);
     const [brand, setBrand] = useState('');
-    const [priceBasic, setPriceBasic] = useState('');
-    const [priceBenefit, setPriceBenefit] = useState('');
-    const [priceCommission, setPriceCommission] = useState('');
-    const [stock, setStock] = useState('');
-    const [weight, setWeight] = useState('');
-    const [cityId, setCityId] = useState('');
+    const [priceBasic, setPriceBasic] = useState(0);
+    const [priceBenefit, setPriceBenefit] = useState(0);
+    const [priceCommission, setPriceCommission] = useState(0);
+    const [stock, setStock] = useState(0);
+    const [weight, setWeight] = useState(0);
+    const [cityId, setCityId] = useState(0);
     const [source, setSource] = useState('');
     const [cod, setCod] = useState(1);
-    const [codCityId, setCodCityId] = useState('');
+    const [codCityId, setCodCityId] = useState(0);
     const [variation, setVariation] = useState([]);
-    const [values, setValues] = useState({ val: [], name: '' });
+    const [values, setValues] = useState({ val: [] });
     const [secondValues, setSecondValues] = useState({ val: [] });
     const [thirdValues, setThirdValues] = useState({ val: [] });
     const [nameVariation, setNameVariation] = useState('')
     const [nameSecondVariation, setNameSecondVariation] = useState('')
     const [nameThirdVariation, setNameThirdVariation] = useState('')
-
+    const [getCity, setGetCity] = useState([])
+    const [getCategory, setGetCategory] = useState([])
 
     useEffect(() => {
+        getDataCategory()
+        getDataCity()
         window.$(document).ready(function () {
-            window.$('.textarea').summernote()
+            window.$('.textarea').summernote({
+                callbacks : {
+                    onChange: function(contents) {
+                        setDescription(contents)
+                    }
+                  }
+            })
             window.$('.select2bs4').select2({
                 theme: 'bootstrap4'
             });
         });
     }, []);
+
+
+    const getDataCity = () => {
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(`${URL_GET_CITY}`, config)
+            .then(res =>
+                res.data.rajaongkir.results.map(data => ({
+                    value: data.city_id,
+                    label: data.city_name,
+                }))
+            )
+            .then(data => {
+                setGetCity(data)
+            })
+            .catch(error => console.log(error));
+    }
+
+    const getDataCategory = () => {
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(`${URL_GET_CATEGORY}`, config)
+            .then(res =>
+                res.data.data.map(data => ({
+                    value: data.id,
+                    label: data.name,
+                }))
+            )
+            .then(data => {
+                setGetCategory(data)
+            })
+            .catch(error => console.log(error));
+    }
+
+    const optionsCategory = getCategory.map(i => i)
+    const options = getCity.map(i => i)
+
+    const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
+
+    const handleChangeCodCities = (data) => {
+        // let catArray = [];
+        // data.map(i =>
+        //     catArray.push(i.value)
+        // );
+        setCodCityId(data.value)
+    }
+
+    const handleChangeCod = (id) => {
+        setCod(id.value);
+    };
+
+    const handleChangeCities = (id) => {
+        setCityId(id.value);
+    };
+
+    const handleChangeCategory = (id) => {
+        setCategoryId(id.value);
+    };
 
     const uploadMultipleFiles = (e) => {
         fileObj.push(e.target.files)
@@ -48,6 +125,10 @@ export default function AddProduct() {
         }
         setFile(fileArray)
     }
+
+    console.log('city', name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
+        file, variation)
+
 
     const uploadFiles = (e) => {
         e.preventDefault()
@@ -160,14 +241,6 @@ export default function AddProduct() {
         console.log(vals);
     }
 
-    function handleDropdownChange(e) {
-        alert('aaa')
-        let vals = 0;
-        vals[this] = e
-        setCod(vals);
-    }
-    const dropdownlist = [0, 1]
-
     const addClick = () => {
         if (values.val.length > 9) {
             alert('Pilihan tidak boleh lebih dari 10')
@@ -210,37 +283,54 @@ export default function AddProduct() {
         setThirdValues({ val: vals });
     }
 
+    const handleVariation = async () => {
+        await setVariation([...variation, nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val])
+    }
+
+    console.log(nameVariation);
+    
+
     const handleSubmit = async () => {
-        await handleVariation()
-        const data = {
-            name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
-            file, user_id: 2, variation
+        await setVariation([...variation, nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val])
+        // let formData = new FormData();
+        // formData.append('name', name);
+        // formData.append('category_id',  parseInt(categoryId));
+        // formData.append('brand', brand);
+        // formData.append('price_basic',  parseInt(priceBasic));
+        // formData.append('price_benefit',  parseInt(priceBenefit));
+        // formData.append('price_commission',  parseInt(priceCommission));
+        // formData.append('stock',  parseInt(stock));
+        // formData.append('weight',  parseInt(weight));
+        // formData.append('city_id',  parseInt(cityId));
+        // formData.append('source', source);
+        // formData.append('cod',  parseInt(cod));
+        // formData.append('cod_city_id',  parseInt(codCityId));
+        // formData.append('user_id',  2);
+        // formData.append('images',  file);
+        // formData.append('variation',  variation);
+
+
+        const data =  {
+            name, description, category_id: parseInt(categoryId), brand, price_basic: parseInt(priceBasic), price_benefit: parseInt(priceBenefit), price_commission: parseInt(priceCommission), stock: parseInt(stock), weight: parseInt(weight), city_id: parseInt(cityId), source, cod: parseInt(cod), cod_city_id: parseInt(codCityId),
+             user_id: 2, images: file, variation: 'test'
         }
+       
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
+               
             }
         }
-        Axios.post(URL_POST, data, config)
+       Axios.post(URL_POST, data, config)
             .then(res => {
-                // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
-                // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
-                // tanpa di reload
-                // let categoryData = [...categories]
-                // categoryData.push(res.data.data)
-                // setCategories(categoryData)
                 alert('success')
+                props.history.push('/product')
                 console.log(res);
-
             })
     }
 
-    const handleVariation = () => {
-        setVariation([...variation, nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val])
-    }
-
-    console.log('value1', cod, codCityId);
+ 
 
     return (
         <section class="content">
@@ -279,15 +369,12 @@ export default function AddProduct() {
                                 </div>
                                 <div className="form-group">
                                     <label>Kategori</label>
-                                    <select className="form-control select2bs4" onSelect={(e) => setCategoryId(e.target.value)} >
-                                        <option selected="selected">Alabama</option>
-                                        <option>Alaska</option>
-                                        <option>California</option>
-                                        <option>Delaware</option>
-                                        <option>Tennessee</option>
-                                        <option>Texas</option>
-                                        <option>Washington</option>
-                                    </select>
+                                    <Select
+                                        defaultValue={optionsCategory[0]}
+                                        isMulti={false}
+                                        options={optionsCategory}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCategory} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Brand</label>
@@ -325,7 +412,7 @@ export default function AddProduct() {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Deskripsi Produk</label>
-                                    <textarea className="textarea" placeholder="Place some text here" style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} onChange={(e) => setDescription(e.target.value)} />
+                                    <textarea className="textarea" placeholder="Place some text here" style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Berat Produk</label>
@@ -337,35 +424,30 @@ export default function AddProduct() {
                                 </div>
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
-                                    <select className="form-control select2bs4" onSelect={(e) => setCityId(e.target.value)}>
-                                        <option selected="selected">Alabama</option>
-                                        <option>Alaska</option>
-                                        <option>California</option>
-                                        <option>Delaware</option>
-                                        <option>Tennessee</option>
-                                        <option>Texas</option>
-                                        <option>Washington</option>
-                                    </select>
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCities} />
                                 </div>
                                 <div className="form-group">
                                     <label>Bisa COD / Tidak</label>
-                                    <select
-                                        className="form-control"
-                                        id="first"
-                                        value={dropdownlist[1]}
-                                        onChange={e => alert(e.target.value)}
-                                        onBlur={e => setCod(e.target.value)}
-                                        disabled={!dropdownlist.length}>
-                                        {dropdownlist.map(item => <option key={item} value={item}>
-                                            {item === 1 ? 'Iya' : 'Tidak'}</option>)}
-                                    </select>
+                                    <Select
+                                        defaultValue={optionsCod[0]}
+                                        isMulti={false}
+                                        options={optionsCod}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCod} />
                                 </div>
                                 <div className="form-group">
                                     <label>Daerah COD</label>
-                                    <select className="form-control select2bs4" onSelect={(e) => setCodCityId(e.target.value)} >
-                                        <option selected="selected">Iya</option>
-                                        <option>Tidak</option>
-                                    </select>
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCodCities} />
                                 </div>
                                 <button type="button" class="btn btn-block btn-primary" onClick={handleSubmit}>Simpan</button>
                             </div>
@@ -379,3 +461,5 @@ export default function AddProduct() {
 
     )
 }
+
+export default withRouter(AddProduct)

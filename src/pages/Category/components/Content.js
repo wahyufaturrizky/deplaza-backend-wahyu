@@ -3,10 +3,10 @@ import { TableHeader, Pagination, Search } from "./DataTable";
 import Axios from 'axios';
 import { Spinner } from '../../../components/spinner'
 import { Auth } from '../../../utils/auth';
-import {withRouter} from 'react-router'
+import { withRouter } from 'react-router'
 
-const URL_STRING = '/v1/product/categories';
-const URL_POST = 'v1/product/category'
+const URL_STRING = '/v1/category';
+const URL_POST = 'v1/category'
 
 const DataTable = (props) => {
     const [categories, setCategories] = useState([]);
@@ -240,7 +240,7 @@ const DataTable = (props) => {
                                                         {comment.id}
                                                     </th>
                                                     <td>{comment.name}</td>
-                                                    <td>{comment.email}</td>
+                                                    <td><img src={comment.image  ? comment.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
                                                     <td>{comment.name}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => categoryDetail(comment.id)}>Lihat</button>

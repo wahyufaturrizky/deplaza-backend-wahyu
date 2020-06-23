@@ -5,7 +5,7 @@ import { Spinner } from '../../../components/spinner'
 import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router'
 
-const URL_STRING = '/v1/category';
+const URL_STRING = 'https://cors-anywhere.herokuapp.com/http://rest-api.deplaza.id/v1/category/?limit=50';
 const URL_POST = 'v1/category'
 
 const DataTable = (props) => {
@@ -17,6 +17,7 @@ const DataTable = (props) => {
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [image, setImage] = useState(null)
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
@@ -39,6 +40,7 @@ const DataTable = (props) => {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
+                Origin: 'x-requested-with'
             }
         }
         Axios.get(URL_STRING, config)
@@ -100,8 +102,10 @@ const DataTable = (props) => {
     };
 
     // fungsi untuk menambah data
-    const handleAddCategory = () => {
-        const data = { main_id: 0, name: title, active: 1 }
+    const handleAddCategory = (e) => {
+        // e.preventDefault()
+        alert(image)
+        const data = { main_id: 0, name: title, active: 1, image }
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
@@ -113,9 +117,7 @@ const DataTable = (props) => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
                 // tanpa di reload
-                let categoryData = [...categories]
-                categoryData.push(res.data.data)
-                setCategories(categoryData)
+                getData();
                 alert('success')
                 hideModal()
             })
@@ -138,8 +140,9 @@ const DataTable = (props) => {
 
 
     // fungsi untuk ubah data
-    const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
+    const changeData = (e) => {
+        e.preventDefault()
+        const data = { main_id: 0, name: title, active: 1, _method: 'put', image }
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
@@ -155,7 +158,6 @@ const DataTable = (props) => {
                 // let categoryData = comments.findIndex((obj => obj.id === id));
                 // categoryData = comments[categoryData] = res.data.data
                 // setCategories([...comments, categoryData])
-                props.history.push('/category')
                 alert('success')
                 getData();
                 window.$('#modal-edit').modal('hide');
@@ -172,13 +174,18 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.post(`${URL_POST}/${id}`, data, config)
+        Axios.post(`${URL_POST}/${id}/delete`, data, config)
             .then(() => {
                 const categoryData = categories.filter(category => category.id !== id)
                 setCategories(categoryData)
                 alert('success')
             })
     }
+    const uploadSingleFile = (e) => {
+        setImage(URL.createObjectURL(e.target.files[0]))
+    }
+    console.log(image);
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -240,7 +247,7 @@ const DataTable = (props) => {
                                                         {comment.id}
                                                     </th>
                                                     <td>{comment.name}</td>
-                                                    <td><img src={comment.image  ? comment.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
+                                                    <td><img src={comment.image ? comment.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
                                                     <td>{comment.name}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => categoryDetail(comment.id)}>Lihat</button>
@@ -274,12 +281,14 @@ const DataTable = (props) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
+                                {image ?
+                                    <img src={image} alt='' /> : null}
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
+                                    <label htmlFor="exampleInputFile">Gambar Kategori</label>
                                     <div className="input-group">
                                         <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
+                                            <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadSingleFile} />
+                                            <label className="custom-file-label" htmlFor="exampleInputFile">Pilih Gambar</label>
                                         </div>
                                     </div>
                                 </div>

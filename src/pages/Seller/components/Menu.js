@@ -101,6 +101,14 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/supplier" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Supplier
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <a onClick={logout} className="nav-link">
                                 <i className="nav-icon fas fa-arrow-left" />
                                 <p>

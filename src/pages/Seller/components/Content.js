@@ -8,7 +8,7 @@ import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/product?limit=1000';
+const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/user?limit=1000';
 const URL_DETAIL = 'v1/product'
 
 const DataTable = (props) => {
@@ -26,13 +26,13 @@ const DataTable = (props) => {
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
-        { name: "Gambar Produk", field: "name", sortable: true },
-        { name: "Nama Produk", field: "name", sortable: true },
-        { name: "Kategori", field: "name", sortable: false },
-        { name: "Brand", field: "email", sortable: true },
-        { name: "Harga Pokok Produk", field: "email", sortable: true },
-        { name: "Benefit Deplaza", field: "email", sortable: true },
-        { name: "Komisi", field: "email", sortable: true },
+        { name: "Nama Lengkap", field: "name", sortable: true },
+        { name: "No Hp", field: "name", sortable: true },
+        { name: "Email", field: "name", sortable: false },
+        { name: "Alamat", field: "email", sortable: true },
+        { name: "Tanggal Lahir", field: "email", sortable: true },
+        { name: "Jenis Kelamin", field: "email", sortable: true },
+        { name: "Pendidikan", field: "email", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -208,15 +208,16 @@ const DataTable = (props) => {
             <div className="content-header">
                 <div className="container-fluid">
                     <div className="row mb-2">
-                        <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
-                            <h1 className="m-0 text-dark">Menu Produk</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Tambah Produk</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                        <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center', width: '100%' }}>
+                            <h1 className="m-0 text-dark">Menu Seller</h1>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{  height: 40, marginTop: 7 }} onClick={testAdd}>Tambah Seller</button>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ height: 40, marginTop: 7 }} onClick={testAdd}>Informasi Rekening</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
                                 <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Menu Produk</li>
+                                <li className="breadcrumb-item active">Menu Seller</li>
                             </ol>
                         </div>{/* /.col */}
                     </div>{/* /.row */}
@@ -262,16 +263,16 @@ const DataTable = (props) => {
                                                         <th scope="row" key={product.id}>
                                                             {product.id}
                                                         </th>
-                                                        <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.category_id}</td>
-                                                        <td>{product.brand}</td>
-                                                        <td>{product.price_basic}</td>
-                                                        <td>{product.price_benefit}</td>
-                                                        <td>{product.price_commission}</td>
+                                                        <td>{product.fullname}</td>
+                                                        <td>{product.phone}</td>
+                                                        <td>{product.email}</td>
+                                                        <td>-</td>
+                                                        <td>-</td>
+                                                        <td>-</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                             <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
                                                             <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
                                                             <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => deleteData(product.id)}>Hapus</button>
                                                         </div>
                                                     </tr>
@@ -289,7 +290,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Tambah Produk</h4>
+                            <h4 className="modal-title">Tambah Seller</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>

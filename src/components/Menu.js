@@ -53,12 +53,12 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <a href="pages/widgets.html" className="nav-link">
+                            <Link to="/seller"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Seller
                                 </p>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <a href="pages/widgets.html" className="nav-link">
@@ -81,6 +81,14 @@ function Menu(props) {
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Kategori
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/popUp" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Popup
                                 </p>
                             </Link>
                         </li>

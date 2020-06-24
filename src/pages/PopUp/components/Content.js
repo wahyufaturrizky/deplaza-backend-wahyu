@@ -11,8 +11,10 @@ import AddProductComponent from './AddProduct'
 const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/product?limit=1000';
 const URL_DETAIL = 'v1/product'
 
+const arrayPopup = [{id: 1, name: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'}]
+
 const DataTable = (props) => {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState( [{id: 1, name: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png', description: 'test'}]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -26,25 +28,21 @@ const DataTable = (props) => {
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
-        { name: "Gambar Produk", field: "name", sortable: true },
-        { name: "Nama Produk", field: "name", sortable: true },
-        { name: "Kategori", field: "name", sortable: false },
-        { name: "Brand", field: "email", sortable: true },
-        { name: "Harga Pokok Produk", field: "email", sortable: true },
-        { name: "Benefit Deplaza", field: "email", sortable: true },
-        { name: "Komisi", field: "email", sortable: true },
+        { name: "Judul Popup", field: "name", sortable: true },
+        { name: "Gambar", field: "name", sortable: true },
+        { name: "Deskripsi", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
 
 
     useEffect(() => {
-        getProduct();
+       
     }, []);
 
 
     const onLoadTables = () => {
-        setProducts([])
+      
     }
 
 
@@ -209,14 +207,14 @@ const DataTable = (props) => {
                 <div className="container-fluid">
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
-                            <h1 className="m-0 text-dark">Menu Produk</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Tambah Produk</button>
+                            <h1 className="m-0 text-dark">Menu Popup</h1>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Tambah Popup</button>
                             <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
                                 <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Menu Produk</li>
+                                <li className="breadcrumb-item active">Menu Popup</li>
                             </ol>
                         </div>{/* /.col */}
                     </div>{/* /.row */}
@@ -264,15 +262,11 @@ const DataTable = (props) => {
                                                         </th>
                                                         <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                         <td>{product.name}</td>
-                                                        <td>{product.category_id}</td>
-                                                        <td>{product.brand}</td>
-                                                        <td>{product.price_basic}</td>
-                                                        <td>{product.price_benefit}</td>
-                                                        <td>{product.price_commission}</td>
+                                                        <td>{product.description}</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            <button type="button" style={{ marginTop: 9}} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                            <button type="button" style={{ marginLeft: 5}} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                            <button type="button" style={{ marginLeft: 5}} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
                                                         </div>
                                                     </tr>
                                                 ))}

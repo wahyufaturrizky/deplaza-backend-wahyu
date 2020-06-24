@@ -45,7 +45,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/product" className="nav-link active">
+                            <Link to="/product" className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Produk
@@ -85,7 +85,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/popUp" className="nav-link">
+                            <Link to="/popUp" className="nav-link active">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Popup

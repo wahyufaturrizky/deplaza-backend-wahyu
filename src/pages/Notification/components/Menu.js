@@ -61,7 +61,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/buyer"  className="nav-link active">
+                            <Link to="/buyer"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Data Buyer
@@ -93,7 +93,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/notification" className="nav-link">
+                            <Link to="/notification" className="nav-link active">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Notifikasi

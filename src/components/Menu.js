@@ -93,6 +93,14 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/notification" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Notifikasi
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <a onClick={logout} className="nav-link">
                                 <i className="nav-icon fas fa-arrow-left" />
                                 <p>

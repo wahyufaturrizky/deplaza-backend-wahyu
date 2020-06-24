@@ -69,12 +69,12 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <a href="pages/widgets.html" className="nav-link">
+                            <Link to="/salesInformation"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
-                                   Informasi Penjualan
+                                    Informasi Penjualan
                                 </p>
-                            </a>
+                            </Link>
                         </li>
                         <li className="nav-item">
                             <Link to="/category" className="nav-link">

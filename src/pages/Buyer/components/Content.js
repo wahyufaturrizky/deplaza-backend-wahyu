@@ -208,18 +208,15 @@ const DataTable = (props) => {
             <div className="content-header">
                 <div className="container-fluid">
                     <div className="row mb-2">
-                        <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
-                            <h1 className="m-0 text-dark" >Menu Seller</h1>
-                            <div style={{display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                            <button type="button" class="btn btn-block btn-success btn-xs" style={{  height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Seller</button>
-                            <button type="button" class="btn btn-block btn-success btn-xs" style={{  height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Informasi Rekening</button>
-                            <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
-                            </div>
+                    <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
+                            <h1 className="m-0 text-dark">Menu Buyer</h1>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Lihat Buyer</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
                                 <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Menu Seller</li>
+                                <li className="breadcrumb-item active">Menu Buyer</li>
                             </ol>
                         </div>{/* /.col */}
                     </div>{/* /.row */}
@@ -273,10 +270,8 @@ const DataTable = (props) => {
                                                         <td>-</td>
                                                         <td>-</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => deleteData(product.id)}>Hapus</button>
                                                         </div>
                                                     </tr>
                                                 ))}
@@ -293,7 +288,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Tambah Seller</h4>
+                            <h4 className="modal-title">Tambah Buyer</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>

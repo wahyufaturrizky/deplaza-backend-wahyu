@@ -15,6 +15,7 @@ import AddProduct from './pages/Product/AddProduct'
 import EditProduct from './pages/Product/EditProduct';
 import PopUp from './pages/PopUp/index'
 import Seller from './pages/Seller/index'
+import Buyer from './pages/Buyer/index'
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
         <ProtectedRoute exact path="/editProduct" component={EditProduct} />
         <ProtectedRoute exact path="/popUp" component={PopUp} />
         <ProtectedRoute exact path="/seller" component={Seller} />
+        <ProtectedRoute exact path="/buyer" component={Buyer} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

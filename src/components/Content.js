@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Axios from 'axios'
-import { Auth } from '../utils/auth'
+import axiosConfig from '../utils/axiosConfig'
 
-const URL_GET = 'v1/user'
+const URL_GET = 'https://dev-rest-api.deplaza.id/v1/user'
 
 export default function Content() {
     const [total, setTotal] = useState('')
@@ -16,17 +15,10 @@ export default function Content() {
     }, []);
 
     const getTotalUser = () => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_GET}`, config)
+        axiosConfig.get('/user')
             .then(res =>
                 setTotal(res.data.meta.total_data)
-            )
-            .catch(error => console.log(error));
+            ).catch(error => console.log(error))
     }
 
     return (

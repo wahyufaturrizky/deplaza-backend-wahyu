@@ -9,7 +9,7 @@ import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
 const URL_STRING = '/v1/products';
-const URL_DETAIL = 'v1/product'
+const URL_DETAIL = '/v1/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);

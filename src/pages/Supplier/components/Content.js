@@ -8,7 +8,7 @@ import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/product?limit=1000';
+const URL_STRING = 'v1/product?limit=1000';
 const URL_DETAIL = 'v1/product'
 
 const arrayPopup = [{ id: 1, name: 'test', description: 'test', detail: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png' }]

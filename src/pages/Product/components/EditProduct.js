@@ -2,15 +2,13 @@ import React, { useEffect, useState } from "react";
 import Axios from 'axios'
 import { Auth } from '../../../utils/auth';
 import Select from 'react-select';
-import { withRouter} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
-const URL_POST = 'v1/product'
-const URL_GET_CITY = 'v1/shipment/cities'
+const URL_POST = '/v1/product'
+const URL_GET_CITY = '/v1/shipment/cities'
 const URL_GET_CATEGORY = '/v1/category';
 
 function AddProduct(props) {
-    let fileObj = [];
-    let fileArray = [];
     const [file, setFile] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -24,7 +22,7 @@ function AddProduct(props) {
     const [cityId, setCityId] = useState(0);
     const [source, setSource] = useState('');
     const [cod, setCod] = useState(1);
-    const [codCityId, setCodCityId] = useState(0);
+    const [codCityId, setCodCityId] = useState([]);
     const [variation, setVariation] = useState([]);
     const [values, setValues] = useState({ val: [] });
     const [secondValues, setSecondValues] = useState({ val: [] });
@@ -34,17 +32,19 @@ function AddProduct(props) {
     const [nameThirdVariation, setNameThirdVariation] = useState('')
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
+    const [urls, setUrls] = useState([])
+    const [fucka, setFucka] = useState([])
 
     useEffect(() => {
         getDataCategory()
         getDataCity()
         window.$(document).ready(function () {
             window.$('.textarea').summernote({
-                callbacks : {
-                    onChange: function(contents) {
+                callbacks: {
+                    onChange: function (contents) {
                         setDescription(contents)
                     }
-                  }
+                }
             })
             window.$('.select2bs4').select2({
                 theme: 'bootstrap4'
@@ -99,11 +99,11 @@ function AddProduct(props) {
     const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
 
     const handleChangeCodCities = (data) => {
-        // let catArray = [];
-        // data.map(i =>
-        //     catArray.push(i.value)
-        // );
-        setCodCityId(data.value)
+        let catArray = [];
+        data.map(i =>
+            catArray.push(i.value)
+        );
+        setCodCityId(catArray)
     }
 
     const handleChangeCod = (id) => {
@@ -118,22 +118,11 @@ function AddProduct(props) {
         setCategoryId(id.value);
     };
 
-    const uploadMultipleFiles = (e) => {
-        fileObj.push(e.target.files)
-        for (let i = 0; i < fileObj[0].length; i++) {
-            fileArray.push(URL.createObjectURL(fileObj[0][i]))
-        }
-        setFile(fileArray)
-    }
 
     console.log('city', name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
         file, variation)
 
 
-    const uploadFiles = (e) => {
-        e.preventDefault()
-        console.log(file)
-    }
 
     function createInputs() {
         return (
@@ -224,6 +213,7 @@ function AddProduct(props) {
         let vals = [...values.val];
         vals[this] = event.target.value;
         setValues({ val: vals });
+        // setVariation([...variation, nameVariation, ...values.val])
         console.log('vals', event);
     }
 
@@ -231,6 +221,7 @@ function AddProduct(props) {
         let vals = [...secondValues.val];
         vals[this] = event.target.value;
         setSecondValues({ val: vals });
+        // setVariation([...variation, nameSecondVariation, secondValues.val])
         console.log(vals);
     }
 
@@ -238,6 +229,7 @@ function AddProduct(props) {
         let vals = [...thirdValues.val];
         vals[this] = event.target.value;
         setThirdValues({ val: vals });
+        // setVariation([...variation, nameThirdVariation, thirdValues.val])
         console.log(vals);
     }
 
@@ -283,29 +275,59 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
-    const handleVariation = async () => {
-        await setVariation([...variation, nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val])
+
+    const ya = () => {
+        const k = values.val
+        const j = secondValues.val
+        const l = thirdValues.val
+        if (nameSecondVariation && j) {
+            setFucka([nameVariation, [k], nameSecondVariation, [j]])
+        } else if (nameThirdVariation && l) {
+            setFucka([nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]])
+        } else {
+            setFucka([nameVariation, [k]])
+        }
     }
 
-    console.log(nameVariation);
-    
-
-    const handleSubmit = async () => {
-        await setVariation([...variation, nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val])
-
-        const data =  {
-            name, description, category_id: parseInt(categoryId), brand, price_basic: parseInt(priceBasic), price_benefit: parseInt(priceBenefit), price_commission: parseInt(priceCommission), stock: parseInt(stock), weight: parseInt(weight), city_id: parseInt(cityId), source, cod: parseInt(cod), cod_city_id: parseInt(codCityId),
-             user_id: 2, images: file, variation: 'test', _method: 'put'
-        }
+    const handleSecondSubmit = async () => {
+        await ya()
+        console.log('handle', variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val));
+        handleSubmit()
+    }
+    const handleSubmit = async (e) => {
+        const k = values.val
+        const j = secondValues.val
+        const l = thirdValues.val
+        const test = [nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]]
        
+        const formData = new FormData();
+        file.forEach((file) => formData.append('images[]', file));
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('category_id', parseInt(categoryId));
+        formData.append('brand', brand);
+        formData.append('price_basic', parseInt(priceBasic));
+        formData.append('price_benefit', parseInt(priceBenefit));
+        formData.append('price_commission', parseInt(priceCommission));
+        formData.append('stock', parseInt(stock));
+        formData.append('weight', parseInt(weight));
+        formData.append('city_id', parseInt(cityId));
+        formData.append('source', source);
+        formData.append('cod', parseInt(cod));
+        formData.append('cod_city_id', parseInt(codCityId));
+        formData.append('user_id', 2);
+        formData.append('_method', 'put');
+        test.forEach((item) => formData.append('variation[]', item));
+
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
-               
+                "Content-Type": "multipart/form-data",
+
             }
         }
-       Axios.post(`${URL_POST}/${props.editData.id}`, data, config)
+        Axios.post(`${URL_POST}/${props.editData.id}`, formData, config)
             .then(res => {
                 alert('success')
                 props.history.push('/product')
@@ -313,14 +335,34 @@ function AddProduct(props) {
             })
     }
 
- 
+    const setFileUrls = (files) => {
+        const item = files.map((file) => URL.createObjectURL(file));
+        if (urls.length > 0) {
+            urls.forEach((url) => URL.revokeObjectURL(url));
+        }
+        setUrls(item);
+    }
+
+    const displayUploadedFiles = (image) => {
+        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100 }} />);
+    }
+
+    const uploadMultipleFiles = (e) => {
+        const files = [...file]; // Spread syntax creates a shallow copy
+        files.push(...e.target.files); // Spread again to push each selected file individually
+        setFileUrls(files)
+        setFile(files);
+    }
+
+    console.log('props', props.editData);
+
 
     return (
         <section class="content">
             <div class="container-fluid">
                 <div className="card card-default">
                     <div className="card-header">
-                        <h3 className="card-title">Tambah Produk</h3>
+                        <h3 className="card-title">Edit Produk</h3>
                         <div className="card-tools">
                             <button type="button" className="btn btn-tool" data-card-widget="collapse"><i className="fas fa-minus" /></button>
                             <button type="button" className="btn btn-tool" data-card-widget="remove"><i className="fas fa-times" /></button>
@@ -333,12 +375,7 @@ function AddProduct(props) {
                                 {/* <MultipleUpload/> */}
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Gambar Produk</label>
-                                    {file.length > 0 ?
-                                        <div className="form-group multi-preview">
-                                            {file.map(url => (
-                                                <img src={url} alt="..." style={{ width: 100, height: 100 }} />
-                                            ))}
-                                        </div> : null}
+                                    {urls.length > 0 && <div className="form-group multi-preview">{displayUploadedFiles(urls)}</div>}
                                     <div className="input-group">
                                         <div className="custom-file">
                                             <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadMultipleFiles} multiple />
@@ -348,12 +385,12 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => setName(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.name} onChange={(e) => setName(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label>Kategori</label>
                                     <Select
-                                        defaultValue={optionsCategory[0]}
+                                        defaultValue={props.editData.category_id}
                                         isMulti={false}
                                         options={optionsCategory}
                                         closeMenuOnSelect={true}
@@ -361,23 +398,23 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Brand</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setBrand(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.brand} onChange={(e) => setBrand(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Harga Pokok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setPriceBasic(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_basic} onChange={(e) => setPriceBasic(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Benefit Deplaza</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceBenefit(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_benefit} onChange={(e) => setPriceBenefit(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Komisi</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceCommission(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_commission} onChange={(e) => setPriceCommission(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Stok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setStock(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.stock} onChange={(e) => setStock(e.target.value)} />
                                 </div>
                                 <label htmlFor="exampleInputEmail1">Variasi</label>
                                 <div style={{ marginLeft: 50 }}>
@@ -395,20 +432,20 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Deskripsi Produk</label>
-                                    <textarea className="textarea" placeholder="Place some text here" style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
+                                    <textarea className="textarea" placeholder={props.editData.description} style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Berat Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setWeight(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.weight} onChange={(e) => setWeight(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Supplier (Sumber Produk)</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setSource(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.source} onChange={(e) => setSource(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
                                     <Select
-                                        defaultValue={options[0]}
+                                        defaultValue={props.editData.city_id}
                                         isMulti={false}
                                         options={options}
                                         closeMenuOnSelect={true}
@@ -417,7 +454,7 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Bisa COD / Tidak</label>
                                     <Select
-                                        defaultValue={optionsCod[0]}
+                                        defaultValue={props.editData.cod}
                                         isMulti={false}
                                         options={optionsCod}
                                         closeMenuOnSelect={true}
@@ -426,13 +463,13 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        defaultValue={options[0]}
-                                        isMulti={false}
+                                        defaultValue={props.editData.cod_city_id}
+                                        isMulti={true}
                                         options={options}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodCities} />
                                 </div>
-                                <button type="button" class="btn btn-block btn-primary" onClick={handleSubmit}>Simpan</button>
+                                <button type="button" class="btn btn-block btn-primary" onClick={handleSecondSubmit} >Simpan</button>
                             </div>
                             {/* /.row */}
                         </div>

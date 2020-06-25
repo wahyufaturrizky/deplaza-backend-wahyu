@@ -8,8 +8,8 @@ import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/product?limit=1000';
-const URL_DETAIL = 'v1/product'
+const URL_STRING = '/v1/product?limit=1000';
+const URL_DETAIL = '/v1/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -53,8 +53,6 @@ const DataTable = (props) => {
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
             }
         }
         Axios.get(URL_STRING, config)
@@ -192,7 +190,7 @@ const DataTable = (props) => {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        Axios.post(`${URL_DETAIL}/${id}/delete`, data, config)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)

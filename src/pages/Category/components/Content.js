@@ -5,8 +5,8 @@ import { Spinner } from '../../../components/spinner'
 import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/http://rest-api.deplaza.id/v1/category/?limit=50';
-const URL_POST = 'v1/category'
+const URL_STRING = '/v1/category?limit=50';
+const URL_POST = '/v1/category'
 
 const DataTable = (props) => {
     const [categories, setCategories] = useState([]);
@@ -18,6 +18,7 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState(null)
+    const [urls, setUrls] = useState('')
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 50;
 
@@ -39,8 +40,6 @@ const DataTable = (props) => {
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
             }
         }
         Axios.get(URL_STRING, config)
@@ -103,16 +102,22 @@ const DataTable = (props) => {
 
     // fungsi untuk menambah data
     const handleAddCategory = (e) => {
-        // e.preventDefault()
-        alert(image)
-        const data = { main_id: 0, name: title, active: 1, image }
+         e.preventDefault()
+        const formData = new FormData();
+        formData.append('image', image)
+        formData.append('name', title);
+        formData.append('active', 1);
+        formData.append('main_id', 1);
+
+
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
+                "Content-Type": "multipart/form-data",
             }
         }
-        Axios.post(URL_POST, data, config)
+        Axios.post(URL_POST, formData, config)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -142,14 +147,22 @@ const DataTable = (props) => {
     // fungsi untuk ubah data
     const changeData = (e) => {
         e.preventDefault()
-        const data = { main_id: 0, name: title, active: 1, _method: 'put', image }
+        const formData = new FormData();
+        formData.append('image', image)
+        formData.append('name', title);
+        formData.append('active', 1);
+        formData.append('main_id', 1);
+        formData.append('_method', 'put');
+
+       
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
                 'Access-Control-Allow-Origin': '*',
+                "Content-Type": "multipart/form-data",
             }
         }
-        Axios.post(`${URL_POST}/${id}`, data, config)
+        Axios.post(`${URL_POST}/${id}`, formData, config)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -181,10 +194,23 @@ const DataTable = (props) => {
                 alert('success')
             })
     }
-    const uploadSingleFile = (e) => {
-        setImage(URL.createObjectURL(e.target.files[0]))
+  
+    const setFileUrls = (files) => {
+        const item = URL.createObjectURL(files)
+        if (urls.length > 0) {
+            URL.revokeObjectURL(urls)
+        }
+        setUrls(item);
     }
-    console.log(image);
+
+    const displayUploadedFiles = (item) => {
+        return  <img  src={item} style={{ width: 100, height: 100 }} />
+    }
+
+    const uploadSingleFile = (e) => {
+        setFileUrls(e.target.files[0])
+        setImage(e.target.files[0]);
+    }
 
     return (
         <div className="content-wrapper">
@@ -281,8 +307,7 @@ const DataTable = (props) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
-                                {image ?
-                                    <img src={image} alt='' /> : null}
+                                {urls.length > 0 && displayUploadedFiles(urls)}
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Gambar Kategori</label>
                                     <div className="input-group">
@@ -296,7 +321,7 @@ const DataTable = (props) => {
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Save changes</button>
+                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Tambah Kategori</button>
                         </div>
                     </div>
                     {/* /.modal-content */}
@@ -349,12 +374,13 @@ const DataTable = (props) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
+                                {urls.length > 0 && displayUploadedFiles(urls)}
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
+                                    <label htmlFor="exampleInputFile">Gambar Kategori</label>
                                     <div className="input-group">
                                         <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
+                                            <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadSingleFile} />
+                                            <label className="custom-file-label" htmlFor="exampleInputFile">Pilih Gambar</label>
                                         </div>
                                     </div>
                                 </div>

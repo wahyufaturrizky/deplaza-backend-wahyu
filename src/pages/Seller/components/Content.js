@@ -1,15 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { TableHeader, Pagination, Search } from "./DataTable";
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
-import { Spinner } from '../../../components/spinner'
-import Axios from 'axios';
-import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
+
+import { TableHeader, Pagination, Search } from "./DataTable";
+import { Spinner } from '../../../components/spinner'
+import axiosConfig from '../../../utils/axiosConfig';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/user?limit=1000';
-const URL_DETAIL = 'v1/product'
+const URL_STRING = '/user?limit=1000';
+const URL_DETAIL = '/v1/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -42,26 +40,13 @@ const DataTable = (props) => {
         getProduct();
     }, []);
 
-
-    const onLoadTables = () => {
-        setProducts([])
-    }
-
-
     const getProduct = () => {
         setLoading(true)
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
-            }
-        }
-        Axios.get(URL_STRING, config)
-            .then(json => {
-                setProducts(json.data.data);
+        axiosConfig.get(URL_STRING)
+            .then(res => {
+                setProducts(res.data.data);
                 setLoading(false)
-            })
+            }).catch(error => console.log(error))
     }
 
 
@@ -98,13 +83,7 @@ const DataTable = (props) => {
     const showModalEdit = async (idData) => {
         console.log(idData);
 
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        await Axios.get(`${URL_DETAIL}/${idData}`, config)
+        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -123,13 +102,8 @@ const DataTable = (props) => {
     // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(URL_DETAIL, data, config)
+
+        axiosConfig.post(URL_DETAIL, data)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -144,13 +118,8 @@ const DataTable = (props) => {
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_DETAIL}/${id}`, config)
+
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -161,21 +130,9 @@ const DataTable = (props) => {
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
-                // let categoryData = [...comments]; // copying the old datas array
-                // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
-                // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
-                // setComments(categoryData); // ??
-                // let categoryData = comments.findIndex((obj => obj.id === id));
-                // categoryData = comments[categoryData] = res.data.data
-                // setComments([...comments, categoryData])
                 props.history.push('/category')
                 alert('success')
                 window.$('#modal-edit').modal('hide');
@@ -186,13 +143,7 @@ const DataTable = (props) => {
     // fungsi untuk delete data
     const deleteData = (id) => {
         const data = { _method: 'delete' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)
@@ -210,10 +161,10 @@ const DataTable = (props) => {
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark" >Menu Seller</h1>
-                            <div style={{display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                            <button type="button" class="btn btn-block btn-success btn-xs" style={{  height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Seller</button>
-                            <button type="button" class="btn btn-block btn-success btn-xs" style={{  height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Informasi Rekening</button>
-                            <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                            <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Seller</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={() => props.history.push('/accountInformation')}>Informasi Rekening</button>
+                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -272,12 +223,12 @@ const DataTable = (props) => {
                                                         <td>-</td>
                                                         <td>-</td>
                                                         <td>-</td>
-                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
-                                                        </div>
+                                                        <td>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
+                                                            <button type="button" class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                        </td>
                                                     </tr>
                                                 ))}
                                             </tbody>

@@ -8,7 +8,7 @@ import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = 'https://cors-anywhere.herokuapp.com/rest-api.deplaza.id/v1/product?limit=1000';
+const URL_STRING = 'v1/product?limit=1000';
 const URL_DETAIL = 'v1/product'
 
 const DataTable = (props) => {

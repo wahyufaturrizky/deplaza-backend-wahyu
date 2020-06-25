@@ -4,8 +4,8 @@ import { Auth } from '../../../utils/auth';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
 
-const URL_POST = 'v1/product'
-const URL_GET_CITY = 'v1/shipment/cities'
+const URL_POST = '/v1/product'
+const URL_GET_CITY = '/v1/shipment/cities'
 const URL_GET_CATEGORY = '/v1/category';
 
 function AddProduct(props) {

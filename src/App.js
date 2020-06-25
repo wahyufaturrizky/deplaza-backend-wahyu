@@ -19,6 +19,10 @@ import Buyer from './pages/Buyer/index'
 import SalesInformation from './pages/SalesInformation/index'
 import Notification from './pages/Notification/index'
 import Supplier from './pages/Supplier/index'
+import Complaint from './pages/Complaint'
+import Report from './pages/Report'
+import Help from './pages/Help'
+import AccountInformation from './pages/AccountInformation'
 
 export default function App() {
   return (
@@ -39,6 +43,10 @@ export default function App() {
         <ProtectedRoute exact path="/salesInformation" component={SalesInformation} />
         <ProtectedRoute exact path="/notification" component={Notification} />
         <ProtectedRoute exact path="/supplier" component={Supplier} />
+        <ProtectedRoute exact path="/complaint" component={Complaint} />
+        <ProtectedRoute exact path="/commissionReport" component={Report} />
+        <ProtectedRoute exact path="/help" component={Help} />
+        <ProtectedRoute exact path="/accountInformation" component={AccountInformation} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

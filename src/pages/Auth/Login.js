@@ -2,23 +2,34 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { Auth } from "../../utils/auth";
 import Axios from 'axios'
+import $ from 'jquery'
 
-const URL_STRING = "/v1/oauth/login"
+const URL_STRING = "https://dev-rest-api.deplaza.id/v1/oauth/login"
+const baseApiUrl = 'https://dev-rest-api.deplaza.id/';
+const username = 'admin@admin.com';
+const password = 'password';
 
 export default class Login extends React.Component {
     state = {
-        username: 'achmadtest',
+        username: 'testing',
         password: '12345',
     }
 
-    componentDidMount() {
-        this.props.history.push(Auth() ? '/home' : '/')
-    }
+    // componentDidMount() {
+    //     this.props.history.push(Auth() ? '/home' : '/')
+    // }
 
     // fungsi untuk login
     login = () => {
         const { username, password } = this.state
         const data = { username, password }
+
+        let config = {
+            headers: {
+                'Content-Type': 'application/form-data'
+              
+            }
+        }
 
         Axios.post(URL_STRING, data)
             .then(res => {
@@ -27,6 +38,25 @@ export default class Login extends React.Component {
                 console.log(res);
             })
     }
+
+    // tesAkses = () => {
+    //     $.get(baseApiUrl, {}, r => {
+    //         console.log(r);
+    //     })
+    // }
+
+    // tesLogin = () => {
+    //     $.post(`${baseApiUrl}/v1/oauth/login`, {
+    //         username: username,
+    //         password: password
+    //     }, r => {
+    //         console.log(r);
+    //         if (r.data.token) {
+    //            const token = r.data.token
+    //             console.log(token)
+    //         }
+    //     })
+    // }
 
     render() {
         return (

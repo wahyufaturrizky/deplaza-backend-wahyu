@@ -4,8 +4,8 @@ import { Auth } from '../../../utils/auth';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
 
-const URL_POST = 'v1/product'
-const URL_GET_CITY = 'v1/shipment/cities'
+const URL_POST = '/v1/product'
+const URL_GET_CITY = '/v1/shipment/cities'
 const URL_GET_CATEGORY = '/v1/category';
 
 function AddProduct(props) {
@@ -59,7 +59,6 @@ function AddProduct(props) {
         let config = {
             headers: {
                 Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
             }
         }
         Axios.get(`${URL_GET_CITY}`, config)
@@ -119,23 +118,6 @@ function AddProduct(props) {
     const handleChangeCategory = (id) => {
         setCategoryId(id.value);
     };
-
-    // const uploadMultipleFiles = (e) => {
-    //     fileObj.push(e.target.files)
-    //     for (let i = 0; i < fileObj[0].length; i++) {
-    //         fileArray.push(URL.createObjectURL(fileObj[0][i]))
-    //     }
-    //     setFile(fileArray)
-    // }
-
-    console.log('city', name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
-        file, variation)
-
-
-    const uploadFiles = (e) => {
-        e.preventDefault()
-        console.log(file)
-    }
 
     function createInputs() {
         return (
@@ -288,11 +270,6 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
-    const handleVariation = async () => {
-        const shit = variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val)
-        setVariation(shit)
-    }
-
     console.log(nameVariation);
 
     const ya = () => {
@@ -314,12 +291,6 @@ function AddProduct(props) {
         handleSubmit()
     }
     const handleSubmit = async (e) => {
-        // await setVariation(variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val))
-        //     .then(i => console.log('uu', i))
-
-
-
-      
 
         const k = values.val
             const j = secondValues.val
@@ -411,12 +382,6 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Gambar Produk</label>
                                     {urls.length > 0 && <div className="form-group multi-preview">{displayUploadedFiles(urls)}</div>}
-                                    {/* {file.length > 0 ?
-                                        <div className="form-group multi-preview">
-                                            {file.map(url => (
-                                                <img src={url} alt="..." style={{ width: 100, height: 100 }} />
-                                            ))}
-                                        </div> : null} */}
                                     <div className="input-group">
                                         <div className="custom-file">
                                             <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadMultipleFiles} multiple />

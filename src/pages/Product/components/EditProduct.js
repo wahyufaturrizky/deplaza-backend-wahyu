@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Axios from 'axios'
-import { Auth } from '../../../utils/auth';
+
+import axiosConfig from '../../../utils/axiosConfig';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
 
-const URL_POST = '/v1/product'
-const URL_GET_CITY = '/v1/shipment/cities'
-const URL_GET_CATEGORY = '/v1/category';
+const URL_POST = '/product'
+const URL_GET_CITY = '/shipment/cities'
+const URL_GET_CATEGORY = '/category';
 
 function AddProduct(props) {
     const [file, setFile] = useState([]);
@@ -54,13 +54,8 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_GET_CITY}`, config)
+       
+        axiosConfig.get(`${URL_GET_CITY}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
@@ -74,13 +69,8 @@ function AddProduct(props) {
     }
 
     const getDataCategory = () => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_GET_CATEGORY}`, config)
+      
+        axiosConfig.get(`${URL_GET_CATEGORY}`)
             .then(res =>
                 res.data.data.map(data => ({
                     value: data.id,
@@ -319,15 +309,8 @@ function AddProduct(props) {
         formData.append('_method', 'put');
         test.forEach((item) => formData.append('variation[]', item));
 
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                "Content-Type": "multipart/form-data",
-
-            }
-        }
-        Axios.post(`${URL_POST}/${props.editData.id}`, formData, config)
+       
+        axiosConfig.post(`${URL_POST}/${props.editData.id}`, formData)
             .then(res => {
                 alert('success')
                 props.history.push('/product')
@@ -344,7 +327,7 @@ function AddProduct(props) {
     }
 
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100 }} />);
+        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} />);
     }
 
     const uploadMultipleFiles = (e) => {

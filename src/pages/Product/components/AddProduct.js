@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Axios from 'axios'
-import { Auth } from '../../../utils/auth';
+
+import axiosConfig from '../../../utils/axiosConfig';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
 
-const URL_POST = '/v1/product'
-const URL_GET_CITY = '/v1/shipment/cities'
-const URL_GET_CATEGORY = '/v1/category';
+const URL_POST = '/product'
+const URL_GET_CITY = '/shipment/cities'
+const URL_GET_CATEGORY = '/category';
 
 function AddProduct(props) {
-    let fileObj = [];
-    let fileArray = [];
     const [file, setFile] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -56,12 +54,7 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-            }
-        }
-        Axios.get(`${URL_GET_CITY}`, config)
+        axiosConfig.get(`${URL_GET_CITY}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
@@ -75,13 +68,7 @@ function AddProduct(props) {
     }
 
     const getDataCategory = () => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_GET_CATEGORY}`, config)
+        axiosConfig.get(`${URL_GET_CATEGORY}`)
             .then(res =>
                 res.data.data.map(data => ({
                     value: data.id,
@@ -318,22 +305,7 @@ function AddProduct(props) {
         formData.append('user_id', 2);
         test.forEach((item) => formData.append('variation[]', item));
 
-
-
-        const data = {
-            name, description, category_id: parseInt(categoryId), brand, price_basic: parseInt(priceBasic), price_benefit: parseInt(priceBenefit), price_commission: parseInt(priceCommission), stock: parseInt(stock), weight: parseInt(weight), city_id: parseInt(cityId), source, cod: parseInt(cod), cod_city_id: codCityId,
-            user_id: 2, images: formData, variation: variation
-        }
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                "Content-Type": "multipart/form-data",
-
-            }
-        }
-        Axios.post(URL_POST, formData, config)
+        axiosConfig.post(URL_POST, formData)
             .then(res => {
                 alert('success')
                 props.history.push('/product')
@@ -350,7 +322,7 @@ function AddProduct(props) {
     }
 
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100 }} />);
+        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} />);
     }
 
     const uploadMultipleFiles = (e) => {

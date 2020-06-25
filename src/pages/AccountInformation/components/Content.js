@@ -4,6 +4,7 @@ import { withRouter } from 'react-router';
 import { TableHeader, Pagination, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import axios from 'axios'
 import AddProductComponent from './AddProduct'
 
 const URL_STRING = '/account?limit=1000';
@@ -19,6 +20,7 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
+    const [bank, setBank] = useState([])
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 10;
 
@@ -40,19 +42,19 @@ const DataTable = (props) => {
         getProduct();
     }, []);
 
-    const getProduct = () => {
+    const getProduct = async () => {
         setLoading(true)
-        axiosConfig.get(URL_STRING)
-            .then(res => {
-                setProducts(res.data.data);
+        axios.all([axiosConfig.get(URL_STRING), axiosConfig.get('/bank')])
+        .then(
+            axios.spread((account, bank) => {
+                setProducts(account.data.data);
+                setBank(bank.data.data)
                 setLoading(false)
-            }
-
-            )
-
+            })
+        )
     }
 
-    console.log(loading);
+    console.log('bank', bank);
 
 
     const productsData = useMemo(() => {
@@ -156,8 +158,7 @@ const DataTable = (props) => {
             })
     }
 
-    console.log('detail', detail.images);
-
+    const listBank = bank
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -221,7 +222,8 @@ const DataTable = (props) => {
                                                         <th scope="row" key={product.id}>
                                                             {product.id}
                                                         </th>
-                                                        <td>{product.bank_id}</td>
+                                                        {bank.length > 0 ? 
+                                                        <td>{bank.find(o => o.id === product.bank_id).name}</td> : null }
                                                         <td>{product.number}</td>
                                                         <td>{product.branch}</td>
                                                         <td>{product.name}</td>

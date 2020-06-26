@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
+
 import { Spinner } from '../../../components/spinner'
-import Axios from 'axios';
-import { Auth } from '../../../utils/auth';
+import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
+import moment from 'moment'
+import 'moment/locale/id';
+moment.locale('id');
 
-const URL_STRING = 'v1/product?limit=1000';
-const URL_DETAIL = 'v1/product'
+const URL_STRING = '/orders?limit=1000&offset=0&order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
+const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -29,8 +30,8 @@ const DataTable = (props) => {
         { name: "Nama Seller", field: "name", sortable: true },
         { name: "Tgl Transaksi", field: "name", sortable: true },
         { name: "Customer", field: "name", sortable: false },
-        { name: "Barang", field: "email", sortable: true },
-        { name: "Varian", field: "email", sortable: true },
+        // { name: "Barang", field: "email", sortable: true },
+        // { name: "Varian", field: "email", sortable: true },
         { name: "Alamat", field: "email", sortable: true },
         { name: "No Telepon", field: "email", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
@@ -50,14 +51,7 @@ const DataTable = (props) => {
 
     const getProduct = () => {
         setLoading(true)
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
-            }
-        }
-        Axios.get(URL_STRING, config)
+        axiosConfig.get(URL_STRING)
             .then(json => {
                 setProducts(json.data.data);
                 setLoading(false)
@@ -97,14 +91,7 @@ const DataTable = (props) => {
 
     const showModalEdit = async (idData) => {
         console.log(idData);
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        await Axios.get(`${URL_DETAIL}/${idData}`, config)
+        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -123,13 +110,7 @@ const DataTable = (props) => {
     // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(URL_DETAIL, data, config)
+        axiosConfig.post(URL_DETAIL, data)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -144,13 +125,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_DETAIL}/${id}`, config)
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -161,13 +136,7 @@ const DataTable = (props) => {
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -186,13 +155,7 @@ const DataTable = (props) => {
     // fungsi untuk delete data
     const deleteData = (id) => {
         const data = { _method: 'delete' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)
@@ -200,7 +163,43 @@ const DataTable = (props) => {
             })
     }
 
+    const Test = (props) => {
+        console.log(props.data);
+        return (
+            props.data.details.map(item => (
+                <span>
+                    <td>{item.metadata_products}</td>
+                    <td>{item.price}</td>
+                    <td>{item.benefit}</td>
+                    <td>{item.commission}</td>
+                </span>
+            ))
+        )
+    }
+
     console.log('detail', detail.images);
+
+    //Columns defines table headings and properties to be placed into the body
+    const columns = [{ heading: 'Name', property: 'name' }, { heading: 'Age', property: 'age' }, { heading: 'Sex', property: 'sex' }, { heading: 'Breed', property: 'breed' },]
+
+    //Data is the array of objects to be placed into the table
+    const data = [{ name: 'Sabrina', age: '6', sex: 'Female', breed: 'Staffordshire' }, { name: 'Max', age: '2', sex: 'Male', breed: 'Boxer' }]
+
+    const App = props => <Table columns={columns} data={data} propertyAsKey='name' />
+
+    const Table = ({ columns, data, propertyAsKey }) =>
+        <table className='table'>
+            <thead>
+                <tr>{columns.map(col => <th key={`header-${col.heading}`}>{col.heading}</th>)}</tr>
+            </thead>
+            <tbody>
+                {data.map(item =>
+                    <tr key={`${item[propertyAsKey]}-row`}>
+                        {columns.map(col => <td key={`${item[propertyAsKey]}-${col.property}`}>{item[col.property]}</td>)}
+                    </tr>
+                )}
+            </tbody>
+        </table>
 
     return (
         <div className="content-wrapper">
@@ -260,12 +259,16 @@ const DataTable = (props) => {
                                                         <th scope="row" key={product.id}>
                                                             {product.id}
                                                         </th>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.category_id}</td>
-                                                        <td>{product.brand}</td>
-                                                        <td>{product.price_basic}</td>
-                                                        <td>{product.price_benefit}</td>
-                                                        <td>{product.price_commission}</td>
+                                                        <td>{product.seller.fullname}</td>
+                                                        <td>{moment(product.created_at).format('MMMM Do YYYY, h:mm')}</td>
+                                                        <td>{product.customer ? product.customer.fullname : '-'}</td>
+                                                        {product.details.map(item => (
+                                                            <tr>
+                                                                <th> test</th>
+                                                                <td>{item.metadata_products}</td>
+                                                                <td>{item.metadata_products}</td>
+                                                            </tr>
+                                                        ))}
                                                         <td>-</td>
                                                         <td>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Input Resi</button>

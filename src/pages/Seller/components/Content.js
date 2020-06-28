@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { withRouter } from 'react-router';
+import toastr from 'toastr'
+import swal from 'sweetalert';
 
 import { TableHeader, Pagination, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
@@ -46,7 +48,7 @@ const DataTable = (props) => {
             .then(res => {
                 setProducts(res.data.data);
                 setLoading(false)
-            }).catch(error => console.log(error))
+            }).catch(error => toastr.danger(error))
     }
 
 
@@ -140,19 +142,26 @@ const DataTable = (props) => {
             })
     }
 
-    // fungsi untuk delete data
+
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete' }
+                    axiosConfig.post(`${URL_DETAIL}/${id}/delete`, data)
+                        .then(() => {
+                            const categoryData = products.filter(category => category.id !== id)
+                            setProducts(categoryData)
+                            toastr.success('Produk berhasil dihapus')
+                        })
+                }
+            });
     }
-
-    console.log('detail', detail.images);
-
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}

@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
-import Axios from 'axios';
+import toastr from 'toastr'
+import swal from 'sweetalert';
+
 import { Spinner } from '../../../components/spinner'
-import { Auth } from '../../../utils/auth';
+import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router'
 
-const URL_STRING = '/v1/category?limit=50';
-const URL_POST = '/v1/category'
+const URL_STRING = '/category?limit=50';
+const URL_POST = '/category'
 
 const DataTable = (props) => {
     const [categories, setCategories] = useState([]);
@@ -37,16 +39,11 @@ const DataTable = (props) => {
 
     const getData = () => {
         setLoading(true)
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-            }
-        }
-        Axios.get(URL_STRING, config)
+        axiosConfig.get(URL_STRING)
             .then(json => {
                 setCategories(json.data.data);
                 setLoading(false)
-            })
+            }).catch(error => toastr.danger(error))
     };
 
     const categoriesData = useMemo(() => {
@@ -80,15 +77,7 @@ const DataTable = (props) => {
     console.log(categoriesData)
 
     const showModalEdit = async (idData) => {
-        console.log(idData);
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        await Axios.get(`${URL_POST}/${idData}`, config)
+        await axiosConfig.get(`${URL_POST}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -108,16 +97,7 @@ const DataTable = (props) => {
         formData.append('name', title);
         formData.append('active', 1);
         formData.append('main_id', 1);
-
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                "Content-Type": "multipart/form-data",
-            }
-        }
-        Axios.post(URL_POST, formData, config)
+        axiosConfig.post(URL_POST, formData)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -130,13 +110,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_POST}/${id}`, config)
+        axiosConfig.get(`${URL_POST}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -153,16 +127,7 @@ const DataTable = (props) => {
         formData.append('active', 1);
         formData.append('main_id', 1);
         formData.append('_method', 'put');
-
-       
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                "Content-Type": "multipart/form-data",
-            }
-        }
-        Axios.post(`${URL_POST}/${id}`, formData, config)
+        axiosConfig.post(`${URL_POST}/${id}`, formData)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -179,20 +144,34 @@ const DataTable = (props) => {
     }
 
     // fungsi untuk delete data
+    // const deleteData = (id) => {
+    //     const data = { _method: 'delete' }
+    //     axiosConfig.post(`${URL_POST}/${id}/delete`, data)
+    //         .then(() => {
+    //             const categoryData = categories.filter(category => category.id !== id)
+    //             setCategories(categoryData)
+    //             alert('success')
+    //         })
+    // }
+
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_POST}/${id}/delete`, data, config)
-            .then(() => {
-                const categoryData = categories.filter(category => category.id !== id)
-                setCategories(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete' }
+                    axiosConfig.post(`${URL_POST}/${id}/delete`, data)
+                        .then(() => {
+                            const categoryData = categories.filter(category => category.id !== id)
+                            setCategories(categoryData)
+                            toastr.success('Kategori berhasil dihapus')
+                        })
+                }
+            });
     }
   
     const setFileUrls = (files) => {
@@ -339,6 +318,10 @@ const DataTable = (props) => {
                         </div>
                         <div className="modal-body">
                             <div className="card-body">
+                            <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Gambar Kategori</label>
+                                   <div><img src={detail.image ? detail.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></div>
+                                </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Kategori</label>
                                     <h4>{detail.name}</h4>

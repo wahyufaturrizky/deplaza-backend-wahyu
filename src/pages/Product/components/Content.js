@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { TableHeader, Pagination, Search } from "./DataTable";
+import { withRouter } from 'react-router';
+import toastr from 'toastr'
+import swal from 'sweetalert';
 
+import { TableHeader, Pagination, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
-import { withRouter } from 'react-router';
-import AddProductComponent from './AddProduct'
+
+
 
 const URL_STRING = '/product?limit=1000';
 const URL_DETAIL = '/product'
@@ -41,19 +44,14 @@ const DataTable = (props) => {
     }, []);
 
 
-    const onLoadTables = () => {
-        setProducts([])
-    }
-
-
     const getProduct = () => {
         setLoading(true)
-      
+
         axiosConfig.get(URL_STRING)
             .then(json => {
                 setProducts(json.data.data);
                 setLoading(false)
-            })
+            }).catch(error => toastr.error(error))
     }
 
 
@@ -87,17 +85,7 @@ const DataTable = (props) => {
     }, [products, currentPage, search, sorting.field, sorting.order]);
     console.log(productsData)
 
-    const showModalEdit = async (idData) => {
-        console.log(idData);
-
-        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
-            .then(res => {
-                setDetail(res.data.data)
-            })
-        setId(idData)
-        window.$('#modal-edit').modal('show');
-    }
-
+    
     const hideModal = hideModalInfo => {
         window.$('#modal-lg').modal('hide');
     };
@@ -106,26 +94,10 @@ const DataTable = (props) => {
         props.history.push('/addProduct')
     }
 
-    // fungsi untuk menambah data
-    const handleAddCategory = () => {
-        const data = { main_id: 0, name: title, active: 1 }
-      
-        axiosConfig.post(URL_DETAIL, data)
-            .then(res => {
-                // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
-                // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
-                // tanpa di reload
-                let categoryData = [...products]
-                categoryData.push(res.data.data)
-                setProducts(categoryData)
-                alert('success')
-                hideModal()
-            })
-    }
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-       
+
         axiosConfig.get(`${URL_DETAIL}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
@@ -134,39 +106,26 @@ const DataTable = (props) => {
     }
 
 
-    // fungsi untuk ubah data
-    const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-       
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
-            .then(res => {
-                // let categoryData = [...comments]; // copying the old datas array
-                // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
-                // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
-                // setComments(categoryData); // ??
-                // let categoryData = comments.findIndex((obj => obj.id === id));
-                // categoryData = comments[categoryData] = res.data.data
-                // setComments([...comments, categoryData])
-                props.history.push('/category')
-                alert('success')
-                window.$('#modal-edit').modal('hide');
-                setId(0)
-            })
-    }
 
-    // fungsi untuk delete data
-    const deleteData = (id) => {
-        const data = { _method: 'delete' }
-       
-        axiosConfig.post(`${URL_DETAIL}/${id}/delete`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+    const modalDelete = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete' }
+                    axiosConfig.post(`${URL_DETAIL}/${id}/delete`, data)
+                        .then(() => {
+                            const categoryData = products.filter(category => category.id !== id)
+                            setProducts(categoryData)
+                            toastr.success('Produk berhasil dihapus')
+                        })
+                }
+            });
     }
-
-    console.log('detail', detail.images);
 
     return (
         <div className="content-wrapper">
@@ -189,7 +148,6 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-            {addProduct ? <AddProductComponent /> :
                 <section className="content">
                     <div className="container-fluid">
                         <div className="row">
@@ -223,10 +181,10 @@ const DataTable = (props) => {
                                                 }
                                             />
                                             <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
+                                                {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
-                                                            {product.id}
+                                                            {i + 1}
                                                         </th>
                                                         <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                         <td>{product.name}</td>
@@ -238,7 +196,7 @@ const DataTable = (props) => {
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                             <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
                                                             <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => modalDelete(product.id)}>Hapus</button>
                                                         </div>
                                                     </tr>
                                                 ))}
@@ -250,44 +208,7 @@ const DataTable = (props) => {
                         </div>
                     </div>
                 </section>
-            }
-            <div className="modal fade" id="modal-lg">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Tambah Produk</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => {
-                                        setTitle(e.target.value)
-                                    }} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Save changes</button>
-                        </div>
-                    </div>
-                    {/* /.modal-content */}
-                </div>
-                {/* /.modal-dialog */}
-            </div>
+            
             <div className="modal fade" id="modal-detail">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -353,43 +274,6 @@ const DataTable = (props) => {
                     </div>
                 </div>
                 {/* /.modal-content */}
-            </div>
-            {/* /.modal-dialog */}
-            <div className="modal fade" id="modal-edit">
-                <div className="modal-dialog modal-edit">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Ubah Produk</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
-                                        setTitle(e.target.value)
-                                    }} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
-                        </div>
-                    </div>
-                    {/* /.modal-content */}
-                </div>
             </div>
         </div>
 

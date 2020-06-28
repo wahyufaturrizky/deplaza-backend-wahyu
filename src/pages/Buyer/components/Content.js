@@ -4,12 +4,12 @@ import { trackPromise } from 'react-promise-tracker';
 import { usePromiseTracker } from "react-promise-tracker";
 import { Spinner } from '../../../components/spinner'
 import Axios from 'axios';
-import { Auth } from '../../../utils/auth';
+import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = '/v1/user?limit=1000';
-const URL_DETAIL = '/v1/product'
+const URL_STRING = '/user?limit=1000';
+const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -50,14 +50,7 @@ const DataTable = (props) => {
 
     const getProduct = () => {
         setLoading(true)
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
-            }
-        }
-        Axios.get(URL_STRING, config)
+        axiosConfig.get(URL_STRING)
             .then(json => {
                 setProducts(json.data.data);
                 setLoading(false)
@@ -96,15 +89,8 @@ const DataTable = (props) => {
     console.log(productsData)
 
     const showModalEdit = async (idData) => {
-        console.log(idData);
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        await Axios.get(`${URL_DETAIL}/${idData}`, config)
+      
+        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -123,13 +109,7 @@ const DataTable = (props) => {
     // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(URL_DETAIL, data, config)
+        axiosConfig.post(URL_DETAIL, data)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -144,13 +124,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_DETAIL}/${id}`, config)
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -161,13 +135,7 @@ const DataTable = (props) => {
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -186,13 +154,7 @@ const DataTable = (props) => {
     // fungsi untuk delete data
     const deleteData = (id) => {
         const data = { _method: 'delete' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)

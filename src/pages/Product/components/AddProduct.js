@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-
-import axiosConfig from '../../../utils/axiosConfig';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
+import toastr from 'toastr'
+import Loader from 'react-loader-spinner'
+
+import axiosConfig from '../../../utils/axiosConfig';
+
 
 const URL_POST = '/product'
 const URL_GET_CITY = '/shipment/cities'
@@ -33,7 +36,7 @@ function AddProduct(props) {
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
     const [urls, setUrls] = useState([])
-    const [fucka, setFucka] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getDataCategory()
@@ -259,58 +262,63 @@ function AddProduct(props) {
 
     console.log(nameVariation);
 
-    const ya = () => {
-        const k = values.val
-        const j = secondValues.val
-        const l = thirdValues.val
-        if (nameSecondVariation && j) {
-             setFucka([nameVariation, [k], nameSecondVariation, [j]])
-        } else if (nameThirdVariation && l) {
-             setFucka([nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]])
-        } else {
-             setFucka([nameVariation, [k]])
-        }
-    }
 
-    const handleSecondSubmit = async () => {
-        await ya()
-        console.log('handle', variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val));
-        handleSubmit()
-    }
     const handleSubmit = async (e) => {
+        if (!name) {
+            toastr.warning('Mohon isi nama produk')
+        } else if (!categoryId) {
+            toastr.warning('Mohon isi kategori')
+        } else if (!brand) {
+            toastr.warning('Mohon isi brand')
+        } else if (!priceBasic) {
+            toastr.warning('Mohon isi harga pokok produk')
+        } else if (!priceBenefit) {
+            toastr.warning('Mohon isi benefit deplaza')
+        } else if (!priceCommission) {
+            toastr.warning('Mohon isi komisi')
+        } else if (!stock) {
+            toastr.warning('Mohon isi stok')
+        } else if (!description) {
+            toastr.warning('Mohon isi deskripsi')
+        } else if (!weight) {
+            toastr.warning('Mohon isi bert produk')
+        } else if (!source) {
+            toastr.warning('Mohon isi supplier')
+        } else if (!cityId) {
+            toastr.warning('Mohon isi kota asal produk')
+        } else if (!codCityId) {
+            toastr.warning('Mohon isi daerah cod')
+        } else {
+            setLoading(true)
+            const test = [nameVariation, [values.val], nameSecondVariation, [secondValues.val], nameThirdVariation, [thirdValues.val]]
+            const formData = new FormData();
+            file.forEach((file) => formData.append('images[]', file));
+            formData.append('name', name);
+            formData.append('description', description);
+            formData.append('category_id', parseInt(categoryId));
+            formData.append('brand', brand);
+            formData.append('price_basic', parseInt(priceBasic));
+            formData.append('price_benefit', parseInt(priceBenefit));
+            formData.append('price_commission', parseInt(priceCommission));
+            formData.append('stock', parseInt(stock));
+            formData.append('weight', parseInt(weight));
+            formData.append('city_id', parseInt(cityId));
+            formData.append('source', source);
+            formData.append('cod', parseInt(cod));
+            formData.append('cod_city_id', parseInt(codCityId));
+            formData.append('user_id', 2);
+            test.forEach((item) => formData.append('variation[]', item));
 
-        const k = values.val
-            const j = secondValues.val
-            const l = thirdValues.val
-        const test = [nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]]
-        console.log('testk', fucka);
+            axiosConfig.post(URL_POST, formData)
+                .then(res => {
+                    props.history.push('/product')
+                    window.location.reload(false);
+                    setLoading(false)
+                    toastr.success('Produk berhasil ditambah')
+                    console.log(res);
+                }).catch(error => toastr.danger(error))
+        }
 
-        // e.preventDefault();
-        const formData = new FormData();
-        file.forEach((file) => formData.append('images[]', file));
-        // formData.append('images', file);
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('category_id', parseInt(categoryId));
-        formData.append('brand', brand);
-        formData.append('price_basic', parseInt(priceBasic));
-        formData.append('price_benefit', parseInt(priceBenefit));
-        formData.append('price_commission', parseInt(priceCommission));
-        formData.append('stock', parseInt(stock));
-        formData.append('weight', parseInt(weight));
-        formData.append('city_id', parseInt(cityId));
-        formData.append('source', source);
-        formData.append('cod', parseInt(cod));
-        formData.append('cod_city_id', parseInt(codCityId));
-        formData.append('user_id', 2);
-        test.forEach((item) => formData.append('variation[]', item));
-
-        axiosConfig.post(URL_POST, formData)
-            .then(res => {
-                alert('success')
-                props.history.push('/product')
-                console.log(res);
-            })
     }
 
     const setFileUrls = (files) => {
@@ -380,19 +388,19 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Harga Pokok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setPriceBasic(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="10000" onChange={(e) => setPriceBasic(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Benefit Deplaza</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceBenefit(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="10000" onChange={(e) => setPriceBenefit(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Komisi</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceCommission(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="10000" onChange={(e) => setPriceCommission(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Stok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setStock(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="100" onChange={(e) => setStock(e.target.value)} />
                                 </div>
                                 <label htmlFor="exampleInputEmail1">Variasi</label>
                                 <div style={{ marginLeft: 50 }}>
@@ -413,12 +421,12 @@ function AddProduct(props) {
                                     <textarea className="textarea" placeholder="Place some text here" style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Berat Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setWeight(e.target.value)} />
+                                    <label htmlFor="exampleInputEmail1">Berat Produk (kg)</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="1" onChange={(e) => setWeight(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Supplier (Sumber Produk)</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setSource(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="tokopedia.com" onChange={(e) => setSource(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
@@ -447,7 +455,14 @@ function AddProduct(props) {
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodCities} />
                                 </div>
-                                <button type="button" class="btn btn-block btn-primary" onClick={handleSecondSubmit} >Simpan</button>
+                                {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
+                                    type="Oval"
+                                    color="#fff"
+                                    height={20}
+                                    width={20}
+                                /> </button> :
+                                    <button type="button" class="btn btn-block btn-primary" onClick={handleSubmit}>Simpan</button>
+                                }
                             </div>
                             {/* /.row */}
                         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
 
@@ -23,6 +24,7 @@ const DataTable = (props) => {
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
     const [id, setId] = useState(0)
+    const [newData, setNewData] = useState([])
     const ITEMS_PER_PAGE = 10;
 
     const headers = [
@@ -30,8 +32,8 @@ const DataTable = (props) => {
         { name: "Nama Seller", field: "name", sortable: true },
         { name: "Tgl Transaksi", field: "name", sortable: true },
         { name: "Customer", field: "name", sortable: false },
-        // { name: "Barang", field: "email", sortable: true },
-        // { name: "Varian", field: "email", sortable: true },
+        { name: "Barang", field: "email", sortable: true },
+        { name: "Varian", field: "email", sortable: true },
         { name: "Alamat", field: "email", sortable: true },
         { name: "No Telepon", field: "email", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
@@ -41,26 +43,33 @@ const DataTable = (props) => {
 
     useEffect(() => {
         getProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-
-    const onLoadTables = () => {
-        setProducts([])
-    }
-
 
     const getProduct = () => {
         setLoading(true)
         axiosConfig.get(URL_STRING)
-            .then(json => {
-                setProducts(json.data.data);
+            .then(res => {
+                setProducts( res.data.data)
                 setLoading(false)
             })
     }
 
+    const displayData = products.map(x => {
+        const object = Object.assign({ ...x }, ...x.details);
+        delete object.details
+     return object
+    })
 
     const productsData = useMemo(() => {
-        let computedProducts = products;
+        // let computedProducts = products;
+
+        let computedProducts = products.map(x => {
+                const object = Object.assign({ ...x }, x.details);
+             return object
+           
+            
+        })
 
         if (search) {
             computedProducts = computedProducts.filter(
@@ -179,27 +188,40 @@ const DataTable = (props) => {
 
     console.log('detail', detail.images);
 
-    //Columns defines table headings and properties to be placed into the body
-    const columns = [{ heading: 'Name', property: 'name' }, { heading: 'Age', property: 'age' }, { heading: 'Sex', property: 'sex' }, { heading: 'Breed', property: 'breed' },]
+    const displayedResult = [
+        {
+            createdAt: 1584972020777,
+            updatedAt: 1584972020777,
+            id: 1,
+            userId: 1,
+            comment: "Let's archive this",
+            createdBy: 2,
+            info: {
+                createdAt: 1584962612534,
+                updatedAt: 1584972020767,
+                id: 1,
+                fullName: 'John Doe',
+                phone: '+2348079821739',
+                location: 'Ilorin',
+                age: 23,
+                email: 'john@mail.com',
+                gender: 'Male',
+                userId: 1,
+                processed: true
+            }
+        }
+    ];
 
-    //Data is the array of objects to be placed into the table
-    const data = [{ name: 'Sabrina', age: '6', sex: 'Female', breed: 'Staffordshire' }, { name: 'Max', age: '2', sex: 'Male', breed: 'Boxer' }]
 
-    const App = props => <Table columns={columns} data={data} propertyAsKey='name' />
 
-    const Table = ({ columns, data, propertyAsKey }) =>
-        <table className='table'>
-            <thead>
-                <tr>{columns.map(col => <th key={`header-${col.heading}`}>{col.heading}</th>)}</tr>
-            </thead>
-            <tbody>
-                {data.map(item =>
-                    <tr key={`${item[propertyAsKey]}-row`}>
-                        {columns.map(col => <td key={`${item[propertyAsKey]}-${col.property}`}>{item[col.property]}</td>)}
-                    </tr>
-                )}
-            </tbody>
-        </table>
+    //   const displayData = products.map(x => {
+    //     console.log('ggg',  Object.keys(x.details))
+    //     Object.keys(x.details).forEach(key => x.details['details.' + key] = x.details[key])
+    //     const y = {...x, ...x.details};
+    //     delete y.details;
+    //     return y;
+    //   })
+    // console.log(displayData)
 
     return (
         <div className="content-wrapper">
@@ -254,22 +276,18 @@ const DataTable = (props) => {
                                                 }
                                             />
                                             <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
+                                                {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
-                                                            {product.id}
+                                                            {i+1}
                                                         </th>
                                                         <td>{product.seller.fullname}</td>
                                                         <td>{moment(product.created_at).format('MMMM Do YYYY, h:mm')}</td>
                                                         <td>{product.customer ? product.customer.fullname : '-'}</td>
-                                                        {product.details.map(item => (
-                                                            <tr>
-                                                                <th> test</th>
-                                                                <td>{item.metadata_products}</td>
-                                                                <td>{item.metadata_products}</td>
-                                                            </tr>
-                                                        ))}
-                                                        <td>-</td>
+                                                        <td>{product[0].metadata_products}</td>
+                                                        <td>{product[0].variation ? product[0].variation : '-'}</td>
+                                                        <td>{product.delivery.receiver_address}</td>
+                                                        <td>{product.customer ? product.customer.phone : '-'}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Input Resi</button>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Kirim Data</button>

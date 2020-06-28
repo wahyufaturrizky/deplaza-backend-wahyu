@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
+import toastr from 'toastr'
+import swal from 'sweetalert';
+
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
 
 const URL_STRING = '/popup';
-const URL_DETAIL = '/v1/product'
+const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -47,7 +48,7 @@ const DataTable = (props) => {
             .then(json => {
                 setProducts(json.data.data);
                 setLoading(false)
-            })
+            }).catch(error => toastr.danger(error))
     }
 
 
@@ -112,9 +113,9 @@ const DataTable = (props) => {
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
                 // tanpa di reload
                 getProduct();
-                alert('success')
+                toastr.success('Popup berhasil ditambahkan')
                 hideModal()
-            })
+            }).catch(error => toastr.danger(error))
     }
 
     // fungsi untuk menampilkan detail data
@@ -139,21 +140,31 @@ const DataTable = (props) => {
         axiosConfig.post(`${URL_STRING}/${id}`, formData)
             .then(res => {
                 getProduct()
-                alert('success')
+                toastr.success('Popup berhasil dirubah')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
-            })
+            }).catch(error => toastr.danger(error))
     }
 
-    // fungsi untuk delete data
+
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        axiosConfig.post(`${URL_STRING}/${id}/delete`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete' }
+                    axiosConfig.post(`${URL_STRING}/${id}/delete`, data)
+                        .then(() => {
+                            const categoryData = products.filter(category => category.id !== id)
+                            setProducts(categoryData)
+                            toastr.success('Popup berhasil dihapus')
+                        })
+                }
+            });
     }
 
     const setFileUrls = (files) => {
@@ -228,10 +239,10 @@ const DataTable = (props) => {
                                                 }
                                             />
                                             <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
+                                                {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
-                                                            {product.id}
+                                                            {i+1}
                                                         </th>
                                                         <td><img style={{ width: 100, height: 100 }} src={product.image ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                         <td>{product.name}</td>

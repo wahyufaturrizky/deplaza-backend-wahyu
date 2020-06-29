@@ -103,7 +103,7 @@ const DataTable = (props) => {
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
                 // tanpa di reload
                 getData();
-                alert('success')
+                toastr.success('Berhasil menambahkan kategori')
                 hideModal()
             })
     }
@@ -129,30 +129,13 @@ const DataTable = (props) => {
         formData.append('_method', 'put');
         axiosConfig.post(`${URL_POST}/${id}`, formData)
             .then(res => {
-                // let categoryData = [...comments]; // copying the old datas array
-                // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
-                // setCategories(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
-                // setCategories(categoryData); // ??
-                // let categoryData = comments.findIndex((obj => obj.id === id));
-                // categoryData = comments[categoryData] = res.data.data
-                // setCategories([...comments, categoryData])
-                alert('success')
+                toastr.success('Berhasil merubah kategori')
                 getData();
                 window.$('#modal-edit').modal('hide');
                 setId(0)
-            })
+            }).catch(error => toastr.danger(error))
     }
 
-    // fungsi untuk delete data
-    // const deleteData = (id) => {
-    //     const data = { _method: 'delete' }
-    //     axiosConfig.post(`${URL_POST}/${id}/delete`, data)
-    //         .then(() => {
-    //             const categoryData = categories.filter(category => category.id !== id)
-    //             setCategories(categoryData)
-    //             alert('success')
-    //         })
-    // }
 
     const deleteData = (id) => {
         swal({

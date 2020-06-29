@@ -290,7 +290,7 @@ function AddProduct(props) {
             toastr.warning('Mohon isi daerah cod')
         } else {
             setLoading(true)
-            const test = [nameVariation, [values.val], nameSecondVariation, [secondValues.val], nameThirdVariation, [thirdValues.val]]
+            const test = [{[nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
             const formData = new FormData();
             file.forEach((file) => formData.append('images[]', file));
             formData.append('name', name);
@@ -307,7 +307,7 @@ function AddProduct(props) {
             formData.append('cod', parseInt(cod));
             formData.append('cod_city_id', parseInt(codCityId));
             formData.append('user_id', 2);
-            test.forEach((item) => formData.append('variation[]', item));
+            formData.append('variation', JSON.stringify(test))
 
             axiosConfig.post(URL_POST, formData)
                 .then(res => {
@@ -316,7 +316,7 @@ function AddProduct(props) {
                     setLoading(false)
                     toastr.success('Produk berhasil ditambah')
                     console.log(res);
-                }).catch(error => toastr.danger(error))
+                }).catch(error => toastr.error(error))
         }
 
     }
@@ -340,7 +340,12 @@ function AddProduct(props) {
         setFile(files);
     }
 
-    console.log('jj', [nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val]);
+    const testV = nameVariation
+    const testV2 = nameSecondVariation
+    const testV3 = nameThirdVariation
+    const obj = {}
+
+    console.log('jj', [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]);
 
 
     return (

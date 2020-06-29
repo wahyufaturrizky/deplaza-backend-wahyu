@@ -260,7 +260,7 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
-    console.log(nameVariation);
+    console.log('nameVariation', codCityId);
 
 
     const handleSubmit = async (e) => {
@@ -305,7 +305,7 @@ function AddProduct(props) {
             formData.append('city_id', parseInt(cityId));
             formData.append('source', source);
             formData.append('cod', parseInt(cod));
-            formData.append('cod_city_id', parseInt(codCityId));
+            codCityId.forEach((file) => formData.append('cod_city_id[]', file));
             formData.append('user_id', 2);
             formData.append('variation', JSON.stringify(test))
 

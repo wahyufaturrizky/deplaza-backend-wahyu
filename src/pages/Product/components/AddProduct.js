@@ -264,6 +264,8 @@ function AddProduct(props) {
 
 
     const handleSubmit = async (e) => {
+        const dataLocal = localStorage.getItem('dataUser');
+        const dataUser = JSON.parse(dataLocal)
         if (!name) {
             toastr.warning('Mohon isi nama produk')
         } else if (!categoryId) {
@@ -306,7 +308,7 @@ function AddProduct(props) {
             formData.append('source', source);
             formData.append('cod', parseInt(cod));
             codCityId.forEach((file) => formData.append('cod_city_id[]', file));
-            formData.append('user_id', 2);
+            formData.append('user_id', dataUser.id);
             formData.append('variation', JSON.stringify(test))
 
             axiosConfig.post(URL_POST, formData)

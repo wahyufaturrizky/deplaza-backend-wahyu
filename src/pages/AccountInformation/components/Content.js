@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { withRouter } from 'react-router';
+import toastr from 'toastr'
+import swal from 'sweetalert';
 
-import { TableHeader, Pagination, Search } from "./DataTable";
+import { TableHeader, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
 import axios from 'axios'
+import Pagination from 'react-paginating';
 import AddProductComponent from './AddProduct'
 
-const URL_STRING = '/account?limit=1000';
+const URL_STRING = '/account';
 const URL_DETAIL = '/v1/product'
 
 const DataTable = (props) => {
@@ -22,7 +25,7 @@ const DataTable = (props) => {
     const [addProduct, setAddProduct] = useState(false);
     const [bank, setBank] = useState([])
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 10;
+    const [limit, setLimit] = useState(10)
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -30,9 +33,6 @@ const DataTable = (props) => {
         { name: "No Rekening", field: "name", sortable: true },
         { name: "Branch", field: "name", sortable: false },
         { name: "Nama", field: "email", sortable: true },
-        // { name: "Tanggal Lahir", field: "email", sortable: true },
-        // { name: "Jenis Kelamin", field: "email", sortable: true },
-        // { name: "Pendidikan", field: "email", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -45,13 +45,14 @@ const DataTable = (props) => {
     const getProduct = async () => {
         setLoading(true)
         axios.all([axiosConfig.get(URL_STRING), axiosConfig.get('/bank')])
-        .then(
-            axios.spread((account, bank) => {
-                setProducts(account.data.data);
-                setBank(bank.data.data)
-                setLoading(false)
-            })
-        )
+            .then(
+                axios.spread((account, bank) => {
+                    setTotalItems(account.data.meta.total_data);
+                    setProducts(account.data.data);
+                    setBank(bank.data.data)
+                    setLoading(false)
+                })
+            )
     }
 
     console.log('bank', bank);
@@ -80,11 +81,8 @@ const DataTable = (props) => {
         }
 
         //Current Page slice
-        return computedProducts.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-        );
-    }, [products, currentPage, search, sorting.field, sorting.order]);
+        return computedProducts
+    }, [products, search, sorting.field, sorting.order]);
     console.log(productsData)
 
     const showModalEdit = async (idData) => {
@@ -158,7 +156,21 @@ const DataTable = (props) => {
             })
     }
 
-    const listBank = bank
+    // fungsi untuk handle pagination
+    const handlePageChange = (page, e) => {
+        setCurrentPage(page)
+        let nextPage = page;
+        if (!nextPage || nextPage === 0) {
+            nextPage = 1;
+        }
+        const offset = (nextPage - 1) * limit;
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
+            .then(json => {
+                setCurrentPage(json.data.meta.current_page)
+                setProducts(json.data.data);
+            }).catch(error => toastr.error(error))
+    };
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -168,9 +180,8 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h4 className="m-0 text-dark" >Informasi Rekening</h4>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Seller</button>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Informasi Rekening</button>
-                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} >Tambah Seller</button>
+                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}>Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -191,15 +202,94 @@ const DataTable = (props) => {
                                 <div className="row w-100">
                                     <div className="col mb-3 col-12 text-center">
                                         <div className="row">
-                                            <div className="col-md-6">
+                                            <div class="col-md-12 d-flex justify-content-between">
                                                 <Pagination
                                                     total={totalItems}
-                                                    itemsPerPage={ITEMS_PER_PAGE}
+                                                    limit={limit}
+                                                    pageCount={5}
                                                     currentPage={currentPage}
-                                                    onPageChange={page => setCurrentPage(page)}
-                                                />
-                                            </div>
-                                            <div className="col-md-6 d-flex flex-row-reverse">
+                                                >
+                                                    {({
+                                                        pages,
+                                                        currentPage,
+                                                        hasNextPage,
+                                                        hasPreviousPage,
+                                                        previousPage,
+                                                        nextPage,
+                                                        totalPages,
+                                                        getPageItemProps
+                                                    }) => (
+                                                            <div>
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: 1,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+
+                                                                >
+                                                                    {'❮❮'}
+                                                                </button>
+                                                                {hasPreviousPage && (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: previousPage,
+                                                                            onPageChange: handlePageChange,
+                                                                            style: style.pageItem,
+                                                                            className: "page-link"
+                                                                        })}
+                                                                    >
+                                                                        {'❮'}
+                                                                    </button>
+                                                                )}
+
+                                                                {pages.map(page => {
+                                                                    let activePage = null;
+                                                                    if (currentPage === page) {
+                                                                        activePage = style.pageItemActive;
+                                                                    }
+                                                                    return (
+                                                                        <button
+                                                                            {...getPageItemProps({
+                                                                                pageValue: page,
+                                                                                key: page,
+                                                                                onPageChange: handlePageChange,
+                                                                                className: "page-link",
+                                                                                style: { ...style.pageItem, ...activePage }
+                                                                            })}
+                                                                        >
+                                                                            {page}
+                                                                        </button>
+                                                                    );
+                                                                })}
+
+                                                                {hasNextPage && (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: nextPage,
+                                                                            onPageChange: handlePageChange,
+                                                                            style: style.pageItem,
+                                                                            className: "page-link"
+                                                                        })}
+                                                                    >
+                                                                        {'❯'}
+                                                                    </button>
+                                                                )}
+
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: totalPages,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯❯'}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                </Pagination>
                                                 <Search
                                                     onSearch={value => {
                                                         setSearch(value);
@@ -222,16 +312,16 @@ const DataTable = (props) => {
                                                         <th scope="row" key={product.id}>
                                                             {product.id}
                                                         </th>
-                                                        {bank.length > 0 ? 
-                                                        <td>{bank.find(o => o.id === product.bank_id).name}</td> : null }
+                                                        {bank.length > 0 ?
+                                                            <td>{bank.find(o => o.id === product.bank_id).name}</td> : null}
                                                         <td>{product.number}</td>
                                                         <td>{product.branch}</td>
                                                         <td>{product.name}</td>
                                                         <td>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
-                                                            <button type="button" class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" >Ubah</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" >Daftar Buyer</button>
+                                                            <button type="button" class="btn btn-block btn-danger btn-xs" >Hapus</button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -388,5 +478,39 @@ const DataTable = (props) => {
 
     );
 };
+const style = {
+    pageItem: {
+        display: "inline",
+        position: "relative",
+        padding: "0.5rem 0.75rem",
+        marginLeft: "-1px",
+        lineHeight: "1.25",
+        color: "#0275d8",
+        backgroundColor: "#fff",
+        border: "1px solid #fff",
+        touchAction: "manipulation",
+        textDecoration: "none"
+    },
+    pageItemActive: {
+        color: "#fff",
+        backgroundColor: "#0275d8",
+        borderColor: "#fff"
+    },
+    listGroup: {
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: 0
+    },
+    listGroupItem: {
+        position: "relative",
+        display: "flex",
+        flexFlow: "row wrap",
+        alignItems: "center",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "-1px",
+        backgroundColor: "#fff",
+        border: "1px #fff"
+    }
+}
 
 export default withRouter(DataTable);

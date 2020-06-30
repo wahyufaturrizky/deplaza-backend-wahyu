@@ -104,7 +104,7 @@ const DataTable = (props) => {
                 getData();
                 toastr.success('Berhasil menambahkan kategori')
                 hideModal()
-            })
+            }).catch(error => toastr.error(error))
     }
 
     // fungsi untuk menampilkan detail data
@@ -197,7 +197,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Kategori</h1>
                             <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Kategori</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -328,7 +328,7 @@ const DataTable = (props) => {
                                                         {i+1}
                                                     </th>
                                                     <td>{comment.name}</td>
-                                                    <td><img src={comment.image ? comment.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
+                                                    <td><img src={comment.image_url ? comment.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
                                                     <td>{comment.name}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => categoryDetail(comment.id)}>Lihat</button>
@@ -396,7 +396,7 @@ const DataTable = (props) => {
                             <div className="card-body">
                             <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Gambar Kategori</label>
-                                   <div><img src={detail.image ? detail.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></div>
+                                   <div><img src={detail.image_url ? detail.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Kategori</label>

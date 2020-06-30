@@ -1,23 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axiosConfig from '../utils/axiosConfig'
+import { Link } from 'react-router-dom'
 
-const URL_GET = 'https://dev-rest-api.deplaza.id/v1/user'
-
-export default function Content() {
+function Content() {
     const [total, setTotal] = useState('')
-
+    const [totalSale, setTotalSale] = useState('')
+    const [totalBuyer, setTotalBuyer] = useState('')
     const data = localStorage.getItem('dataUser');
     const dataUser = JSON.parse(data)
 
 
     useEffect(() => {
         getTotalUser()
+        getTotalSale()
+        getTotalBuyer()
     }, []);
 
     const getTotalUser = () => {
-        axiosConfig.get('/user')
+        axiosConfig.get('/user?role=0')
             .then(res =>
-                setTotal(res.data.meta.total_data)
+                setTotal(res.data.meta.total_result)
+            ).catch(error => console.log(error))
+    }
+
+    const getTotalBuyer = () => {
+        axiosConfig.get('/user?role=1')
+            .then(res =>
+                setTotalBuyer(res.data.meta.total_result)
+            ).catch(error => console.log(error))
+    }
+
+    const getTotalSale = () => {
+        axiosConfig.get('/orders')
+            .then(res =>
+                setTotalSale(res.data.meta.total_data)
             ).catch(error => console.log(error))
     }
 
@@ -46,43 +62,43 @@ export default function Content() {
                 <div className="container-fluid">
                     {/* Info boxes */}
                     <div className="row">
-                        <div className="col-12 col-sm-6 col-md-4">
+                        <Link to="/seller" className="col-12 col-sm-6 col-md-4">
                             <div className="info-box mb-3" style={{ height: 100 }}>
                                 <span className="info-box-icon bg-danger elevation-1" style={{ width: 100 }}><i className="fas fa-users" /></span>
                                 <div className="info-box-content">
-                                    <span className="info-box-text" style={{ alignSelf: 'flex-end' }}>Total Seller</span>
-                                    <span className="info-box-number" style={{ alignSelf: 'flex-end' }}>{total}</span>
+                                    <span className="info-box-text" style={{ alignSelf: 'flex-end', color: '#000' }}>Total Seller</span>
+                                    <span className="info-box-number" style={{ alignSelf: 'flex-end', color: '#000' }}>{total}</span>
                                 </div>
                                 {/* /.info-box-content */}
                             </div>
                             {/* /.info-box */}
-                        </div>
+                        </Link>
                         {/* /.col */}
                         {/* fix for small devices only */}
                         <div className="clearfix hidden-md-up" />
-                        <div className="col-12 col-sm-6 col-md-4">
+                        <Link to="/salesInformation" className="col-12 col-sm-6 col-md-4">
                             <div className="info-box mb-3" style={{ height: 100 }}>
                                 <span className="info-box-icon bg-success elevation-1" style={{ width: 100 }}><i className="fas fa-shopping-cart" /></span>
                                 <div className="info-box-content">
-                                    <span className="info-box-text" style={{ alignSelf: 'flex-end' }}>Penjualan</span>
-                                    <span className="info-box-number" style={{ alignSelf: 'flex-end' }}>760</span>
+                                    <span className="info-box-text" style={{ alignSelf: 'flex-end', color: '#000' }}>Penjualan</span>
+                                    <span className="info-box-number" style={{ alignSelf: 'flex-end', color: '#000' }}>{totalSale}</span>
                                 </div>
                                 {/* /.info-box-content */}
                             </div>
                             {/* /.info-box */}
-                        </div>
+                        </Link>
                         {/* /.col */}
-                        <div className="col-12 col-sm-6 col-md-4">
+                        <Link to="/buyer" className="col-12 col-sm-6 col-md-4">
                             <div className="info-box mb-3" style={{ height: 100 }}>
                                 <span className="info-box-icon bg-warning elevation-1" style={{ width: 100 }}><i className="fas fa-users" /></span>
                                 <div className="info-box-content">
-                                    <span className="info-box-text" style={{ alignSelf: 'flex-end' }}>Total Buyer</span>
-                                    <span className="info-box-number" style={{ alignSelf: 'flex-end' }}>2,000</span>
+                                    <span className="info-box-text" style={{ alignSelf: 'flex-end', color: '#000' }}>Total Buyer</span>
+                                    <span className="info-box-number" style={{ alignSelf: 'flex-end', color: '#000' }}>{totalBuyer}</span>
                                 </div>
                                 {/* /.info-box-content */}
                             </div>
                             {/* /.info-box */}
-                        </div>
+                        </Link>
                         {/* /.col */}
                     </div>
                     {/* /.row */}
@@ -221,3 +237,5 @@ export default function Content() {
         /* /.content-wrapper */
     )
 }
+
+export default Content

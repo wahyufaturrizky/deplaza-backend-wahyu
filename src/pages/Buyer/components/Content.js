@@ -310,9 +310,9 @@ const DataTable = (props) => {
                                                     <td>{product.phone}</td>
                                                     <td>{product.email}</td>
                                                     <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
+                                                    <td>{product.birth_date}</td>
+                                                    <td>{product.gender}</td>
+                                                    <td>{product.educational_stage}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm">Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button>

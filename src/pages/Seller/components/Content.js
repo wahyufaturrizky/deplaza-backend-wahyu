@@ -321,9 +321,9 @@ const DataTable = (props) => {
                                                         <td>{product.phone}</td>
                                                         <td>{product.email}</td>
                                                         <td>-</td>
-                                                        <td>-</td>
-                                                        <td>-</td>
-                                                        <td>-</td>
+                                                        <td>{product.birth_date}</td>
+                                                        <td>{product.gender}</td>
+                                                        <td>{product.educational_stage}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>

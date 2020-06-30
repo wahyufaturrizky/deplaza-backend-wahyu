@@ -15,7 +15,7 @@ import 'moment/locale/id';
 moment.locale('id');
 
 const URL_STRING = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
-const URL_DETAIL = '/product'
+const URL_DETAIL = '/orders'
 
 
 const DataTable = (props) => {
@@ -31,8 +31,9 @@ const DataTable = (props) => {
     const [courierId, setCourierId] = useState(0)
     const [trackingId, setTrackingId] = useState(0)
     const [packageCourier, setPackageCourier] = useState("")
+    const [detail, setDetail] = useState([])
     const [limit, setLimit] = useState(10)
-  
+
 
     // header table
     const headers = [
@@ -41,9 +42,10 @@ const DataTable = (props) => {
         { name: "Tgl Transaksi", field: "name", sortable: true },
         { name: "Customer", field: "name", sortable: false },
         { name: "Barang", field: "email", sortable: true },
-        { name: "Varian", field: "email", sortable: true },
+        // { name: "Varian", field: "email", sortable: true },
         { name: "Alamat", field: "email", sortable: true },
         { name: "No Telepon", field: "email", sortable: true },
+        { name: "Status", field: "status", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -123,8 +125,17 @@ const DataTable = (props) => {
         window.$('#modal-edit').modal('show');
     }
 
+    const showModalStatus = async (id) => {
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
+            .then(res => {
+                setDetail(res.data.data)
+            })
+        window.$('#modal-status').modal('show');
+    }
+
     const hideModal = hideModalInfo => {
-        window.$('#modal-lg').modal('hide');
+        setId(0)
+        window.$('#modal-status').modal('hide');
     };
 
     // fungsi untuk handle error
@@ -185,6 +196,36 @@ const DataTable = (props) => {
                 setData(json.data.data);
             }).catch(error => toastr.error(error))
     };
+
+    // fungsi untuk menampilkan detail data
+    const salesDetail = (id) => {
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
+            .then(res => {
+                setDetail(res.data.data)
+            })
+        window.$('#modal-detail').modal('show');
+    }
+
+    const changeStatus = (key, i) => {
+        // const i = [key]
+        
+        // if (key === 1) {
+        //     return 'confirm'
+        // } else if (key === 3) {
+        //     return 'process'
+        // } else if (key === 5) {
+        //     return 'done'
+        // } else if (key === 9) {
+        //     return 'reject'
+        // } else {
+        //     return 'test'
+        // }
+        console.log(key && key[i]);
+        
+    }
+
+    console.log('test', changeStatus());
+
 
     return (
         <div className="content-wrapper">
@@ -326,13 +367,15 @@ const DataTable = (props) => {
                                                     <td>{moment(sale.created_at).format('MMMM Do YYYY, h:mm')}</td>
                                                     <td>{sale.customer ? sale.customer.fullname : '-'}</td>
                                                     <td>{sale[0].metadata_products}</td>
-                                                    <td>{sale[0].variation ? sale[0].variation : '-'}</td>
+                                                    {/* <td>{sale[0].variation ? sale[0].variation : '-'}</td> */}
                                                     <td>{sale.delivery.receiver_address}</td>
                                                     <td>{sale.customer ? sale.customer.phone : '-'}</td>
+                                                    <td>{sale.status_label}</td>
                                                     <td>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={''}>Kirim Data</button>
-                                                        <button type="button" class="btn btn-block btn-danger btn-xs" onClick={''}>Hapus</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalStatus(sale.id)}>Rubah Status</button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -344,6 +387,46 @@ const DataTable = (props) => {
                     </div>
                 </div>
             </section>
+            <div className="modal fade" id="modal-detail">
+                <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h4 className="modal-title">Detail Produk</h4>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {detail.status_label === "Verifikasi Pembayaran" ?
+                                <div className="card-body">
+                                    <div className="form-group">
+                                        {detail.status_label === "Verifikasi Pembayaran" ?
+                                            <label htmlFor="exampleInputEmail1">Bukti Transfer</label> : null}
+                                        <div>
+                                            <td>
+                                                {detail.status_label === "Verifikasi Pembayaran" ? detail.payment.metadata_decode.map(image =>
+                                                    <img style={{ width: 725, height: 350, marginRight: 10 }} src={image.bukti_bayar} />) : null}
+                                            </td>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="exampleInputEmail1">No. Invoice</label>
+                                        <h4>{detail.invoice}</h4>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="exampleInputEmail1">Total</label>
+                                        <h4>{detail.payment.ammount}</h4>
+                                    </div>
+                                </div>
+                                : <div>Belum ada bukti pembayaran / sudah diverifikasi</div>}
+                        </div>
+                        <div className="modal-footer justify-content-between">
+                            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+                {/* /.modal-content */}
+            </div>
             <div className="modal fade" id="modal-edit">
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
@@ -381,6 +464,32 @@ const DataTable = (props) => {
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
                             <button type="button" className="btn btn-primary" onClick={handleInputResi}>Input Resi</button>
+                        </div>
+                    </div>
+                    {/* /.modal-content */}
+                </div>
+            </div>
+            <div className="modal fade" id="modal-status">
+                <div className="modal-dialog modal-status">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h4 className="modal-title">Rubah Status</h4>
+                            <button type="button" className="close" onClick={hideModal} aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="card-body">
+                                {detail.available_status_label ?
+                                    <div className="form-group">
+                                        {Object.keys(detail.available_status_label ? detail.available_status_label : 'null').map((key, i) =>
+                                            <button type="button" value={key} class="btn btn-block btn-success btn-sm" onClick={changeStatus(key, i)}>{detail.available_status_label ? detail.available_status_label[key] : null}</button>
+                                        )}
+                                    </div> : <Spinner />}
+                            </div>
+                        </div>
+                        <div className="modal-footer justify-content-between">
+                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
                         </div>
                     </div>
                     {/* /.modal-content */}

@@ -6,10 +6,10 @@ import swal from 'sweetalert';
 import { TableHeader, Pagination, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
-
-
-
-const URL_STRING = '/product?limit=1000';
+// import PaginationTest from "react-js-pagination";
+import "./Pagination.css";
+import PaginationTest from 'react-paginating';
+const URL_STRING = '/product';
 const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
@@ -22,6 +22,8 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
+    const [limit, setLimit] = useState(10)
+    const [activePage, setActivePage] = useState(0)
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 10;
 
@@ -49,12 +51,15 @@ const DataTable = (props) => {
 
         axiosConfig.get(URL_STRING)
             .then(json => {
+                setActivePage(json.data.meta.current_page);
+                setLimit(json.data.meta.limit)
+                setTotalItems(json.data.meta.total_data);
                 setProducts(json.data.data);
                 setLoading(false)
             }).catch(error => toastr.error(error))
     }
 
-
+// fungsi untuk search
     const productsData = useMemo(() => {
         let computedProducts = products;
 
@@ -66,8 +71,6 @@ const DataTable = (props) => {
             );
         }
 
-        setTotalItems(computedProducts.length);
-
         //Sorting products
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
@@ -78,14 +81,11 @@ const DataTable = (props) => {
         }
 
         //Current Page slice
-        return computedProducts.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-        );
-    }, [products, currentPage, search, sorting.field, sorting.order]);
+        return computedProducts
+    }, [products, search, sorting.field, sorting.order]);
     console.log(productsData)
 
-    
+
     const hideModal = hideModalInfo => {
         window.$('#modal-lg').modal('hide');
     };
@@ -126,6 +126,38 @@ const DataTable = (props) => {
                 }
             });
     }
+    // handlePageChange = (page, e) => {
+    //     this.setState(
+    //         {
+    //             page
+    //         },
+    //         async () => {
+    //             let currentPage = this.state.page;
+    //             if (!currentPage || currentPage === 0) {
+    //                 currentPage = 1;
+    //             }
+
+    //             const offset = (currentPage - 1) * limit;
+    //             const url = `https://pokeapi.co/api/v2/evolution-chain/?limit=${limit}&offset=${offset}`;
+    //             const data = await fetch(url).then(data => data.json());
+
+    //             this.setState({
+    //                 data,
+    //                 page: currentPage
+    //             });
+    //         }
+    //     );
+    // };
+
+
+    const handlePageChange = (page, e) => {
+        setCurrentPage(page)
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${currentPage * 10}`)
+            .then(json => {
+                setCurrentPage(json.data.meta.current_page)
+                setProducts(json.data.data);
+            }).catch(error => toastr.error(error))
+    };
 
     return (
         <div className="content-wrapper">
@@ -148,67 +180,146 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-                <section className="content">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-12">
-                                <div className="row w-100">
-                                    <div className="col mb-3 col-12 text-center">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <Pagination
-                                                    total={totalItems}
-                                                    itemsPerPage={ITEMS_PER_PAGE}
-                                                    currentPage={currentPage}
-                                                    onPageChange={page => setCurrentPage(page)}
-                                                />
-                                            </div>
-                                            <div className="col-md-6 d-flex flex-row-reverse">
-                                                <Search
-                                                    onSearch={value => {
-                                                        setSearch(value);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
+            <section className="content">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="row w-100">
+                                <div className="col mb-3 col-12 text-center">
+                                    <div className="row">
+                                        <div class="col-md-12 d-flex justify-content-between">
+                                            <PaginationTest
+                                                total={totalItems}
+                                                limit={limit}
+                                                pageCount={5}
+                                                currentPage={currentPage}
+                                            >
+                                                {({
+                                                    pages,
+                                                    currentPage,
+                                                    hasNextPage,
+                                                    hasPreviousPage,
+                                                    previousPage,
+                                                    nextPage,
+                                                    totalPages,
+                                                    getPageItemProps
+                                                }) => (
+                                                        <div>
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: 1,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
 
-                                        <table className="table table-striped">
-                                            <TableHeader
-                                                headers={headers}
-                                                onSorting={(field, order) =>
-                                                    setSorting({ field, order })
-                                                }
-                                            />
-                                            <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                    <tr>
-                                                        <th scope="row" key={product.id}>
-                                                            {i + 1}
-                                                        </th>
-                                                        <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.category_id}</td>
-                                                        <td>{product.brand}</td>
-                                                        <td>{product.price_basic}</td>
-                                                        <td>{product.price_benefit}</td>
-                                                        <td>{product.price_commission}</td>
-                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => modalDelete(product.id)}>Hapus</button>
+                                                            >
+                                                                {'❮❮'}
+                                                            </button>
+                                                            {hasPreviousPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: previousPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❮'}
+                                                                </button>
+                                                            )}
+
+                                                            {pages.map(page => {
+                                                                let activePage = null;
+                                                                if (currentPage === page) {
+                                                                    activePage = style.pageItemActive;
+                                                                }
+                                                                return (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: page,
+                                                                            key: page,
+                                                                            onPageChange: handlePageChange,
+                                                                            className: "page-link",
+                                                                            style: { ...style.pageItem, ...activePage }
+                                                                        })}
+                                                                    >
+                                                                        {page}
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {hasNextPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: nextPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯'}
+                                                                </button>
+                                                            )}
+
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: totalPages,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+                                                            >
+                                                                {'❯❯'}
+                                                            </button>
                                                         </div>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                            </PaginationTest>
+                                            <Search
+                                                onSearch={value => {
+                                                    setSearch(value);
+                                                    setCurrentPage(1);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
+                                    <table className="table table-striped">
+                                        <TableHeader
+                                            headers={headers}
+                                            onSorting={(field, order) =>
+                                                setSorting({ field, order })
+                                            }
+                                        />
+                                        <tbody>
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
+                                                <tr>
+                                                    <th scope="row" key={product.id}>
+                                                        {i + 1}
+                                                    </th>
+                                                    {product.images.map(image =>
+                                                        <td><img style={{ width: 100, height: 100 }} src={image ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>)}
+                                                    <td>{product.name}</td>
+                                                    <td>{product.category_id}</td>
+                                                    <td>{product.brand}</td>
+                                                    <td>{product.price_basic}</td>
+                                                    <td>{product.price_benefit}</td>
+                                                    <td>{product.price_commission}</td>
+                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => modalDelete(product.id)}>Hapus</button>
+                                                    </div>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-            
+                </div>
+            </section>
+
             <div className="modal fade" id="modal-detail">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -225,7 +336,7 @@ const DataTable = (props) => {
                                     <div>
                                         {detail.images && detail.images.map(image =>
                                             <td>
-                                                <img style={{ width: 100, height: 100, marginRight: 10 }} src={image.file_upload ? image.file_upload : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                <img style={{ width: 100, height: 100, marginRight: 10 }} src={image.file_upload ? image.image_url  : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
 
                                         )}
                                     </div>
@@ -260,6 +371,15 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Variasi</label>
+                                    {/* {detail.variation_data && detail.variation_data.map(item => {
+                                        return (
+                                            <div>
+                                                <h4>{Object.keys(item)}</h4>
+                                            </div>
+                                        )
+                                    }
+
+                                    )} */}
                                     <h4>{detail.variation}</h4>
                                 </div>
                                 <div className="form-group">
@@ -275,9 +395,43 @@ const DataTable = (props) => {
                 </div>
                 {/* /.modal-content */}
             </div>
-        </div>
+        </div >
 
     );
+};
+const style = {
+    pageItem: {
+        display: "inline",
+        position: "relative",
+        padding: "0.5rem 0.75rem",
+        marginLeft: "-1px",
+        lineHeight: "1.25",
+        color: "#0275d8",
+        backgroundColor: "#fff",
+        border: "1px solid #fff",
+        touchAction: "manipulation",
+        textDecoration: "none"
+    },
+    pageItemActive: {
+        color: "#fff",
+        backgroundColor: "#0275d8",
+        borderColor: "#fff"
+    },
+    listGroup: {
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: 0
+    },
+    listGroupItem: {
+        position: "relative",
+        display: "flex",
+        flexFlow: "row wrap",
+        alignItems: "center",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "-1px",
+        backgroundColor: "#fff",
+        border: "1px #fff"
+    }
 };
 
 export default withRouter(DataTable);

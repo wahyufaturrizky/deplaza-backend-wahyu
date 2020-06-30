@@ -41,10 +41,13 @@ const PaginationComponent = ({
                 disabled={currentPage === 1}
             />
             {paginationItems}
+            <Pagination.Ellipsis />
+            <Pagination.Item>{paginationItems.slice(-1)}</Pagination.Item>
             <Pagination.Next
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             />
+            <Pagination.Last />
         </Pagination>
     );
 };

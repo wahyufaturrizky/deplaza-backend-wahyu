@@ -3,12 +3,11 @@ import { withRouter } from 'react-router';
 import toastr from 'toastr'
 import swal from 'sweetalert';
 
-import { TableHeader, Pagination, Search } from "./DataTable";
+import { TableHeader, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
-// import PaginationTest from "react-js-pagination";
-import "./Pagination.css";
-import PaginationTest from 'react-paginating';
+
+import Pagination from 'react-paginating';
 const URL_STRING = '/product';
 const URL_DETAIL = '/product'
 
@@ -59,7 +58,7 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
-// fungsi untuk search
+    // fungsi untuk search
     const productsData = useMemo(() => {
         let computedProducts = products;
 
@@ -126,33 +125,14 @@ const DataTable = (props) => {
                 }
             });
     }
-    // handlePageChange = (page, e) => {
-    //     this.setState(
-    //         {
-    //             page
-    //         },
-    //         async () => {
-    //             let currentPage = this.state.page;
-    //             if (!currentPage || currentPage === 0) {
-    //                 currentPage = 1;
-    //             }
-
-    //             const offset = (currentPage - 1) * limit;
-    //             const url = `https://pokeapi.co/api/v2/evolution-chain/?limit=${limit}&offset=${offset}`;
-    //             const data = await fetch(url).then(data => data.json());
-
-    //             this.setState({
-    //                 data,
-    //                 page: currentPage
-    //             });
-    //         }
-    //     );
-    // };
-
-
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
-        axiosConfig.get(`${URL_STRING}?limit=10&offset=${currentPage * 10}`)
+        let nextPage = page;
+        if (!nextPage || nextPage === 0) {
+            nextPage = 1;
+        }
+        const offset = (nextPage - 1) * limit;
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
@@ -188,7 +168,7 @@ const DataTable = (props) => {
                                 <div className="col mb-3 col-12 text-center">
                                     <div className="row">
                                         <div class="col-md-12 d-flex justify-content-between">
-                                            <PaginationTest
+                                            <Pagination
                                                 total={totalItems}
                                                 limit={limit}
                                                 pageCount={5}
@@ -274,7 +254,7 @@ const DataTable = (props) => {
                                                             </button>
                                                         </div>
                                                     )}
-                                            </PaginationTest>
+                                            </Pagination>
                                             <Search
                                                 onSearch={value => {
                                                     setSearch(value);
@@ -336,7 +316,7 @@ const DataTable = (props) => {
                                     <div>
                                         {detail.images && detail.images.map(image =>
                                             <td>
-                                                <img style={{ width: 100, height: 100, marginRight: 10 }} src={image.file_upload ? image.image_url  : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                <img style={{ width: 100, height: 100, marginRight: 10 }} src={image.file_upload ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
 
                                         )}
                                     </div>

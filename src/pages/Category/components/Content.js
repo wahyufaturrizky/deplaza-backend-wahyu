@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { TableHeader, Pagination, Search } from "./DataTable";
+import { TableHeader, Search } from "./DataTable";
 import toastr from 'toastr'
 import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router'
+import Pagination from 'react-paginating';
 
-const URL_STRING = '/category?limit=50';
+const URL_STRING = '/category';
 const URL_POST = '/category'
 
 const DataTable = (props) => {
@@ -22,7 +23,7 @@ const DataTable = (props) => {
     const [image, setImage] = useState(null)
     const [urls, setUrls] = useState('')
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 50;
+    const [limit, setLimit] = useState(10)
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -41,11 +42,13 @@ const DataTable = (props) => {
         setLoading(true)
         axiosConfig.get(URL_STRING)
             .then(json => {
+                setTotalItems(json.data.meta.total_data);
                 setCategories(json.data.data);
                 setLoading(false)
             }).catch(error => toastr.danger(error))
     };
 
+    
     const categoriesData = useMemo(() => {
         let computedCategories = categories;
 
@@ -68,12 +71,8 @@ const DataTable = (props) => {
             );
         }
 
-        //Current Page slice
-        return computedCategories.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-        );
-    }, [categories, currentPage, search, sorting.field, sorting.order]);
+        return computedCategories
+    }, [categories, search, sorting.field, sorting.order]);
     console.log(categoriesData)
 
     const showModalEdit = async (idData) => {
@@ -174,6 +173,21 @@ const DataTable = (props) => {
         setImage(e.target.files[0]);
     }
 
+      // fungsi untuk handle pagination
+      const handlePageChange = (page, e) => {
+        setCurrentPage(page)
+        let nextPage = page;
+        if (!nextPage || nextPage === 0) {
+            nextPage = 1;
+        }
+        const offset = (nextPage - 1) * limit;
+        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+            .then(json => {
+                setCurrentPage(json.data.meta.current_page)
+                setCategories(json.data.data);
+            }).catch(error => toastr.error(error))
+    };
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -203,15 +217,94 @@ const DataTable = (props) => {
                             <div className="row w-100">
                                 <div className="col mb-3 col-12 text-center">
                                     <div className="row">
-                                        <div className="col-md-6">
+                                    <div class="col-md-12 d-flex justify-content-between">
                                             <Pagination
                                                 total={totalItems}
-                                                itemsPerPage={ITEMS_PER_PAGE}
+                                                limit={limit}
+                                                pageCount={5}
                                                 currentPage={currentPage}
-                                                onPageChange={page => setCurrentPage(page)}
-                                            />
-                                        </div>
-                                        <div className="col-md-6 d-flex flex-row-reverse">
+                                            >
+                                                {({
+                                                    pages,
+                                                    currentPage,
+                                                    hasNextPage,
+                                                    hasPreviousPage,
+                                                    previousPage,
+                                                    nextPage,
+                                                    totalPages,
+                                                    getPageItemProps
+                                                }) => (
+                                                        <div>
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: 1,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+
+                                                            >
+                                                                {'❮❮'}
+                                                            </button>
+                                                            {hasPreviousPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: previousPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❮'}
+                                                                </button>
+                                                            )}
+
+                                                            {pages.map(page => {
+                                                                let activePage = null;
+                                                                if (currentPage === page) {
+                                                                    activePage = style.pageItemActive;
+                                                                }
+                                                                return (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: page,
+                                                                            key: page,
+                                                                            onPageChange: handlePageChange,
+                                                                            className: "page-link",
+                                                                            style: { ...style.pageItem, ...activePage }
+                                                                        })}
+                                                                    >
+                                                                        {page}
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {hasNextPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: nextPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯'}
+                                                                </button>
+                                                            )}
+
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: totalPages,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+                                                            >
+                                                                {'❯❯'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                            </Pagination>
                                             <Search
                                                 onSearch={value => {
                                                     setSearch(value);
@@ -229,10 +322,10 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : categoriesData.map(comment => (
+                                            {loading === true ? <Spinner /> : categoriesData.map((comment, i) => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
-                                                        {comment.id}
+                                                        {i+1}
                                                     </th>
                                                     <td>{comment.name}</td>
                                                     <td><img src={comment.image ? comment.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
@@ -364,5 +457,40 @@ const DataTable = (props) => {
 
     );
 };
+
+const style = {
+    pageItem: {
+        display: "inline",
+        position: "relative",
+        padding: "0.5rem 0.75rem",
+        marginLeft: "-1px",
+        lineHeight: "1.25",
+        color: "#0275d8",
+        backgroundColor: "#fff",
+        border: "1px solid #fff",
+        touchAction: "manipulation",
+        textDecoration: "none"
+    },
+    pageItemActive: {
+        color: "#fff",
+        backgroundColor: "#0275d8",
+        borderColor: "#fff"
+    },
+    listGroup: {
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: 0
+    },
+    listGroupItem: {
+        position: "relative",
+        display: "flex",
+        flexFlow: "row wrap",
+        alignItems: "center",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "-1px",
+        backgroundColor: "#fff",
+        border: "1px #fff"
+    }
+}
 
 export default withRouter(DataTable);

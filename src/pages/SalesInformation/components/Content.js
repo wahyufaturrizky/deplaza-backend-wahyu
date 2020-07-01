@@ -206,26 +206,37 @@ const DataTable = (props) => {
         window.$('#modal-detail').modal('show');
     }
 
-    const changeStatus = (key, i) => {
-        // const i = [key]
-        
-        // if (key === 1) {
-        //     return 'confirm'
-        // } else if (key === 3) {
-        //     return 'process'
-        // } else if (key === 5) {
-        //     return 'done'
-        // } else if (key === 9) {
-        //     return 'reject'
-        // } else {
-        //     return 'test'
-        // }
-        console.log(key && key[i]);
-        
+    const changeStatus = (key, idOrder) => {
+        if (key.indexOf(1) !== -1) {
+            axiosConfig.post(`/orders/${idOrder}/confirm`).then(res => {
+                getData();
+                toastr.success('Berhasil Konfirmasi Pesanan')
+            }).catch(error => toastr.error('Pesanan ini belum melakukan pembayaran'))
+        } else if (key.indexOf(2) !== -1) {
+            axiosConfig.post(`/orders/${idOrder}/process`).then(res => {
+                getData();
+                toastr.success('Berhasil Process Pesanan')
+            }).catch(error => toastr.error(error))
+        }
+        else if (key.indexOf(3) !== -1) {
+            axiosConfig.post(`/orders/${idOrder}/process`).then(res => {
+                getData();
+                toastr.success('Berhasil Process Pesanan')
+            }).catch(error => toastr.error(error))
+        } else if (key.indexOf(5) !== -1) {
+            axiosConfig.post(`/orders/${idOrder}/done`).then(res => {
+                getData();
+                toastr.success('Pesanan Selesai')
+            }).catch(error => toastr.error(error))
+        } else if (key.indexOf(9) !== -1) {
+            axiosConfig.post(`/orders/${idOrder}/reject`).then(res => {
+                getData();
+                toastr.success('Berhasil Menolak Pesanan')
+            }).catch(error => toastr.error(error))
+        } else {
+            console.log('error')
+        }
     }
-
-    console.log('test', changeStatus());
-
 
     return (
         <div className="content-wrapper">
@@ -483,7 +494,7 @@ const DataTable = (props) => {
                                 {detail.available_status_label ?
                                     <div className="form-group">
                                         {Object.keys(detail.available_status_label ? detail.available_status_label : 'null').map((key, i) =>
-                                            <button type="button" value={key} class="btn btn-block btn-success btn-sm" onClick={changeStatus(key, i)}>{detail.available_status_label ? detail.available_status_label[key] : null}</button>
+                                            <button type="button" value={key} class="btn btn-block btn-success btn-sm" onClick={() => changeStatus(key, detail.id)}>{detail.available_status_label ? detail.available_status_label[key] : null}</button>
                                         )}
                                     </div> : <Spinner />}
                             </div>

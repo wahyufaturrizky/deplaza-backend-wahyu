@@ -27,13 +27,12 @@ const DataTable = (props) => {
     const headers = [
         { name: "No#", field: "id", sortable: false },
         { name: "Nama Lengkap", field: "name", sortable: true },
-        { name: "No Hp", field: "name", sortable: true },
-        { name: "Email", field: "name", sortable: false },
-        { name: "Alamat", field: "email", sortable: true },
-        { name: "Tanggal Lahir", field: "email", sortable: true },
-        { name: "Jenis Kelamin", field: "email", sortable: true },
-        { name: "Pendidikan", field: "email", sortable: true },
-        { name: "Aksi", field: "body", sortable: false }
+        { name: "Alamat Pengiriman", field: "name", sortable: true },
+        { name: "Poduk yang Dipesan", field: "name", sortable: false },
+        { name: "Spesifikasi Produk (warna, size, dll)", field: "email", sortable: true },
+        { name: "Harga Barang Total", field: "email", sortable: true },
+        { name: "Supplier", field: "email", sortable: true },
+        { name: "Alamat Supplier", field: "email", sortable: true },
     ];
 
 
@@ -307,16 +306,16 @@ const DataTable = (props) => {
                                                         {i+1}
                                                     </th>
                                                     <td>{product.fullname}</td>
-                                                    <td>{product.phone}</td>
-                                                    <td>{product.email}</td>
                                                     <td>-</td>
-                                                    <td>{product.birth_date}</td>
-                                                    <td>{product.gender}</td>
-                                                    <td>{product.educational_stage}</td>
-                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    {/* <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm">Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button>
-                                                    </div>
+                                                    </div> */}
                                                 </tr>
                                             ))}
                                         </tbody>

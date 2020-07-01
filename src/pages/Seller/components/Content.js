@@ -199,147 +199,147 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-   
-                <section className="content">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-12">
-                                <div className="row w-100">
-                                    <div className="col mb-3 col-12 text-center">
-                                        <div className="row">
-                                            <div class="col-md-12 d-flex justify-content-between">
-                                                <Pagination
-                                                    total={totalItems}
-                                                    limit={limit}
-                                                    pageCount={5}
-                                                    currentPage={currentPage}
-                                                >
-                                                    {({
-                                                        pages,
-                                                        currentPage,
-                                                        hasNextPage,
-                                                        hasPreviousPage,
-                                                        previousPage,
-                                                        nextPage,
-                                                        totalPages,
-                                                        getPageItemProps
-                                                    }) => (
-                                                            <div>
-                                                                <button
-                                                                    {...getPageItemProps({
-                                                                        pageValue: 1,
-                                                                        onPageChange: handlePageChange,
-                                                                        style: style.pageItem,
-                                                                        className: "page-link"
-                                                                    })}
 
-                                                                >
-                                                                    {'❮❮'}
-                                                                </button>
-                                                                {hasPreviousPage && (
-                                                                    <button
-                                                                        {...getPageItemProps({
-                                                                            pageValue: previousPage,
-                                                                            onPageChange: handlePageChange,
-                                                                            style: style.pageItem,
-                                                                            className: "page-link"
-                                                                        })}
-                                                                    >
-                                                                        {'❮'}
-                                                                    </button>
-                                                                )}
-
-                                                                {pages.map(page => {
-                                                                    let activePage = null;
-                                                                    if (currentPage === page) {
-                                                                        activePage = style.pageItemActive;
-                                                                    }
-                                                                    return (
-                                                                        <button
-                                                                            {...getPageItemProps({
-                                                                                pageValue: page,
-                                                                                key: page,
-                                                                                onPageChange: handlePageChange,
-                                                                                className: "page-link",
-                                                                                style: { ...style.pageItem, ...activePage }
-                                                                            })}
-                                                                        >
-                                                                            {page}
-                                                                        </button>
-                                                                    );
+            <section className="content">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="row w-100">
+                                <div className="col mb-3 col-12 text-center">
+                                    <div className="row">
+                                        <div class="col-md-12 d-flex justify-content-between">
+                                            <Pagination
+                                                total={totalItems}
+                                                limit={limit}
+                                                pageCount={5}
+                                                currentPage={currentPage}
+                                            >
+                                                {({
+                                                    pages,
+                                                    currentPage,
+                                                    hasNextPage,
+                                                    hasPreviousPage,
+                                                    previousPage,
+                                                    nextPage,
+                                                    totalPages,
+                                                    getPageItemProps
+                                                }) => (
+                                                        <div>
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: 1,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
                                                                 })}
 
-                                                                {hasNextPage && (
-                                                                    <button
-                                                                        {...getPageItemProps({
-                                                                            pageValue: nextPage,
-                                                                            onPageChange: handlePageChange,
-                                                                            style: style.pageItem,
-                                                                            className: "page-link"
-                                                                        })}
-                                                                    >
-                                                                        {'❯'}
-                                                                    </button>
-                                                                )}
-
+                                                            >
+                                                                {'❮❮'}
+                                                            </button>
+                                                            {hasPreviousPage && (
                                                                 <button
                                                                     {...getPageItemProps({
-                                                                        pageValue: totalPages,
+                                                                        pageValue: previousPage,
                                                                         onPageChange: handlePageChange,
                                                                         style: style.pageItem,
                                                                         className: "page-link"
                                                                     })}
                                                                 >
-                                                                    {'❯❯'}
+                                                                    {'❮'}
                                                                 </button>
-                                                            </div>
-                                                        )}
-                                                </Pagination>
-                                                <Search
-                                                    onSearch={value => {
-                                                        setSearch(value);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
+                                                            )}
 
-                                        <table className="table table-striped">
-                                            <TableHeader
-                                                headers={headers}
-                                                onSorting={(field, order) =>
-                                                    setSorting({ field, order })
-                                                }
+                                                            {pages.map(page => {
+                                                                let activePage = null;
+                                                                if (currentPage === page) {
+                                                                    activePage = style.pageItemActive;
+                                                                }
+                                                                return (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: page,
+                                                                            key: page,
+                                                                            onPageChange: handlePageChange,
+                                                                            className: "page-link",
+                                                                            style: { ...style.pageItem, ...activePage }
+                                                                        })}
+                                                                    >
+                                                                        {page}
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {hasNextPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: nextPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯'}
+                                                                </button>
+                                                            )}
+
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: totalPages,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+                                                            >
+                                                                {'❯❯'}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                            </Pagination>
+                                            <Search
+                                                onSearch={value => {
+                                                    setSearch(value);
+                                                    setCurrentPage(1);
+                                                }}
                                             />
-                                            <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
-                                                    <tr>
-                                                        <th scope="row" key={product.id}>
-                                                            {product.id}
-                                                        </th>
-                                                        <td>{product.fullname}</td>
-                                                        <td>{product.phone}</td>
-                                                        <td>{product.email}</td>
-                                                        <td>-</td>
-                                                        <td>{product.birth_date}</td>
-                                                        <td>{product.gender}</td>
-                                                        <td>{product.educational_stage}</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/editProduct', product)}>Daftar Buyer</button>
-                                                            <button type="button" class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                        </div>
                                     </div>
+
+                                    <table className="table table-striped">
+                                        <TableHeader
+                                            headers={headers}
+                                            onSorting={(field, order) =>
+                                                setSorting({ field, order })
+                                            }
+                                        />
+                                        <tbody>
+                                            {loading === true ? <Spinner /> : productsData.map(product => (
+                                                <tr>
+                                                    <th scope="row" key={product.id}>
+                                                        {product.id}
+                                                    </th>
+                                                    <td>{product.fullname}</td>
+                                                    <td>{product.phone}</td>
+                                                    <td>{product.email}</td>
+                                                    <td>-</td>
+                                                    <td>{product.birth_date}</td>
+                                                    <td>{product.gender}</td>
+                                                    <td>{product.educational_stage}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Ubah</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/buyer', product)}>Daftar Buyer</button>
+                                                        <button type="button" class="btn btn-block btn-danger btn-xs" >Hapus</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
             <div className="modal fade" id="modal-lg">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">

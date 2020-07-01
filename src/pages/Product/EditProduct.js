@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from './components/Header'
+import Header from '../../components/Header'
 import Menu from './components/Menu'
 import Content from './components/Content'
 import Footer from './components/Footer'
@@ -10,7 +10,7 @@ export default class AddProduct extends React.Component {
         console.log('fff', this.props.location.state)
         return (
             <div>
-                <Header />
+                <Header name="Edit Produk" />
                 <Menu />
                 <Edit data={this.props.location.state} />
                 <Footer />

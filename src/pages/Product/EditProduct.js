@@ -1,8 +1,7 @@
 import React from 'react';
 import Header from '../../components/Header'
 import Menu from './components/Menu'
-import Content from './components/Content'
-import Footer from './components/Footer'
+import Footer from '../../components/Footer'
 import Edit from './components/ContentEdit'
 
 export default class AddProduct extends React.Component {

@@ -35,6 +35,7 @@ const DataTable = (props) => {
         { name: "Harga Pokok Produk", field: "email", sortable: true },
         { name: "Benefit Deplaza", field: "email", sortable: true },
         { name: "Komisi", field: "email", sortable: true },
+        { name: "Total Harga", field: "totalHarga", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -281,9 +282,10 @@ const DataTable = (props) => {
                                                     <td>{product.name}</td>
                                                     <td>{product.category_id}</td>
                                                     <td>{product.brand}</td>
-                                                    <td>{product.price_basic}</td>
-                                                    <td>{product.price_benefit}</td>
-                                                    <td>{product.price_commission}</td>
+                                                    <td>Rp. {product.price_basic}</td>
+                                                    <td>Rp. {product.price_benefit}</td>
+                                                    <td>Rp. {product.price_commission}</td>
+                                                    <td>Rp. {product.price_basic+product.price_benefit}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>

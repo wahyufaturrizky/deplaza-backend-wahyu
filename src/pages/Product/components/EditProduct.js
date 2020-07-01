@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import toastr from 'toastr'
+import swal from 'sweetalert';
 
 import axiosConfig from '../../../utils/axiosConfig';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
+import Loader from 'react-loader-spinner'
 
 const URL_POST = '/product'
 const URL_GET_CITY = '/shipment/cities'
@@ -33,7 +36,7 @@ function AddProduct(props) {
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
     const [urls, setUrls] = useState([])
-    const [fucka, setFucka] = useState([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getDataCategory()
@@ -54,7 +57,7 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-       
+
         axiosConfig.get(`${URL_GET_CITY}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
@@ -69,7 +72,7 @@ function AddProduct(props) {
     }
 
     const getDataCategory = () => {
-      
+
         axiosConfig.get(`${URL_GET_CATEGORY}`)
             .then(res =>
                 res.data.data.map(data => ({
@@ -107,12 +110,6 @@ function AddProduct(props) {
     const handleChangeCategory = (id) => {
         setCategoryId(id.value);
     };
-
-
-    console.log('city', name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
-        file, variation)
-
-
 
     function createInputs() {
         return (
@@ -265,31 +262,12 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
-
-    const ya = () => {
-        const k = values.val
-        const j = secondValues.val
-        const l = thirdValues.val
-        if (nameSecondVariation && j) {
-            setFucka([nameVariation, [k], nameSecondVariation, [j]])
-        } else if (nameThirdVariation && l) {
-            setFucka([nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]])
-        } else {
-            setFucka([nameVariation, [k]])
-        }
-    }
-
-    const handleSecondSubmit = async () => {
-        await ya()
-        console.log('handle', variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val));
-        handleSubmit()
-    }
+    // handle untuk submit data
     const handleSubmit = async (e) => {
-        const k = values.val
-        const j = secondValues.val
-        const l = thirdValues.val
-        const test = [nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]]
-       
+        const dataLocal = localStorage.getItem('dataUser');
+        const dataUser = JSON.parse(dataLocal)
+        setLoading(true)
+        const test = [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
         const formData = new FormData();
         file.forEach((file) => formData.append('images[]', file));
         formData.append('name', name);
@@ -304,20 +282,23 @@ function AddProduct(props) {
         formData.append('city_id', parseInt(cityId));
         formData.append('source', source);
         formData.append('cod', parseInt(cod));
-        formData.append('cod_city_id', parseInt(codCityId));
-        formData.append('user_id', 2);
+        codCityId.forEach((file) => formData.append('cod_city_id[]', file));
+        formData.append('user_id', dataUser.id);
+        formData.append('variation', JSON.stringify(test))
         formData.append('_method', 'put');
-        test.forEach((item) => formData.append('variation[]', item));
 
-       
         axiosConfig.post(`${URL_POST}/${props.editData.id}`, formData)
             .then(res => {
-                alert('success')
                 props.history.push('/product')
+                window.location.reload(false);
+                setLoading(false)
+                toastr.success('Produk berhasil ditambah')
                 console.log(res);
-            })
+            }).catch(error => toastr.error(error))
     }
 
+
+    // fungsi untuk setFileUrls image
     const setFileUrls = (files) => {
         const item = files.map((file) => URL.createObjectURL(file));
         if (urls.length > 0) {
@@ -326,19 +307,18 @@ function AddProduct(props) {
         setUrls(item);
     }
 
+    //fungsi untuk display image
     const displayUploadedFiles = (image) => {
         return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} />);
     }
 
+    //fungsi untuk upload multiple image
     const uploadMultipleFiles = (e) => {
         const files = [...file]; // Spread syntax creates a shallow copy
         files.push(...e.target.files); // Spread again to push each selected file individually
         setFileUrls(files)
         setFile(files);
     }
-
-    console.log('props', props.editData);
-
 
     return (
         <section class="content">
@@ -452,7 +432,14 @@ function AddProduct(props) {
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodCities} />
                                 </div>
-                                <button type="button" class="btn btn-block btn-primary" onClick={handleSecondSubmit} >Simpan</button>
+                                {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
+                                    type="Oval"
+                                    color="#fff"
+                                    height={20}
+                                    width={20}
+                                /> </button> :
+                                    <button type="button" class="btn btn-block btn-primary" onClick={handleSubmit}>Simpan</button>
+                                }
                             </div>
                             {/* /.row */}
                         </div>

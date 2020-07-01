@@ -6,6 +6,7 @@ import swal from 'sweetalert';
 import { TableHeader, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import axios from 'axios'
 
 import Pagination from 'react-paginating';
 const URL_STRING = '/product';
@@ -21,8 +22,9 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(50)
     const [activePage, setActivePage] = useState(0)
+    const [category, setCategory] = useState([])
     const [id, setId] = useState(0)
     const ITEMS_PER_PAGE = 10;
 
@@ -46,18 +48,35 @@ const DataTable = (props) => {
     }, []);
 
 
-    const getProduct = () => {
-        setLoading(true)
+    // const getProduct = () => {
+    //     setLoading(true)
 
-        axiosConfig.get(URL_STRING)
-            .then(json => {
-                setActivePage(json.data.meta.current_page);
-                setLimit(json.data.meta.limit)
-                setTotalItems(json.data.meta.total_data);
-                setProducts(json.data.data);
-                setLoading(false)
-            }).catch(error => toastr.error(error))
+    //     axiosConfig.get(URL_STRING)
+    //         .then(json => {
+    //             setActivePage(json.data.meta.current_page);
+    //             setLimit(json.data.meta.limit)
+    //             setTotalItems(json.data.meta.total_data);
+    //             setProducts(json.data.data);
+    //             setLoading(false)
+    //         }).catch(error => toastr.error(error))
+    // }
+
+    const getProduct = async () => {
+        setLoading(true)
+        axios.all([axiosConfig.get(`${URL_STRING}?limit=50`), axiosConfig.get('/category')])
+            .then(
+                axios.spread((product, category) => {
+                    setActivePage(product.data.meta.current_page);
+                    setLimit(product.data.meta.limit)
+                    setTotalItems(product.data.meta.total_data);
+                    setProducts(product.data.data);
+                    setCategory(category.data.data)
+                    setLoading(false)
+                })
+            ).catch(error => toastr.error(error))
     }
+
+    console.log(category);
 
     // fungsi untuk search
     const productsData = useMemo(() => {
@@ -126,6 +145,8 @@ const DataTable = (props) => {
                 }
             });
     }
+
+    //fungsi untuk handle pagination
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
         let nextPage = page;
@@ -133,7 +154,7 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}?limit=50&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
@@ -272,27 +293,32 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                <tr>
-                                                    <th scope="row" key={product.id}>
-                                                        {i + 1}
-                                                    </th>
-                                                    {product.images.map(image =>
-                                                        <td><img style={{ width: 100, height: 100 }} src={image ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>)}
-                                                    <td>{product.name}</td>
-                                                    <td>{product.category_id}</td>
-                                                    <td>{product.brand}</td>
-                                                    <td>Rp. {product.price_basic}</td>
-                                                    <td>Rp. {product.price_benefit}</td>
-                                                    <td>Rp. {product.price_commission}</td>
-                                                    <td>Rp. {product.price_basic+product.price_benefit}</td>
-                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => modalDelete(product.id)}>Hapus</button>
-                                                    </div>
-                                                </tr>
-                                            ))}
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => {
+                                                const findCategory = category.find(o => o.id === product.category_id)
+                                                return (
+                                                    <tr>
+                                                        <th scope="row" key={product.id}>
+                                                            {i + 1}
+                                                        </th>
+                                                        {product.images.map(image =>
+                                                            <td><img style={{ width: 100, height: 100 }} src={image ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>)}
+                                                        <td>{product.name}</td>
+                                                        {category.length > 0 ?
+                                                            <td>{findCategory ? findCategory.name : '-'}</td> : null}
+                                                        <td>{product.brand ? product.brand : '-'}</td>
+                                                        <td>Rp. {product.price_basic}</td>
+                                                        <td>Rp. {product.price_benefit}</td>
+                                                        <td>Rp. {product.price_commission}</td>
+                                                        <td>Rp. {product.price_basic + product.price_benefit}</td>
+                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm" onClick={() => modalDelete(product.id)}>Hapus</button>
+                                                        </div>
+                                                    </tr>
+                                                )
+                                            }
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>

@@ -206,32 +206,35 @@ const DataTable = (props) => {
         window.$('#modal-detail').modal('show');
     }
 
+    // fungsi untuk change status
     const changeStatus = (key, idOrder) => {
         if (key.indexOf(1) !== -1) {
             axiosConfig.post(`/orders/${idOrder}/confirm`).then(res => {
                 getData();
                 toastr.success('Berhasil Konfirmasi Pesanan')
+                window.$('#modal-status').modal('hide');
             }).catch(error => toastr.error('Pesanan ini belum melakukan pembayaran'))
         } else if (key.indexOf(2) !== -1) {
-            axiosConfig.post(`/orders/${idOrder}/process`).then(res => {
+            axiosConfig.post(`/orders/${idOrder}/confirm`).then(res => {
                 getData();
-                toastr.success('Berhasil Process Pesanan')
+                toastr.success('Berhasil Konfirmasi Pembayaran')
+                window.$('#modal-status').modal('hide');
             }).catch(error => toastr.error(error))
         }
         else if (key.indexOf(3) !== -1) {
-            axiosConfig.post(`/orders/${idOrder}/process`).then(res => {
-                getData();
-                toastr.success('Berhasil Process Pesanan')
-            }).catch(error => toastr.error(error))
-        } else if (key.indexOf(5) !== -1) {
+            toastr.warning('Silahkan input resi')
+            window.$('#modal-status').modal('hide');
+        } else if (key.indexOf(4) !== -1) {
             axiosConfig.post(`/orders/${idOrder}/done`).then(res => {
                 getData();
                 toastr.success('Pesanan Selesai')
+                window.$('#modal-status').modal('hide');
             }).catch(error => toastr.error(error))
         } else if (key.indexOf(9) !== -1) {
             axiosConfig.post(`/orders/${idOrder}/reject`).then(res => {
                 getData();
                 toastr.success('Berhasil Menolak Pesanan')
+                window.$('#modal-status').modal('hide');
             }).catch(error => toastr.error(error))
         } else {
             console.log('error')
@@ -381,7 +384,7 @@ const DataTable = (props) => {
                                                     {/* <td>{sale[0].variation ? sale[0].variation : '-'}</td> */}
                                                     <td>{sale.delivery.receiver_address}</td>
                                                     <td>{sale.customer ? sale.customer.phone : '-'}</td>
-                                                    <td>{sale.status_label}</td>
+                                                    <td>{sale.payment.status_label}</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
@@ -411,12 +414,11 @@ const DataTable = (props) => {
                             {detail.status_label === "Verifikasi Pembayaran" ?
                                 <div className="card-body">
                                     <div className="form-group">
-                                        {detail.status_label === "Verifikasi Pembayaran" ?
-                                            <label htmlFor="exampleInputEmail1">Bukti Transfer</label> : null}
+                                        <label htmlFor="exampleInputEmail1">Bukti Transfer</label>
                                         <div>
                                             <td>
-                                                {detail.status_label === "Verifikasi Pembayaran" ? detail.payment.metadata_decode.map(image =>
-                                                    <img style={{ width: 725, height: 350, marginRight: 10 }} src={image.bukti_bayar} />) : null}
+                                                {detail.payment.metadata_decode.map(image =>
+                                                    <img style={{ width: 725, height: 350, marginRight: 10 }} src={image.bukti_bayar} />)}
                                             </td>
                                         </div>
                                     </div>

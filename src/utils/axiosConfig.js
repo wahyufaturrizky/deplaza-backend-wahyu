@@ -2,7 +2,7 @@
 import axios from 'axios';
 import {Auth} from './auth'
 
-const mode = 'production'
+const mode = 'dev'
 // Next we make an 'instance' of it
 const instance = axios.create({
 // .. where we make our configurations

@@ -8,7 +8,7 @@ import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
-const URL_STRING = '/user?role=1';
+const URL_STRING = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
 const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
@@ -48,13 +48,16 @@ const DataTable = (props) => {
                 setTotalItems(json.data.meta.total_result);
                 setProducts(json.data.data);
                 setLoading(false)
-            })
+            }).catch(error => toastr.error(error))
     }
 
 
     // fungsi untuk search
     const productsData = useMemo(() => {
-        let computedProducts = products;
+        let computedProducts = products.map(x => {
+            const object = Object.assign({ ...x }, x.details, {variationTest: JSON.parse(x.details[0].variation)});
+            return object
+        })
 
         if (search) {
             computedProducts = computedProducts.filter(
@@ -166,6 +169,11 @@ const DataTable = (props) => {
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
     };
+
+    const formatNumber = (num) => {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+
 
     return (
         <div className="content-wrapper">
@@ -300,24 +308,34 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                <tr>
-                                                    <th scope="row" key={product.id}>
-                                                        {i+1}
-                                                    </th>
-                                                    <td>{product.fullname}</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    {/* <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                            {loading === true  ? <Spinner /> : productsData.map((product, i) => {
+                                                // const variation = product.variationTest
+                                                // const objKey = variation && Object.keys(variation)
+                                                // console.log(variation);
+                                                
+                                                // const variationOne = `${objKey[0] ? objKey[0] : null}: ${variation[objKey[0]] ? variation[objKey[0]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[0]] : null}`
+                                                // const variationTwo = `${objKey[1] ? objKey[1] : null}: ${variation[objKey[1]] ? variation[objKey[1]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[1]] : null}`
+                                                // const variationThree = `${objKey[2] ? objKey[2] : null}: ${variation[objKey[2]] ? variation[objKey[2]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[2]] : null}`
+                                                return (
+                                                    <tr>
+                                                        <th scope="row" key={product.id}>
+                                                            {i + 1}
+                                                        </th>
+                                                        <td>{product.customer ? product.customer.fullname : '-'}</td>
+                                                        <td>{product.delivery.receiver_address}</td>
+                                                        <td>{product[0].metadata_products}</td>
+                                                        {/* <td>{variationOne === 'null: null' ? '-' : variationOne} {variationTwo === 'null: null' ? null : variationTwo} {variationThree === 'null: null' ? null : variationThree}</td> */}
+                                                        <td>Rp.</td>
+                                                        <td>-</td>
+                                                        <td>-</td>
+                                                        {/* <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm">Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button>
                                                     </div> */}
-                                                </tr>
-                                            ))}
+                                                    </tr>
+                                                )
+                                            }
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>

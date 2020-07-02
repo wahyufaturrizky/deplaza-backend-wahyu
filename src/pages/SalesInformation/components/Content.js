@@ -148,7 +148,7 @@ const DataTable = (props) => {
         setPackageCourier({ ...initialState })
     }
 
-    // fungsi untuk ubah data
+    // fungsi untuk input resi
     const handleInputResi = () => {
         if (!trackingId) {
             toastr.warning('Mohon isi no resi')

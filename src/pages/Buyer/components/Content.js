@@ -55,7 +55,13 @@ const DataTable = (props) => {
     // fungsi untuk search
     const productsData = useMemo(() => {
         let computedProducts = products.map(x => {
-            const object = Object.assign({ ...x }, x.details, {variationTest: JSON.parse(x.details[0].variation)});
+            // if (x.details[0].variation === "") {
+            //     const v = JSON.parse(x.details[0].variation)
+            // const object = Object.assign({ ...x }, x.details, { variationTest: v });
+            // return object
+            // } 
+            const v = x.details[0].variation
+            const object = Object.assign({ ...x }, x.details, { variationTest: v });
             return object
         })
 
@@ -130,7 +136,7 @@ const DataTable = (props) => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
         axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
-                // let categoryData = [...comments]; // copying the old datas array
+                // let categoryData = [...comments]; // copying the olds array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
                 // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
                 // setComments(categoryData); // ??
@@ -308,14 +314,25 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true  ? <Spinner /> : productsData.map((product, i) => {
-                                                // const variation = product.variationTest
-                                                // const objKey = variation && Object.keys(variation)
-                                                // console.log(variation);
-                                                
-                                                // const variationOne = `${objKey[0] ? objKey[0] : null}: ${variation[objKey[0]] ? variation[objKey[0]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[0]] : null}`
-                                                // const variationTwo = `${objKey[1] ? objKey[1] : null}: ${variation[objKey[1]] ? variation[objKey[1]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[1]] : null}`
-                                                // const variationThree = `${objKey[2] ? objKey[2] : null}: ${variation[objKey[2]] ? variation[objKey[2]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[2]] : null}`
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => {
+                                                // console.log(typeof product.variationTest);
+                                                let variation = null;
+                                                let objKey = null;
+                                                let variationOne = null;
+                                                let variationTwo = null;
+                                                let variationThree = null;
+                                                try {
+                                                    // if plain js
+                                                    variation = JSON.parse(product.variationTest);
+                                                    objKey = Object.keys(variation)
+                                                    variationOne = `${objKey[0] ? objKey[0] : null}: ${variation[objKey[0]] ? variation[objKey[0]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[0]] : null}`
+                                                    variationTwo = `${objKey[1] ? objKey[1] : null}: ${variation[objKey[1]] ? variation[objKey[1]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[1]] : null}`
+                                                    variationThree = `${objKey[2] ? objKey[2] : null}: ${variation[objKey[2]] ? variation[objKey[2]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[2]] : null}`
+                                                }
+                                                catch (e) {
+                                                    // forget about it :)
+                                                }
+                                                console.log(objKey);
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
@@ -324,7 +341,7 @@ const DataTable = (props) => {
                                                         <td>{product.customer ? product.customer.fullname : '-'}</td>
                                                         <td>{product.delivery.receiver_address}</td>
                                                         <td>{product[0].metadata_products}</td>
-                                                        {/* <td>{variationOne === 'null: null' ? '-' : variationOne} {variationTwo === 'null: null' ? null : variationTwo} {variationThree === 'null: null' ? null : variationThree}</td> */}
+                                                        <td>{variationOne === 'null: null' ? '-' : variationOne} {variationTwo === 'null: null' ? null : variationTwo} {variationThree === 'null: null' ? null : variationThree}</td>
                                                         <td>Rp.</td>
                                                         <td>-</td>
                                                         <td>-</td>

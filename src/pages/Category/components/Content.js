@@ -45,7 +45,7 @@ const DataTable = (props) => {
                 setTotalItems(json.data.meta.total_data);
                 setCategories(json.data.data);
                 setLoading(false)
-            }).catch(error => toastr.danger(error))
+            }).catch(error => toastr.error(error))
     };
 
     
@@ -132,7 +132,7 @@ const DataTable = (props) => {
                 getData();
                 window.$('#modal-edit').modal('hide');
                 setId(0)
-            }).catch(error => toastr.danger(error))
+            }).catch(error => toastr.error(error))
     }
 
 

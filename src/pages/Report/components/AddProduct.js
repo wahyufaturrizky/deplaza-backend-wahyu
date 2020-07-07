@@ -9,8 +9,6 @@ const URL_GET_CITY = '/v1/shipment/cities'
 const URL_GET_CATEGORY = '/v1/category';
 
 function AddProduct(props) {
-    let fileObj = [];
-    let fileArray = [];
     const [file, setFile] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');

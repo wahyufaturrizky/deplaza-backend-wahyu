@@ -23,6 +23,7 @@ import Complaint from './pages/Complaint'
 import Report from './pages/Report'
 import Help from './pages/Help'
 import AccountInformation from './pages/AccountInformation'
+import Transaction from './pages/Report/Transaction'
 
 export default function App() {
   return (
@@ -47,6 +48,7 @@ export default function App() {
         <ProtectedRoute exact path="/commissionReport" component={Report} />
         <ProtectedRoute exact path="/help" component={Help} />
         <ProtectedRoute exact path="/accountInformation" component={AccountInformation} />
+        <ProtectedRoute exact path="/transaction" component={Transaction} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

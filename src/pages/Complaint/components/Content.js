@@ -1,17 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { TableHeader, Pagination, Search } from "./DataTable";
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
+import { TableHeader, Search } from "./DataTable";
+import toastr from 'toastr'
+import swal from 'sweetalert';
+
 import { Spinner } from '../../../components/spinner'
 import Axios from 'axios';
-import { Auth } from '../../../utils/auth';
+import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
-import AddProductComponent from './AddProduct'
+import Pagination from 'react-paginating';
 
-const URL_STRING = '/v1/product?limit=1000';
+const URL_STRING = '/complaint';
 const URL_DETAIL = '/v1/product'
-
-const arrayPopup = [{ id: 1, name: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png' }]
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([{ id: 1, name: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png', description: 'test' }]);
@@ -24,7 +23,7 @@ const DataTable = (props) => {
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 10;
+    const [limit, setLimit] = useState(10)
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -43,26 +42,15 @@ const DataTable = (props) => {
 
 
     useEffect(() => {
-
+        getProduct()
     }, []);
-
-
-    const onLoadTables = () => {
-
-    }
 
 
     const getProduct = () => {
         setLoading(true)
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-                Origin: 'x-requested-with'
-            }
-        }
-        Axios.get(URL_STRING, config)
+        axiosConfig.get(URL_STRING)
             .then(json => {
+                setTotalItems(json.data.meta.total_data);
                 setProducts(json.data.data);
                 setLoading(false)
             })
@@ -92,23 +80,12 @@ const DataTable = (props) => {
         }
 
         //Current Page slice
-        return computedProducts.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-        );
-    }, [products, currentPage, search, sorting.field, sorting.order]);
+        return computedProducts
+    }, [products, search, sorting.field, sorting.order]);
     console.log(productsData)
 
     const showModalEdit = async (idData) => {
-        console.log(idData);
-
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        await Axios.get(`${URL_DETAIL}/${idData}`, config)
+        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -127,13 +104,7 @@ const DataTable = (props) => {
     // fungsi untuk menambah data
     const handleAddCategory = () => {
         const data = { main_id: 0, name: title, active: 1 }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(URL_DETAIL, data, config)
+        axiosConfig.post(URL_DETAIL, data)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
                 // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
@@ -148,13 +119,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menampilkan detail data
     const categoryDetail = (id) => {
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.get(`${URL_DETAIL}/${id}`, config)
+        axiosConfig.get(`${URL_DETAIL}/${id}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -165,13 +130,7 @@ const DataTable = (props) => {
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
                 // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
@@ -190,13 +149,7 @@ const DataTable = (props) => {
     // fungsi untuk delete data
     const deleteData = (id) => {
         const data = { _method: 'delete' }
-        let config = {
-            headers: {
-                Authorization: `Bearer ${Auth()}`,
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        Axios.post(`${URL_DETAIL}/${id}`, data, config)
+        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(() => {
                 const categoryData = products.filter(category => category.id !== id)
                 setProducts(categoryData)
@@ -204,7 +157,20 @@ const DataTable = (props) => {
             })
     }
 
-    console.log('detail', detail.images);
+    const handlePageChange = (page, e) => {
+        setCurrentPage(page)
+        let nextPage = page;
+        if (!nextPage || nextPage === 0) {
+            nextPage = 1;
+        }
+        const offset = (nextPage - 1) * limit;
+        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+            .then(json => {
+                setCurrentPage(json.data.meta.current_page)
+                setProducts(json.data.data);
+            }).catch(error => toastr.error(error))
+    };
+
 
     return (
         <div className="content-wrapper">
@@ -227,70 +193,150 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-            {addProduct ? <AddProductComponent /> :
-                <section className="content">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-12">
-                                <div className="row w-100">
-                                    <div className="col mb-3 col-12 text-center">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <Pagination
-                                                    total={totalItems}
-                                                    itemsPerPage={ITEMS_PER_PAGE}
-                                                    currentPage={currentPage}
-                                                    onPageChange={page => setCurrentPage(page)}
-                                                />
-                                            </div>
-                                            <div className="col-md-6 d-flex flex-row-reverse">
-                                                <Search
-                                                    onSearch={value => {
-                                                        setSearch(value);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
+            <section className="content">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="row w-100">
+                                <div className="col mb-3 col-12 text-center">
+                                    <div className="row">
+                                        <div class="col-md-12 d-flex justify-content-between">
+                                            <Pagination
+                                                total={totalItems}
+                                                limit={limit}
+                                                pageCount={5}
+                                                currentPage={currentPage}
+                                            >
+                                                {({
+                                                    pages,
+                                                    currentPage,
+                                                    hasNextPage,
+                                                    hasPreviousPage,
+                                                    previousPage,
+                                                    nextPage,
+                                                    totalPages,
+                                                    getPageItemProps
+                                                }) => (
+                                                        <div>
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: 1,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
 
-                                        <table className="table table-striped">
-                                            <TableHeader
-                                                headers={headers}
-                                                onSorting={(field, order) =>
-                                                    setSorting({ field, order })
-                                                }
-                                            />
-                                            <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
-                                                    <tr>
-                                                        <th scope="row" key={product.id}>
-                                                            {product.id}
-                                                        </th>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.description}</td>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.description}</td>
-                                                        <td>{product.name}</td>
-                                                        <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                        <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                        <td>{product.description}</td>
-                                                        <td>{product.name}</td>
-                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            >
+                                                                {'❮❮'}
+                                                            </button>
+                                                            {hasPreviousPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: previousPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❮'}
+                                                                </button>
+                                                            )}
+
+                                                            {pages.map(page => {
+                                                                let activePage = null;
+                                                                if (currentPage === page) {
+                                                                    activePage = style.pageItemActive;
+                                                                }
+                                                                return (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: page,
+                                                                            key: page,
+                                                                            onPageChange: handlePageChange,
+                                                                            className: "page-link",
+                                                                            style: { ...style.pageItem, ...activePage }
+                                                                        })}
+                                                                    >
+                                                                        {page}
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {hasNextPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: nextPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯'}
+                                                                </button>
+                                                            )}
+
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: totalPages,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+                                                            >
+                                                                {'❯❯'}
+                                                            </button>
                                                         </div>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                            </Pagination>
+                                            <Search
+                                                onSearch={value => {
+                                                    setSearch(value);
+                                                    setCurrentPage(1);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
+
+                                    <table className="table table-striped">
+                                        <TableHeader
+                                            headers={headers}
+                                            onSorting={(field, order) =>
+                                                setSorting({ field, order })
+                                            }
+                                        />
+                                        <tbody>
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
+                                                <tr>
+                                                    <th scope="row" key={product.id}>
+                                                        {i + 1}
+                                                    </th>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>{product.order_id}</td>
+                                                    <td>{product.reason_id}</td>
+                                                    <td>{product.description}</td>
+                                                    {product.complaint_details && product.complaint_details.length > 0 ? product.complaint_details.map(image =>
+                                                        <td><img style={{ width: 100, height: 100 }} src={image.file_url} /></td>
+                                                    ) : <td><img style={{ width: 100, height: 100 }} src={'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                    }
+                                                    <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                    <td>{product.qty}</td>
+                                                    <td>{product.address_id}</td>
+                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                    </div>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-            }
+                </div>
+            </section>
             <div className="modal fade" id="modal-lg">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -435,5 +481,40 @@ const DataTable = (props) => {
 
     );
 };
+
+const style = {
+    pageItem: {
+        display: "inline",
+        position: "relative",
+        padding: "0.5rem 0.75rem",
+        marginLeft: "-1px",
+        lineHeight: "1.25",
+        color: "#0275d8",
+        backgroundColor: "#fff",
+        border: "1px solid #fff",
+        touchAction: "manipulation",
+        textDecoration: "none"
+    },
+    pageItemActive: {
+        color: "#fff",
+        backgroundColor: "#0275d8",
+        borderColor: "#fff"
+    },
+    listGroup: {
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: 0
+    },
+    listGroupItem: {
+        position: "relative",
+        display: "flex",
+        flexFlow: "row wrap",
+        alignItems: "center",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "-1px",
+        backgroundColor: "#fff",
+        border: "1px #fff"
+    }
+}
 
 export default withRouter(DataTable);

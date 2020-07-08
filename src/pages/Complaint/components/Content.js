@@ -323,7 +323,7 @@ const DataTable = (props) => {
                                                     <td>{product.qty}</td>
                                                     <td>{product.address_id}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
                                                     </div>

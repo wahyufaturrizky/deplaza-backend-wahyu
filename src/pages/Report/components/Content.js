@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Search } from "./DataTable";
+import Select from 'react-select';
+
 import toastr from 'toastr'
 import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
+import Axios from 'axios'
 import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
@@ -26,16 +29,19 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [addProduct, setAddProduct] = useState(false);
+    const [status, setStatus] = useState(0)
+    const [bank, setBank] = useState([])
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
         { name: "Nama Seller", field: "name", sortable: true },
-        { name: "Total Komisi", field: "name", sortable: true },
-        { name: "Total Margin", field: "name", sortable: false },
+        { name: "Withdrawal No", field: "name", sortable: true },
+        { name: "Rekening", field: "name", sortable: true },
         { name: "Tgl Penarikan", field: "name", sortable: false },
         { name: "Jumlah yang ditarik", field: "name", sortable: false },
+        { name: "Status", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -45,16 +51,27 @@ const DataTable = (props) => {
         getProduct()
     }, []);
 
+
     const getProduct = () => {
         setLoading(true)
-        axiosConfig.get(URL_STRING)
-            .then(json => {
-                setTotalItems(json.data.meta.total_data);
-                setProducts(json.data.data);
-                setLoading(false)
-            })
+        Axios.all([axiosConfig.get(URL_STRING), axiosConfig.get('/bank')])
+            .then(
+                Axios.spread((withdrawal, bank) => {
+                    setTotalItems(withdrawal.data.meta.total_data);
+                    setProducts(withdrawal.data.data);
+                    setBank(bank.data.data)
+                    setLoading(false)
+                })
+            )
     }
 
+    // list array options
+    const optionsStatus = [{ value: 0, label: 'Tidak Setujui' }, { value: 1, label: 'Setujui' }]
+
+    // fungsi untuk set id status
+    const handleChangeStatus = (id) => {
+        setStatus(id.value);
+    };
 
     const productsData = useMemo(() => {
         let computedProducts = products;
@@ -84,7 +101,7 @@ const DataTable = (props) => {
     console.log(productsData)
 
     const showModalEdit = async (idData) => {
-        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
+        await axiosConfig.get(`${URL_STRING}/${idData}`)
             .then(res => {
                 setDetail(res.data.data)
             })
@@ -95,10 +112,6 @@ const DataTable = (props) => {
     const hideModal = hideModalInfo => {
         window.$('#modal-lg').modal('hide');
     };
-
-    const testAdd = () => {
-        props.history.push('/addProduct')
-    }
 
     // fungsi untuk menambah data
     const handleAddCategory = () => {
@@ -128,32 +141,33 @@ const DataTable = (props) => {
 
     // fungsi untuk ubah data
     const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
+        const data = { approval: status, _method: 'put' }
+        axiosConfig.put(`${URL_STRING}/${id}`, data)
             .then(res => {
-                // let categoryData = [...comments]; // copying the old datas array
-                // categoryData[id] = res.data.data; // replace e.target.value with whatever you want to change it to
-                // setComments(comments.map(usr => usr.id === id ? res.data.data :  { ...comments }));
-                // setComments(categoryData); // ??
-                // let categoryData = comments.findIndex((obj => obj.id === id));
-                // categoryData = comments[categoryData] = res.data.data
-                // setComments([...comments, categoryData])
-                props.history.push('/category')
-                alert('success')
+                getProduct()
+                toastr.success('Berhasil rubah status')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
-            })
+            }).catch(error => toastr.error(error))
     }
 
     // fungsi untuk delete data
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    axiosConfig.delete(`${URL_STRING}/${id}/delete`)
+                        .then(() => {
+                            getProduct()
+                            toastr.success('berhasil menghapus')
+                        })
+                }
+            });
     }
 
     const handlePageChange = (page, e) => {
@@ -178,7 +192,6 @@ const DataTable = (props) => {
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Report Komisi Seller</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={() => props.history.push('/transaction')}>Proses Transaksi</button>
                             <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -303,23 +316,31 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                <tr>
-                                                    <th scope="row" key={product.id}>
-                                                        {i + 1}
-                                                    </th>
-                                                    <td>{product.user.fullname}</td>
-                                                    <td>Rp.{product.amount}</td>
-                                                    <td>{product.detail}</td>
-                                                    <td>{moment(product.created_at).format('MMMM Do YYYY, h:mm')}</td>
-                                                    <td>Rp.{product.amount}</td>
-                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
-                                                    </div>
-                                                </tr>
-                                            ))}
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => {
+                                                const getBank = bank.find(o => o.id === product.account.bank_id).name
+                                                console.log(getBank);
+
+                                                return (
+                                                    <tr>
+                                                        <th scope="row" key={product.id}>
+                                                            {i + 1}
+                                                        </th>
+                                                        <td>{product.user.fullname}</td>
+                                                        <td>{product.withdrawal_no}</td>
+                                                        <td>{getBank} {product.account.number} a.n {product.account.name} </td>
+                                                        <td>{moment(product.created_at).format('MMMM Do YYYY, h:mm')}</td>
+                                                        <td>Rp.{product.amount}</td>
+                                                        <td>{product.approval === 0 ? 'Belum disetujui' : `Telah disetujui pada ${moment(product.approval_at).format('MMMM Do YYYY, h:mm')}`}</td>
+                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
+                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                        </div>
+                                                    </tr>
+                                                )
+                                            }
+
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -436,7 +457,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Ubah Produk</h4>
+                            <h4 className="modal-title">Ubah Status</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -444,25 +465,19 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
-                                        setTitle(e.target.value)
-                                    }} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
+                                    <label htmlFor="exampleInputEmail1">Ubah Status</label>
+                                    <Select
+                                        defaultValue={optionsStatus[0]}
+                                        isMulti={false}
+                                        options={optionsStatus}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeStatus} />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
+                            <button type="button" className="btn btn-primary" onClick={changeData}>Ubah Status</button>
                         </div>
                     </div>
                     {/* /.modal-content */}

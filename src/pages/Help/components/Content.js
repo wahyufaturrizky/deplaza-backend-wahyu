@@ -25,7 +25,6 @@ const DataTable = (props) => {
     const [user, setUser] = useState(0);
     const [problem, setProblem] = useState("");
     const [status, setStatus] = useState(0);
-    const [addProduct, setAddProduct] = useState(false);
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
 
@@ -175,7 +174,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h5 className="m-0 text-dark">Menu Bantuan Jualan</h5>
                             <button type="button" class="btn btn-block btn-success btn-xs" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Bantuan Jualan</button>
-                            <button type="button" class="btn btn-block btn-danger btn-xs" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-danger btn-xs" style={{ width: 130, height: 40, }} >Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -308,9 +307,9 @@ const DataTable = (props) => {
                                                     <td>{helpdesk.problem}</td>
                                                     <td>{helpdesk.status}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(helpdesk.id)}>Lihat</button>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(helpdesk.id)}>Ubah</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(helpdesk.id)}>Hapus</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" >Hapus</button>
                                                     </div>
                                                 </tr>
                                             ))}

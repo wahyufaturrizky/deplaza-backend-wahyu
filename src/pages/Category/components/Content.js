@@ -24,6 +24,7 @@ const DataTable = (props) => {
     const [urls, setUrls] = useState('')
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
+    const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -48,7 +49,7 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     };
 
-    
+
     const categoriesData = useMemo(() => {
         let computedCategories = categories;
 
@@ -90,7 +91,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menambah data
     const handleAddCategory = (e) => {
-         e.preventDefault()
+        e.preventDefault()
         const formData = new FormData();
         formData.append('image', image)
         formData.append('name', title);
@@ -135,6 +136,24 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
+    const modalDeleteMultiple = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = {_method: 'delete', id: checkedBoxes }
+                    axiosConfig.post(`${URL_POST}/delete-batch`, data)
+                        .then(() => {
+                            getData();
+                            toastr.success('Kategori berhasil dihapus')
+                        })
+                }
+            });
+    }
 
     const deleteData = (id) => {
         swal({
@@ -145,8 +164,7 @@ const DataTable = (props) => {
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    const data = { _method: 'delete' }
-                    axiosConfig.post(`${URL_POST}/${id}/delete`, data)
+                    axiosConfig.delete(`${URL_POST}/${id}/delete`)
                         .then(() => {
                             const categoryData = categories.filter(category => category.id !== id)
                             setCategories(categoryData)
@@ -155,7 +173,7 @@ const DataTable = (props) => {
                 }
             });
     }
-  
+
     const setFileUrls = (files) => {
         const item = URL.createObjectURL(files)
         if (urls.length > 0) {
@@ -165,7 +183,7 @@ const DataTable = (props) => {
     }
 
     const displayUploadedFiles = (item) => {
-        return  <img  src={item} style={{ width: 100, height: 100 }} />
+        return <img src={item} style={{ width: 100, height: 100 }} />
     }
 
     const uploadSingleFile = (e) => {
@@ -173,8 +191,8 @@ const DataTable = (props) => {
         setImage(e.target.files[0]);
     }
 
-      // fungsi untuk handle pagination
-      const handlePageChange = (page, e) => {
+    // fungsi untuk handle pagination
+    const handlePageChange = (page, e) => {
         setCurrentPage(page)
         let nextPage = page;
         if (!nextPage || nextPage === 0) {
@@ -188,6 +206,21 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     };
 
+    // fungsi checkbox delete
+    const toggleCheckbox = (e, item) => {
+        if (e.target.checked) {
+            let arr = checkedBoxes;
+            arr.push(item.id);
+
+            setCheckedBoxes(arr);
+        } else {
+            let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+            setCheckedBoxes(items)
+        }
+        console.log(checkedBoxes);
+    }
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -197,7 +230,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Kategori</h1>
                             <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Kategori</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }}>Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -217,7 +250,7 @@ const DataTable = (props) => {
                             <div className="row w-100">
                                 <div className="col mb-3 col-12 text-center">
                                     <div className="row">
-                                    <div class="col-md-12 d-flex justify-content-between">
+                                        <div class="col-md-12 d-flex justify-content-between">
                                             <Pagination
                                                 total={totalItems}
                                                 limit={limit}
@@ -325,7 +358,9 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : categoriesData.map((comment, i) => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
-                                                        {i+1}
+                                                        <input type="checkbox" className="selectsingle" value="{category.id}" checked={checkedBoxes.find((p) => p.id === comment.id)} onChange={(e) => toggleCheckbox(e, comment)} />
+									                         &nbsp;&nbsp;
+                                                        {i + 1}
                                                     </th>
                                                     <td>{comment.name}</td>
                                                     <td><img src={comment.image_url ? comment.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>
@@ -394,9 +429,9 @@ const DataTable = (props) => {
                         </div>
                         <div className="modal-body">
                             <div className="card-body">
-                            <div className="form-group">
+                                <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Gambar Kategori</label>
-                                   <div><img src={detail.image_url ? detail.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></div>
+                                    <div><img src={detail.image_url ? detail.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Kategori</label>

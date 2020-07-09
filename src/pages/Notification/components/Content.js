@@ -28,6 +28,8 @@ const DataTable = (props) => {
     const [date, setDate] = useState("")
     const [status, setStatus] = useState(0)
     const [limit, setLimit] = useState(10)
+    const [checkedBoxes, setCheckedBoxes] = useState([])
+
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -93,7 +95,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menambah data
     const handleAddCategory = () => {
-        const data = {user_id: user, title: title, type: type, content: content, send_datetime: date}
+        const data = { user_id: user, title: title, type: type, content: content, send_datetime: date }
         axiosConfig.post(URL_STRING, data)
             .then(res => {
                 // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
@@ -127,6 +129,26 @@ const DataTable = (props) => {
                 window.$('#modal-edit').modal('hide');
                 setId(0)
             }).catch(error => toastr.error(error))
+    }
+
+    // fungsi untuk multiple delete
+    const modalDeleteMultiple = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete', id: checkedBoxes }
+                    axiosConfig.post(`${URL_STRING}/delete-batch`, data)
+                        .then(() => {
+                            getProduct()
+                            toastr.success('Notifikasi berhasil dihapus')
+                        })
+                }
+            });
     }
 
     // fungsi untuk delete data
@@ -164,6 +186,21 @@ const DataTable = (props) => {
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
     };
+
+    // fungsi checkbox delete
+    const toggleCheckbox = (e, item) => {
+        if (e.target.checked) {
+            let arr = checkedBoxes;
+            arr.push(item.id);
+
+            setCheckedBoxes(arr);
+        } else {
+            let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+            setCheckedBoxes(items)
+        }
+        console.log(checkedBoxes);
+    }
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -173,7 +210,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Notifikasi</h1>
                             <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Notifikasi</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }}>Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -300,6 +337,8 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
                                                     <th scope="row" key={product.id}>
+                                                        <input type="checkbox" className="selectsingle" value="{product.id}" checked={checkedBoxes.find((p) => p.id === product.id)} onChange={(e) => toggleCheckbox(e, product)} />
+									                         &nbsp;&nbsp;
                                                         {i + 1}
                                                     </th>
                                                     <td>{product.title}</td>

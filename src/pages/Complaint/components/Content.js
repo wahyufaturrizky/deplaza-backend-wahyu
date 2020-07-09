@@ -24,6 +24,8 @@ const DataTable = (props) => {
     const [addProduct, setAddProduct] = useState(false);
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
+    const [checkedBoxes, setCheckedBoxes] = useState([])
+
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -67,8 +69,6 @@ const DataTable = (props) => {
                     product.slug.toLowerCase().includes(search.toLowerCase())
             );
         }
-
-        setTotalItems(computedProducts.length);
 
         //Sorting products
         if (sorting.field) {
@@ -146,6 +146,26 @@ const DataTable = (props) => {
             })
     }
 
+    // fungsi untuk multiple delete
+    const modalDeleteMultiple = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete', id: checkedBoxes }
+                    axiosConfig.post(`${URL_STRING}/delete-batch`, data)
+                        .then(() => {
+                            getProduct()
+                            toastr.success('Berhasil dihapus')
+                        })
+                }
+            });
+    }
+
     // fungsi untuk delete data
     const deleteData = (id) => {
         const data = { _method: 'delete' }
@@ -164,13 +184,27 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
     };
 
+    // fungsi checkbox delete
+    const toggleCheckbox = (e, item) => {
+        if (e.target.checked) {
+            let arr = checkedBoxes;
+            arr.push(item.id);
+
+            setCheckedBoxes(arr);
+        } else {
+            let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+            setCheckedBoxes(items)
+        }
+        console.log(checkedBoxes);
+    }
 
     return (
         <div className="content-wrapper">
@@ -180,8 +214,8 @@ const DataTable = (props) => {
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Komplain</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} onClick={testAdd}>Lihat Data Buyer</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }}>Lihat Data Buyer</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -308,6 +342,8 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
                                                     <th scope="row" key={product.id}>
+                                                        <input type="checkbox" className="selectsingle" value="{product.id}" checked={checkedBoxes.find((p) => p.id === product.id)} onChange={(e) => toggleCheckbox(e, product)} />
+									                         &nbsp;&nbsp;
                                                         {i + 1}
                                                     </th>
                                                     <td>-</td>

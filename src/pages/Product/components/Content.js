@@ -9,6 +9,7 @@ import axiosConfig from '../../../utils/axiosConfig';
 import axios from 'axios'
 
 import Pagination from 'react-paginating';
+
 const URL_STRING = '/product';
 const URL_DETAIL = '/product'
 
@@ -21,13 +22,11 @@ const DataTable = (props) => {
     const [title, setTitle] = useState('');
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [addProduct, setAddProduct] = useState(false);
     const [limit, setLimit] = useState(50)
     const [activePage, setActivePage] = useState(0)
     const [category, setCategory] = useState([])
     const [checkedBoxes, setCheckedBoxes] = useState([])
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 10;
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -49,19 +48,6 @@ const DataTable = (props) => {
     }, []);
 
 
-    // const getProduct = () => {
-    //     setLoading(true)
-
-    //     axiosConfig.get(URL_STRING)
-    //         .then(json => {
-    //             setActivePage(json.data.meta.current_page);
-    //             setLimit(json.data.meta.limit)
-    //             setTotalItems(json.data.meta.total_data);
-    //             setProducts(json.data.data);
-    //             setLoading(false)
-    //         }).catch(error => toastr.error(error))
-    // }
-
     const getProduct = async () => {
         setLoading(true)
         axios.all([axiosConfig.get(`${URL_STRING}?limit=50`), axiosConfig.get('/category')])
@@ -76,8 +62,6 @@ const DataTable = (props) => {
                 })
             ).catch(error => toastr.error(error))
     }
-
-    console.log(category);
 
     // fungsi untuk search
     const productsData = useMemo(() => {
@@ -134,8 +118,7 @@ const DataTable = (props) => {
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    const testId = JSON.stringify(checkedBoxes)
-                    const data = { _method: 'delete', id: checkedBoxes  }
+                    const data = { _method: 'delete', id: checkedBoxes }
                     axiosConfig.post(`${URL_DETAIL}/delete-batch`, data)
                         .then(() => {
                             getProduct()
@@ -154,7 +137,7 @@ const DataTable = (props) => {
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    const data = { _method: 'delete'}
+                    const data = { _method: 'delete' }
                     axiosConfig.post(`${URL_DETAIL}/${id}/delete`, data)
                         .then(() => {
                             getProduct()
@@ -179,6 +162,7 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     };
 
+    // fungsi checkbox delete
     const toggleCheckbox = (e, item) => {
         if (e.target.checked) {
             let arr = checkedBoxes;

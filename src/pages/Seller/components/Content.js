@@ -23,7 +23,7 @@ const DataTable = (props) => {
     const [addProduct, setAddProduct] = useState(false);
     const [limit, setLimit] = useState(10)
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 10;
+    const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
         { name: "No#", field: "id", sortable: false },

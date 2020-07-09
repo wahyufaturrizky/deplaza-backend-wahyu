@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { TableHeader, Pagination, Search } from "./DataTable";
+import { TableHeader, Search } from "./DataTable";
 import toastr from 'toastr'
 import swal from 'sweetalert';
 
@@ -7,6 +7,8 @@ import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import AddProductComponent from './AddProduct'
+import Pagination from 'react-paginating';
+
 
 const URL_STRING = '/popup';
 const URL_DETAIL = '/product'
@@ -25,7 +27,9 @@ const DataTable = (props) => {
     const [image, setImage] = useState(null)
     const [urls, setUrls] = useState('')
     const [id, setId] = useState(0)
-    const ITEMS_PER_PAGE = 10;
+    const [limit, setLimit] = useState(10)
+    const [checkedBoxes, setCheckedBoxes] = useState([])
+
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -46,6 +50,7 @@ const DataTable = (props) => {
         setLoading(true)
         axiosConfig.get(URL_STRING)
             .then(json => {
+                setTotalItems(json.data.meta.total_data);
                 setProducts(json.data.data);
                 setLoading(false)
             }).catch(error => toastr.danger(error))
@@ -63,8 +68,6 @@ const DataTable = (props) => {
             );
         }
 
-        setTotalItems(computedProducts.length);
-
         //Sorting products
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
@@ -75,11 +78,8 @@ const DataTable = (props) => {
         }
 
         //Current Page slice
-        return computedProducts.slice(
-            (currentPage - 1) * ITEMS_PER_PAGE,
-            (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-        );
-    }, [products, currentPage, search, sorting.field, sorting.order]);
+        return computedProducts
+    }, [products, search, sorting.field, sorting.order]);
     console.log(productsData)
 
     const showModalEdit = async (idData) => {
@@ -146,6 +146,25 @@ const DataTable = (props) => {
             }).catch(error => toastr.danger(error))
     }
 
+    // fungsi untuk multiple delete
+    const modalDeleteMultiple = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = { _method: 'delete', id: checkedBoxes }
+                    axiosConfig.post(`${URL_STRING}/delete-batch`, data)
+                        .then(() => {
+                            getProduct()
+                            toastr.success('Popup berhasil dihapus')
+                        })
+                }
+            });
+    }
 
     const deleteData = (id) => {
         swal({
@@ -184,6 +203,36 @@ const DataTable = (props) => {
         setImage(e.target.files[0]);
     }
 
+    // fungsi untuk handle pagination
+    const handlePageChange = (page, e) => {
+        setCurrentPage(page)
+        let nextPage = page;
+        if (!nextPage || nextPage === 0) {
+            nextPage = 1;
+        }
+        const offset = (nextPage - 1) * limit;
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
+            .then(json => {
+                setCurrentPage(json.data.meta.current_page)
+                setProducts(json.data.data);
+            }).catch(error => toastr.error(error))
+    };
+
+    // fungsi checkbox delete
+    const toggleCheckbox = (e, item) => {
+        if (e.target.checked) {
+            let arr = checkedBoxes;
+            arr.push(item.id);
+
+            setCheckedBoxes(arr);
+        } else {
+            let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+            setCheckedBoxes(items)
+        }
+        console.log(checkedBoxes);
+    }
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -193,7 +242,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark">Menu Popup</h1>
                             <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Tambah Popup</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
@@ -205,63 +254,142 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-            {addProduct ? <AddProductComponent /> :
-                <section className="content">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-12">
-                                <div className="row w-100">
-                                    <div className="col mb-3 col-12 text-center">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <Pagination
-                                                    total={totalItems}
-                                                    itemsPerPage={ITEMS_PER_PAGE}
-                                                    currentPage={currentPage}
-                                                    onPageChange={page => setCurrentPage(page)}
-                                                />
-                                            </div>
-                                            <div className="col-md-6 d-flex flex-row-reverse">
-                                                <Search
-                                                    onSearch={value => {
-                                                        setSearch(value);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
+            <section className="content">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="row w-100">
+                                <div className="col mb-3 col-12 text-center">
+                                    <div className="row">
+                                        <div class="col-md-12 d-flex justify-content-between">
+                                            <Pagination
+                                                total={totalItems}
+                                                limit={limit}
+                                                pageCount={5}
+                                                currentPage={currentPage}
+                                            >
+                                                {({
+                                                    pages,
+                                                    currentPage,
+                                                    hasNextPage,
+                                                    hasPreviousPage,
+                                                    previousPage,
+                                                    nextPage,
+                                                    totalPages,
+                                                    getPageItemProps
+                                                }) => (
+                                                        <div>
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: 1,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
 
-                                        <table className="table table-striped">
-                                            <TableHeader
-                                                headers={headers}
-                                                onSorting={(field, order) =>
-                                                    setSorting({ field, order })
-                                                }
-                                            />
-                                            <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                    <tr>
-                                                        <th scope="row" key={product.id}>
-                                                            {i+1}
-                                                        </th>
-                                                        <td><img style={{ width: 100, height: 100 }} src={product.image ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.description}</td>
-                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 8 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                            >
+                                                                {'❮❮'}
+                                                            </button>
+                                                            {hasPreviousPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: previousPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❮'}
+                                                                </button>
+                                                            )}
+
+                                                            {pages.map(page => {
+                                                                let activePage = null;
+                                                                if (currentPage === page) {
+                                                                    activePage = style.pageItemActive;
+                                                                }
+                                                                return (
+                                                                    <button
+                                                                        {...getPageItemProps({
+                                                                            pageValue: page,
+                                                                            key: page,
+                                                                            onPageChange: handlePageChange,
+                                                                            className: "page-link",
+                                                                            style: { ...style.pageItem, ...activePage }
+                                                                        })}
+                                                                    >
+                                                                        {page}
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {hasNextPage && (
+                                                                <button
+                                                                    {...getPageItemProps({
+                                                                        pageValue: nextPage,
+                                                                        onPageChange: handlePageChange,
+                                                                        style: style.pageItem,
+                                                                        className: "page-link"
+                                                                    })}
+                                                                >
+                                                                    {'❯'}
+                                                                </button>
+                                                            )}
+
+                                                            <button
+                                                                {...getPageItemProps({
+                                                                    pageValue: totalPages,
+                                                                    onPageChange: handlePageChange,
+                                                                    style: style.pageItem,
+                                                                    className: "page-link"
+                                                                })}
+                                                            >
+                                                                {'❯❯'}
+                                                            </button>
                                                         </div>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                            </Pagination>
+                                            <Search
+                                                onSearch={value => {
+                                                    setSearch(value);
+                                                    setCurrentPage(1);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
+
+                                    <table className="table table-striped">
+                                        <TableHeader
+                                            headers={headers}
+                                            onSorting={(field, order) =>
+                                                setSorting({ field, order })
+                                            }
+                                        />
+                                        <tbody>
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
+                                                <tr>
+                                                    <th scope="row" key={product.id}>
+                                                        <input type="checkbox" className="selectsingle" value="{product.id}" checked={checkedBoxes.find((p) => p.id === product.id)} onChange={(e) => toggleCheckbox(e, product)} />
+									                         &nbsp;&nbsp;
+                                                        {i + 1}
+                                                    </th>
+                                                    <td><img style={{ width: 100, height: 100 }} src={product.image_url ? product.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                    <td>{product.name}</td>
+                                                    <td>{product.description}</td>
+                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                        <button type="button" style={{ marginTop: 8 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
+                                                    </div>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-            }
+                </div>
+            </section>
             <div className="modal fade" id="modal-lg">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -354,5 +482,40 @@ const DataTable = (props) => {
 
     );
 };
+
+const style = {
+    pageItem: {
+        display: "inline",
+        position: "relative",
+        padding: "0.5rem 0.75rem",
+        marginLeft: "-1px",
+        lineHeight: "1.25",
+        color: "#0275d8",
+        backgroundColor: "#fff",
+        border: "1px solid #fff",
+        touchAction: "manipulation",
+        textDecoration: "none"
+    },
+    pageItemActive: {
+        color: "#fff",
+        backgroundColor: "#0275d8",
+        borderColor: "#fff"
+    },
+    listGroup: {
+        display: "flex",
+        flexDirection: "column",
+        paddingLeft: 0
+    },
+    listGroupItem: {
+        position: "relative",
+        display: "flex",
+        flexFlow: "row wrap",
+        alignItems: "center",
+        padding: "0.75rem 1.25rem",
+        marginBottom: "-1px",
+        backgroundColor: "#fff",
+        border: "1px #fff"
+    }
+}
 
 export default withRouter(DataTable);

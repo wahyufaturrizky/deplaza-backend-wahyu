@@ -8,6 +8,7 @@ import axiosConfig from '../../../utils/axiosConfig';
 
 
 const URL_POST = '/product'
+const URL_GET_PROVINCE = '/shipment/provinces'
 const URL_GET_CITY = '/shipment/cities'
 const URL_GET_CATEGORY = '/category';
 
@@ -23,6 +24,7 @@ function AddProduct(props) {
     const [stock, setStock] = useState(0);
     const [weight, setWeight] = useState(0);
     const [cityId, setCityId] = useState(0);
+    const [provinceId, setProvinceId] = useState(0);
     const [source, setSource] = useState('');
     const [cod, setCod] = useState(1);
     const [codCityId, setCodCityId] = useState([]);
@@ -35,12 +37,14 @@ function AddProduct(props) {
     const [nameThirdVariation, setNameThirdVariation] = useState('')
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
+    const [getProvince, setGetProvince] = useState([])
     const [urls, setUrls] = useState([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getDataCategory()
         getDataCity()
+        getDataProvince()
         window.$(document).ready(function () {
             window.$('.textarea').summernote({
                 callbacks: {
@@ -70,6 +74,20 @@ function AddProduct(props) {
             .catch(error => console.log(error));
     }
 
+    const getDataProvince = () => {
+        axiosConfig.get(`${URL_GET_PROVINCE}`)
+            .then(res =>
+                res.data.rajaongkir.results.map(data => ({
+                    value: data.province_id,
+                    label: data.province,
+                }))
+            )
+            .then(data => {
+                setGetProvince(data)
+            })
+            .catch(error => console.log(error));
+    }
+
     const getDataCategory = () => {
         axiosConfig.get(`${URL_GET_CATEGORY}`)
             .then(res =>
@@ -86,10 +104,11 @@ function AddProduct(props) {
 
     const optionsCategory = getCategory.map(i => i)
     const options = getCity.map(i => i)
+    const optionsProvince = getProvince.map(i => i)
 
     const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
 
-    const handleChangeCodCities = (data) => {
+    const handleChangeCodProvince = (data) => {
         let catArray = [];
         data.map(i =>
             catArray.push(i.value)
@@ -307,7 +326,7 @@ function AddProduct(props) {
             formData.append('city_id', parseInt(cityId));
             formData.append('source', source);
             formData.append('cod', parseInt(cod));
-            codCityId.forEach((file) => formData.append('cod_city_id[]', file));
+            formData.append('cod_city_id', JSON.stringify(codCityId));
             formData.append('user_id', dataUser.id);
             formData.append('variation', JSON.stringify(test))
 
@@ -456,11 +475,11 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        defaultValue={options[0]}
+                                        defaultValue={optionsProvince[0]}
                                         isMulti={true}
-                                        options={options}
+                                        options={optionsProvince}
                                         closeMenuOnSelect={true}
-                                        onChange={handleChangeCodCities} />
+                                        onChange={handleChangeCodProvince} />
                                 </div>
                                 {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
                                     type="Oval"

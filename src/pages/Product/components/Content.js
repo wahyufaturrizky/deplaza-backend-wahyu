@@ -10,7 +10,7 @@ import axios from 'axios'
 
 import Pagination from 'react-paginating';
 
-const URL_STRING = '/product';
+const URL_STRING = '/product?order_direction=desc';
 const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
@@ -50,7 +50,7 @@ const DataTable = (props) => {
 
     const getProduct = async () => {
         setLoading(true)
-        axios.all([axiosConfig.get(`${URL_STRING}?limit=50`), axiosConfig.get('/category')])
+        axios.all([axiosConfig.get(`${URL_STRING}&limit=50`), axiosConfig.get('/category')])
             .then(
                 axios.spread((product, category) => {
                     setActivePage(product.data.meta.current_page);
@@ -155,7 +155,7 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}?limit=50&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}&limit=50&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);

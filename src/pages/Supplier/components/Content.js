@@ -1,17 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Pagination, Search } from "./DataTable";
-import { trackPromise } from 'react-promise-tracker';
-import { usePromiseTracker } from "react-promise-tracker";
+
 import { Spinner } from '../../../components/spinner'
 import Axios from 'axios';
 import { Auth } from '../../../utils/auth';
 import { withRouter } from 'react-router';
-import AddProductComponent from './AddProduct'
 
 const URL_STRING = 'v1/product?limit=1000';
 const URL_DETAIL = 'v1/product'
-
-const arrayPopup = [{ id: 1, name: 'test', description: 'test', detail: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png' }]
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([{ id: 1, name: 'test', description: 'test', detail: 'test' }]);
@@ -31,6 +27,8 @@ const DataTable = (props) => {
         { name: "Nama", field: "name", sortable: true },
         { name: "Alamat", field: "name", sortable: true },
         { name: "Barang", field: "name", sortable: false },
+        { name: "Kategori", field: "name", sortable: false },
+        { name: "Harga", field: "name", sortable: false },
         { name: "Stok", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
@@ -210,8 +208,8 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark" >Menu Supplier</h1>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Supplier</button>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Log Aktivitas</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }}>Tambah Supplier</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }}>Log Aktivitas</button>
                                 <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 6 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
@@ -225,65 +223,65 @@ const DataTable = (props) => {
                 </div>{/* /.container-fluid */}
             </div>
             {/* Main content */}
-            {addProduct ? <AddProductComponent /> :
-                <section className="content">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-12">
-                                <div className="row w-100">
-                                    <div className="col mb-3 col-12 text-center">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <Pagination
-                                                    total={totalItems}
-                                                    itemsPerPage={ITEMS_PER_PAGE}
-                                                    currentPage={currentPage}
-                                                    onPageChange={page => setCurrentPage(page)}
-                                                />
-                                            </div>
-                                            <div className="col-md-6 d-flex flex-row-reverse">
-                                                <Search
-                                                    onSearch={value => {
-                                                        setSearch(value);
-                                                        setCurrentPage(1);
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <table className="table table-striped">
-                                            <TableHeader
-                                                headers={headers}
-                                                onSorting={(field, order) =>
-                                                    setSorting({ field, order })
-                                                }
+            <section className="content">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="row w-100">
+                                <div className="col mb-3 col-12 text-center">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <Pagination
+                                                total={totalItems}
+                                                itemsPerPage={ITEMS_PER_PAGE}
+                                                currentPage={currentPage}
+                                                onPageChange={page => setCurrentPage(page)}
                                             />
-                                            <tbody>
-                                                {loading === true ? <Spinner /> : productsData.map(product => (
-                                                    <tr>
-                                                        <th scope="row" key={product.id}>
-                                                            {product.id}
-                                                        </th>
-                                                        <td>{product.name}</td>
-                                                        <td>{product.description}</td>
-                                                        <td>{product.detail}</td>
-                                                        <td>{product.id}</td>
-                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" onClick={() => categoryDetail(product.id)}>Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
-                                                        </div>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                        </div>
+                                        <div className="col-md-6 d-flex flex-row-reverse">
+                                            <Search
+                                                onSearch={value => {
+                                                    setSearch(value);
+                                                    setCurrentPage(1);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
+
+                                    <table className="table table-striped">
+                                        <TableHeader
+                                            headers={headers}
+                                            onSorting={(field, order) =>
+                                                setSorting({ field, order })
+                                            }
+                                        />
+                                        <tbody>
+                                            {loading === true ? <Spinner /> : productsData.map(product => (
+                                                <tr>
+                                                    <th scope="row" key={product.id}>
+                                                        {product.id}
+                                                    </th>
+                                                    <td>{product.name}</td>
+                                                    <td>{product.description}</td>
+                                                    <td>{product.detail}</td>
+                                                    <td>{product.detail}</td>
+                                                    <td>Rp. 10000</td>
+                                                    <td>{product.id}</td>
+                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success" >Lihat</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success">Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger">Hapus</button>
+                                                    </div>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-            }
+                </div>
+            </section>
             <div className="modal fade" id="modal-lg">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">

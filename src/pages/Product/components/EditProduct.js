@@ -8,8 +8,9 @@ import { withRouter } from 'react-router-dom'
 import Loader from 'react-loader-spinner'
 
 const URL_POST = '/product'
-const URL_GET_CITY = '/shipment/cities'
+const URL_GET_CITIES = '/shipment/cities'
 const URL_GET_PROVINCE = '/shipment/provinces'
+const URL_GET_CITY = '/shipment/city/province'
 const URL_GET_CATEGORY = '/category';
 
 function AddProduct(props) {
@@ -37,13 +38,14 @@ function AddProduct(props) {
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
     const [getProvince, setGetProvince] = useState([])
+    const [getCities, setGetCities] = useState([])
     const [urls, setUrls] = useState([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getDataCategory()
         getDataCity()
-        getDataProvince()
+        getDataProvinces()
         window.$(document).ready(function () {
             window.$('.textarea').summernote({
                 callbacks: {
@@ -60,26 +62,25 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-
-        axiosConfig.get(`${URL_GET_CITY}`)
+        axiosConfig.get(`${URL_GET_CITIES}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
-                    label: data.city_name,
+                    label: data.type + ' ' + data.city_name,
                 }))
             )
             .then(data => {
-                setGetCity(data)
+                setGetCities(data)
             })
             .catch(error => console.log(error));
     }
 
-    const getDataProvince = () => {
+    const getDataProvinces = () => {
         axiosConfig.get(`${URL_GET_PROVINCE}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.province_id,
-                    label: data.province,
+                    label: 'Provinsi ' + data.province,
                 }))
             )
             .then(data => {
@@ -87,6 +88,7 @@ function AddProduct(props) {
             })
             .catch(error => console.log(error));
     }
+
 
     const getDataCategory = () => {
 
@@ -104,16 +106,31 @@ function AddProduct(props) {
     }
 
     const optionsCategory = getCategory.map(i => i)
-    const options = getCity.map(i => i)
-    const optionsProvince = getProvince.map(i => i)
-
+    const optionsCity = getCity.map(i => i)
+    const options = getProvince.map(i => i)
+    const optionsCities = getCities.map(i => i)
     const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
 
     const handleChangeCodProvince = (data) => {
+
+        axiosConfig.get(`${URL_GET_CITY}/${data.value}`)
+            .then(res =>
+                res.data.rajaongkir.results.map(data => ({
+                    value: data.city_id,
+                    label: data.type + ' ' + data.city_name,
+                }))
+            )
+            .then(data => {
+                setGetCity(data)
+            })
+            .catch(error => console.log(error));
+    }
+
+    const handleChangeCodCity = (data) => {
         let catArray = [];
-        data.map(i =>
+        data && data.map(i =>
             catArray.push(i.value)
-        );
+        )
         setCodCityId(catArray)
     }
 
@@ -428,7 +445,7 @@ function AddProduct(props) {
                                     <Select
                                         defaultValue={props.editData.city_id}
                                         isMulti={false}
-                                        options={options}
+                                        options={optionsCities}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCities} />
                                 </div>
@@ -443,12 +460,21 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label>Daerah COD</label>
+                                    <br/>
+                                    <label>Provinsi</label>
+                                    <Select
+                                        defaultValue={props.editData.cod_city_id}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCodProvince} />
+                                    <label>Kota</label>
                                     <Select
                                         defaultValue={props.editData.cod_city_id}
                                         isMulti={true}
-                                        options={optionsProvince}
+                                        options={optionsCity}
                                         closeMenuOnSelect={true}
-                                        onChange={handleChangeCodProvince} />
+                                        onChange={handleChangeCodCity} />
                                 </div>
                                 {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
                                     type="Oval"

@@ -47,10 +47,10 @@ const DataTable = (props) => {
         setLoading(true)
         axiosConfig.get(`${URL_STRING}?role=0`)
             .then(res => {
-                setTotalItems(res.data.meta.total_data);
+                setTotalItems(res.data.meta.total_result);
                 setProducts(res.data.data);
                 setLoading(false)
-            }).catch(error => toastr.danger(error))
+            }).catch(error => toastr.error(error))
     }
 
 
@@ -312,10 +312,10 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map(product => (
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
                                                     <th scope="row" key={product.id}>
-                                                        {product.id}
+                                                        {i+1}
                                                     </th>
                                                     <td>{product.fullname}</td>
                                                     <td>{product.phone}</td>

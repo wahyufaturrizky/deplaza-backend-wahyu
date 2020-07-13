@@ -73,7 +73,7 @@ const DataTable = (props) => {
             .then(res =>
                 res.data.data.map(data => ({
                     value: data.id,
-                    label: data.description,
+                    label: `${data.description} (${data.name})`
                 }))
             )
             .then(data => {
@@ -120,8 +120,11 @@ const DataTable = (props) => {
     console.log(salesData)
 
     const showModalEdit = async (idData) => {
-        console.log(idData);
-        setId(idData)
+        await setId(idData)
+        await axiosConfig.get(`${URL_DETAIL}/${idData}`)
+            .then(res => {
+                setDetail(res.data.data)
+            })
         window.$('#modal-edit').modal('show');
     }
 
@@ -154,10 +157,8 @@ const DataTable = (props) => {
             toastr.warning('Mohon isi no resi')
         } else if (!courierId) {
             toastr.warning('Mohon isi kurir')
-        } else if (!packageCourier) {
-            toastr.warning('Mohon isi jenis layanan')
         } else {
-            const data = { tracking_id: trackingId, courier_id: courierId, package_courier: packageCourier }
+            const data = { tracking_id: trackingId, courier_id: courierId, package_courier: detail.delivery.package_courier }
             axiosConfig.post(`orders/${id}/sent`, data)
                 .then(res => {
                     setId({ ...initialState })
@@ -222,14 +223,16 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
         }
         else if (key.indexOf(3) !== -1) {
-            toastr.warning('Silahkan input resi')
-            window.$('#modal-status').modal('hide');
-        } else if (key.indexOf(4) !== -1) {
-            axiosConfig.post(`/orders/${idOrder}/done`).then(res => {
+            axiosConfig.post(`/orders/${idOrder}/process`).then(res => {
                 getData();
-                toastr.success('Pesanan Selesai')
+                toastr.success('Pesanan sedang diproses')
                 window.$('#modal-status').modal('hide');
             }).catch(error => toastr.error(error))
+        }
+        else if (key.indexOf(4) !== -1) {
+            setId(idOrder)
+            window.$('#modal-status').modal('hide')
+            window.$('#modal-edit').modal('show')
         } else if (key.indexOf(9) !== -1) {
             axiosConfig.post(`/orders/${idOrder}/reject`).then(res => {
                 getData();
@@ -384,12 +387,12 @@ const DataTable = (props) => {
                                                     {/* <td>{sale[0].variation ? sale[0].variation : '-'}</td> */}
                                                     <td>{sale.delivery.receiver_address}</td>
                                                     <td>{sale.customer ? sale.customer.phone : '-'}</td>
-                                                    <td>{sale.payment.status_label}</td>
+                                                    <td>{sale.status_label}</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalStatus(sale.id)}>Rubah Status</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan Selesai') : showModalStatus(sale.id)}>Rubah Status</button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -405,7 +408,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Detail Produk</h4>
+                            <h4 className="modal-title">Detail Order</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -468,9 +471,8 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Jenis Layanan</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Reg" onChange={(e) => {
-                                        setPackageCourier(e.target.value)
-                                    }} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Reg" value={detail.delivery && detail.delivery.package_courier}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -496,7 +498,7 @@ const DataTable = (props) => {
                                 {detail.available_status_label ?
                                     <div className="form-group">
                                         {Object.keys(detail.available_status_label ? detail.available_status_label : 'null').map((key, i) =>
-                                            <button type="button" value={key} class="btn btn-block btn-success btn-sm" onClick={() => changeStatus(key, detail.id)}>{detail.available_status_label ? detail.available_status_label[key] : null}</button>
+                                            <button type="button" value={key} class="btn btn-block btn-success btn-sm" onClick={() => changeStatus(key, detail.id)}>{detail.available_status_label[key] === 'Sedang di Dikirim' ? 'Input Resi' : detail.available_status_label[key]}</button>
                                         )}
                                     </div> : <Spinner />}
                             </div>

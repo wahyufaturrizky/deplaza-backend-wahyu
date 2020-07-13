@@ -24,6 +24,7 @@ import Report from './pages/Report'
 import Help from './pages/Help'
 import AccountInformation from './pages/AccountInformation'
 import Transaction from './pages/Report/Transaction'
+import Courier from './pages/Courier'
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ export default function App() {
         <ProtectedRoute exact path="/help" component={Help} />
         <ProtectedRoute exact path="/accountInformation" component={AccountInformation} />
         <ProtectedRoute exact path="/transaction" component={Transaction} />
+        <ProtectedRoute exact path="/courier" component={Courier} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

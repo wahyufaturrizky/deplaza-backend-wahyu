@@ -8,8 +8,9 @@ import axiosConfig from '../../../utils/axiosConfig';
 
 
 const URL_POST = '/product'
+const URL_GET_CITIES = '/shipment/cities'
 const URL_GET_PROVINCE = '/shipment/provinces'
-const URL_GET_CITY = '/shipment/cities'
+const URL_GET_CITY = '/shipment/city/province'
 const URL_GET_CATEGORY = '/category';
 
 function AddProduct(props) {
@@ -36,15 +37,16 @@ function AddProduct(props) {
     const [nameSecondVariation, setNameSecondVariation] = useState('')
     const [nameThirdVariation, setNameThirdVariation] = useState('')
     const [getCity, setGetCity] = useState([])
-    const [getCategory, setGetCategory] = useState([])
     const [getProvince, setGetProvince] = useState([])
+    const [getCategory, setGetCategory] = useState([])
+    const [getCities, setGetCities] = useState([])
     const [urls, setUrls] = useState([])
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getDataCategory()
+        getDataProvinces()
         getDataCity()
-        getDataProvince()
         window.$(document).ready(function () {
             window.$('.textarea').summernote({
                 callbacks: {
@@ -61,25 +63,25 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-        axiosConfig.get(`${URL_GET_CITY}`)
+        axiosConfig.get(`${URL_GET_CITIES}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
-                    label: data.city_name,
+                    label: data.type + ' ' + data.city_name,
                 }))
             )
             .then(data => {
-                setGetCity(data)
+                setGetCities(data)
             })
             .catch(error => console.log(error));
     }
 
-    const getDataProvince = () => {
+    const getDataProvinces = () => {
         axiosConfig.get(`${URL_GET_PROVINCE}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.province_id,
-                    label: data.province,
+                    label: 'Provinsi ' + data.province,
                 }))
             )
             .then(data => {
@@ -103,16 +105,37 @@ function AddProduct(props) {
     }
 
     const optionsCategory = getCategory.map(i => i)
-    const options = getCity.map(i => i)
-    const optionsProvince = getProvince.map(i => i)
-
+    const optionsCity = getCity.map(i => i)
+    const options = getProvince.map(i => i)
+    const optionsCities = getCities.map(i => i)
     const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
 
     const handleChangeCodProvince = (data) => {
+
+        axiosConfig.get(`${URL_GET_CITY}/${data.value}`)
+            .then(res =>
+                res.data.rajaongkir.results.map(data => ({
+                    value: data.city_id,
+                    label: data.type + ' ' + data.city_name,
+                }))
+            )
+            .then(data => {
+                setGetCity(data)
+            })
+            .catch(error => console.log(error));
+
+        // let catArray = [];
+        // data && data.map(i =>
+        //     catArray.push(i.value)
+        // ) 
+        // setCodCityId(catArray)
+    }
+
+    const handleChangeCodCity = (data) => {
         let catArray = [];
-        data.map(i =>
+        data && data.map(i =>
             catArray.push(i.value)
-        );
+        )
         setCodCityId(catArray)
     }
 
@@ -311,7 +334,7 @@ function AddProduct(props) {
             toastr.warning('Mohon isi daerah cod')
         } else {
             setLoading(true)
-            const test = [{[nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
+            const test = [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
             const formData = new FormData();
             file.forEach((file) => formData.append('images[]', file));
             formData.append('name', name);
@@ -457,9 +480,9 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
                                     <Select
-                                        defaultValue={options[0]}
+                                        defaultValue={optionsCities[0]}
                                         isMulti={false}
-                                        options={options}
+                                        options={optionsCities}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCities} />
                                 </div>
@@ -474,12 +497,21 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label>Daerah COD</label>
+                                    <br/>
+                                    <label>Provinsi</label>
                                     <Select
-                                        defaultValue={optionsProvince[0]}
-                                        isMulti={true}
-                                        options={optionsProvince}
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodProvince} />
+                                    <label>Kota</label>
+                                    <Select
+                                        defaultValue={optionsCity[0]}
+                                        isMulti={true}
+                                        options={optionsCity}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChangeCodCity} />
                                 </div>
                                 {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
                                     type="Oval"

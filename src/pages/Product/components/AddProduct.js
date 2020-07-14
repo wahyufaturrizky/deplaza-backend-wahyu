@@ -108,10 +108,9 @@ function AddProduct(props) {
     const optionsCity = getCity.map(i => i)
     const options = getProvince.map(i => i)
     const optionsCities = getCities.map(i => i)
-    const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
+    const optionsCod = [{ value: 1, label: 'Iya' }, { value: 0, label: 'Tidak' }]
 
     const handleChangeCodProvince = (data) => {
-
         axiosConfig.get(`${URL_GET_CITY}/${data.value}`)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
@@ -374,9 +373,18 @@ function AddProduct(props) {
     }
 
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} />);
+        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} /> );
     }
 
+    const removeImage = (idImage) => {
+        console.log(idImage);
+        let test = [...file];
+        test.splice(this, idImage-1);
+        setFileUrls(test);
+        setFile(test);
+    }
+
+    console.log(file);
     const uploadMultipleFiles = (e) => {
         const files = [...file]; // Spread syntax creates a shallow copy
         files.push(...e.target.files); // Spread again to push each selected file individually
@@ -497,19 +505,10 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label>Daerah COD</label>
-                                    <br/>
-                                    <label>Provinsi</label>
                                     <Select
                                         defaultValue={options[0]}
-                                        isMulti={false}
-                                        options={options}
-                                        closeMenuOnSelect={true}
-                                        onChange={handleChangeCodProvince} />
-                                    <label>Kota</label>
-                                    <Select
-                                        defaultValue={optionsCity[0]}
                                         isMulti={true}
-                                        options={optionsCity}
+                                        options={options}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodCity} />
                                 </div>

@@ -10,6 +10,7 @@ import Pagination from 'react-paginating';
 
 const URL_STRING = '/user';
 const URL_DETAIL = '/v1/product'
+const URL_POST = '/oauth/register'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -24,6 +25,11 @@ const DataTable = (props) => {
     const [limit, setLimit] = useState(10)
     const [id, setId] = useState(0)
     const [checkedBoxes, setCheckedBoxes] = useState([])
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [name, setName] = useState("")
+    const [phone, setPhone] = useState(0)
+    const [username, setUsername] = useState("")
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -100,19 +106,13 @@ const DataTable = (props) => {
 
     // fungsi untuk menambah data
     const handleAddCategory = () => {
-        const data = { main_id: 0, name: title, active: 1 }
-
-        axiosConfig.post(URL_DETAIL, data)
+        const data = {fullname: name, role: 0, email, phone, password, username  }
+        axiosConfig.post(URL_POST, data)
             .then(res => {
-                // setelah berhasil post data, maka otomatis res.data.data yang berisi data yang barusan ditambahkan
-                // akan langsung di push ke array yang akan di map, jadi data terkesan otomatis update
-                // tanpa di reload
-                let categoryData = [...products]
-                categoryData.push(res.data.data)
-                setProducts(categoryData)
-                alert('success')
+                getProduct()
+                toastr.success('Berhasil tambah seller')
                 hideModal()
-            })
+            }).catch(error => toastr.error(error))
     }
 
     // fungsi untuk menampilkan detail data
@@ -184,9 +184,9 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h1 className="m-0 text-dark" >Menu Seller</h1>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={testAdd}>Tambah Seller</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} data-toggle="modal" data-target="#modal-lg">Tambah Seller</button>
                                 <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={() => props.history.push('/accountInformation')}>Informasi Rekening</button>
-                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }} data-toggle="modal" data-target="#modal-lg">Hapus Sekaligus</button>
+                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}>Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -352,25 +352,40 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => {
-                                        setTitle(e.target.value)
+                                    <label htmlFor="exampleInputEmail1">Email</label>
+                                    <input type="email" className="form-control" id="exampleInputEmail1" placeholder="Email" onChange={(e) => {
+                                        setEmail(e.target.value)
                                     }} />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
+                                    <label htmlFor="exampleInputEmail1">Password</label>
+                                    <input type="password" className="form-control" id="exampleInputEmail1" placeholder="Password" onChange={(e) => {
+                                        setPassword(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Fullname</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Fullname" onChange={(e) => {
+                                        setName(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Phone</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Phone" onChange={(e) => {
+                                        setPhone(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Username</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Username" onChange={(e) => {
+                                        setUsername(e.target.value)
+                                    }} />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Save changes</button>
+                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Tambah Seller</button>
                         </div>
                     </div>
                     {/* /.modal-content */}

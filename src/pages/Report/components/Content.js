@@ -351,9 +351,7 @@ const DataTable = (props) => {
                                         />
                                         <tbody>
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => {
-                                                const getBank = bank.find(o => o.id === product.account.bank_id).name
-                                                console.log(getBank);
-
+                                                const getBank = bank.find(o => o.id === product.account.bank_id)
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
@@ -363,7 +361,7 @@ const DataTable = (props) => {
                                                         </th>
                                                         <td>{product.user.fullname}</td>
                                                         <td>{product.withdrawal_no}</td>
-                                                        <td>{getBank} {product.account.number} a.n {product.account.name} </td>
+                                                        <td>{getBank && getBank.name} {product.account && product.account.number} a.n {product.account && product.account.name} </td>
                                                         <td>{moment(product.created_at).format('MMMM Do YYYY, h:mm')}</td>
                                                         <td>Rp.{product.amount}</td>
                                                         <td>{product.approval === 0 ? 'Belum disetujui' : `Telah disetujui pada ${moment(product.approval_at).format('MMMM Do YYYY, h:mm')}`}</td>

@@ -109,7 +109,7 @@ function AddProduct(props) {
     const optionsCity = getCity.map(i => i)
     const options = getProvince.map(i => i)
     const optionsCities = getCities.map(i => i)
-    const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
+    const optionsCod = [{ value: 1, label: 'Iya' }, { value: 0, label: 'Tidak' }]
 
     const handleChangeCodProvince = (data) => {
 
@@ -460,19 +460,10 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label>Daerah COD</label>
-                                    <br/>
-                                    <label>Provinsi</label>
-                                    <Select
-                                        defaultValue={props.editData.cod_city_id}
-                                        isMulti={false}
-                                        options={options}
-                                        closeMenuOnSelect={true}
-                                        onChange={handleChangeCodProvince} />
-                                    <label>Kota</label>
                                     <Select
                                         defaultValue={props.editData.cod_city_id}
                                         isMulti={true}
-                                        options={optionsCity}
+                                        options={options}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCodCity} />
                                 </div>

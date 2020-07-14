@@ -68,8 +68,8 @@ const DataTable = (props) => {
     }
 
     // fungsi untuk fecthing data kurir
-    const getDataCourier = () => {
-        axiosConfig.get('/courier')
+    const getDataCourier = async () => {
+        await axiosConfig.get('/courier')
             .then(res =>
                 res.data.data.map(data => ({
                     value: data.id,
@@ -84,7 +84,9 @@ const DataTable = (props) => {
 
     // fungsi untuk map kurir untuk select option
     const optionsCourier = getCourier.map(i => i)
-
+    
+    console.log(optionsCourier);
+    const dataCourier = optionsCourier.find(o => o.value === detail.delivery ? detail.delivery.courier_id : 2)
     // fungsi untuk handle select option
     const handleCourier = (id) => {
         setCourierId(id.value);
@@ -155,10 +157,8 @@ const DataTable = (props) => {
     const handleInputResi = () => {
         if (!trackingId) {
             toastr.warning('Mohon isi no resi')
-        } else if (!courierId) {
-            toastr.warning('Mohon isi kurir')
         } else {
-            const data = { tracking_id: trackingId, courier_id: courierId, package_courier: detail.delivery.package_courier }
+            const data = { tracking_id: trackingId, courier_id: dataCourier.value, package_courier: detail.delivery.package_courier }
             axiosConfig.post(`orders/${id}/sent`, data)
                 .then(res => {
                     setId({ ...initialState })
@@ -167,6 +167,25 @@ const DataTable = (props) => {
                     setPackageCourier({ ...initialState })
                     getData()
                     toastr.success('Berhasil input resi')
+                    window.$('#modal-edit').modal('hide');
+                }).catch(error => handleError(error.message))
+        }
+    }
+
+     // fungsi untuk edit resi
+     const handleEditResi = () => {
+        if (!trackingId) {
+            toastr.warning('Mohon isi no resi')
+        } else {
+            const data = { tracking_id: trackingId, courier_id: dataCourier.value, package_courier: detail.delivery.package_courier }
+            axiosConfig.post(`orders/${id}/change-delivery`, data)
+                .then(res => {
+                    setId({ ...initialState })
+                    setTrackingId({ ...initialState })
+                    setCourierId({ ...initialState })
+                    setPackageCourier({ ...initialState })
+                    getData()
+                    toastr.success('Berhasil edit resi')
                     window.$('#modal-edit').modal('hide');
                 }).catch(error => handleError(error.message))
         }
@@ -392,7 +411,7 @@ const DataTable = (props) => {
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan Selesai') : showModalStatus(sale.id)}>Rubah Status</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan sedang dikirim, menunggu konfirmasi dari seller') : showModalStatus(sale.id)}>Rubah Status</button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -462,23 +481,19 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Kurir</label>
-                                    <Select
-                                        defaultValue={optionsCourier[0]}
-                                        isMulti={false}
-                                        options={optionsCourier}
-                                        closeMenuOnSelect={true}
-                                        onChange={handleCourier} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={dataCourier && dataCourier.label} value={dataCourier && dataCourier.label}
+                                    />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Jenis Layanan</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Reg" value={detail.delivery && detail.delivery.package_courier}
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.delivery && detail.delivery.package_courier} value={detail.delivery && detail.delivery.package_courier}
                                     />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleInputResi}>Input Resi</button>
+                            <button type="button" className="btn btn-primary" onClick={detail.status_label === "Sedang di Dikirim" ? handleEditResi : handleInputResi}>{detail.status_label === "Sedang di Dikirim" ? "Edit Resi" : "Input Resi"}</button>
                         </div>
                     </div>
                     {/* /.modal-content */}

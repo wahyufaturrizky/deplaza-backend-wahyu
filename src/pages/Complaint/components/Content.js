@@ -206,6 +206,13 @@ const DataTable = (props) => {
         console.log(checkedBoxes);
     }
 
+    const getImage = item => {
+        const newImage = item[0]
+        return (
+            <td><img style={{ width: 100, height: 100 }} src={newImage} /></td>
+        )
+    }
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -351,9 +358,8 @@ const DataTable = (props) => {
                                                     <td>{product.order_id}</td>
                                                     <td>{product.reason_id}</td>
                                                     <td>{product.description}</td>
-                                                    {product.complaint_details && product.complaint_details.length > 0 ? product.complaint_details.map(image =>
-                                                        <td><img style={{ width: 100, height: 100 }} src={image.file_url} /></td>
-                                                    ) : <td><img style={{ width: 100, height: 100 }} src={'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
+                                                    {product.complaint_details && product.complaint_details.length > 0 ? getImage(product.complaint_details.map(image =>  image.file_url))
+                                                        : <td><img style={{ width: 100, height: 100 }} src={'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                     }
                                                     <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                     <td>{product.qty}</td>

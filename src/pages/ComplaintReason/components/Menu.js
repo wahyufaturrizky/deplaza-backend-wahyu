@@ -69,7 +69,7 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/salesInformation"  className="nav-link active">
+                            <Link to="/salesInformation"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Informasi Penjualan
@@ -81,6 +81,14 @@ function Menu(props) {
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Kategori
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/popUp" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Popup
                                 </p>
                             </Link>
                         </li>
@@ -101,14 +109,6 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/popUp" className="nav-link">
-                                <i className="nav-icon fas fa-th" />
-                                <p>
-                                    Menu Popup
-                                </p>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
                             <Link to="/complaint" className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
@@ -117,18 +117,10 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/complaintReason" className="nav-link">
+                            <Link to="/complaintReason" className="nav-link active">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Alasan Komplain
-                                </p>
-                            </Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/commissionReport" className="nav-link">
-                                <i className="nav-icon fas fa-th" />
-                                <p>
-                                    Report Komisi Seller
                                 </p>
                             </Link>
                         </li>
@@ -137,6 +129,14 @@ function Menu(props) {
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Bantuan Jualan
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/commissionReport" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Report Komisi Seller
                                 </p>
                             </Link>
                         </li>

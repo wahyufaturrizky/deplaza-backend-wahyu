@@ -117,6 +117,14 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/complaintReason" className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Menu Alasan Komplain
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/commissionReport" className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>

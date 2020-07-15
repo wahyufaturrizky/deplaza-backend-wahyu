@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, createRef } from "react";
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
 import toastr from 'toastr'
@@ -373,18 +373,16 @@ function AddProduct(props) {
     }
 
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100, marginRight: 10 }} /> );
+        return image.map((url, i) => <div><img key={i} src={url} style={{ width: 100, height: 100, marginLeft: 10}} /><button style={styles.buttonRemove} onClick={() => removeImage(i)}>X</button></div>);
     }
 
-    const removeImage = (idImage) => {
-        console.log(idImage);
-        let test = [...file];
-        test.splice(this, idImage-1);
-        setFileUrls(test);
-        setFile(test);
+    const removeImage = (value) => {
+        file.splice(value, 1)
+        setFile(file);
+        setFileUrls(file)
     }
 
-    console.log(file);
+
     const uploadMultipleFiles = (e) => {
         const files = [...file]; // Spread syntax creates a shallow copy
         files.push(...e.target.files); // Spread again to push each selected file individually
@@ -392,10 +390,6 @@ function AddProduct(props) {
         setFile(files);
     }
 
-    const testV = nameVariation
-    const testV2 = nameSecondVariation
-    const testV3 = nameThirdVariation
-    const obj = {}
 
     console.log('jj', [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]);
 
@@ -418,7 +412,7 @@ function AddProduct(props) {
                                 {/* <MultipleUpload/> */}
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Gambar Produk</label>
-                                    {urls.length > 0 && <div className="form-group multi-preview">{displayUploadedFiles(urls)}</div>}
+                                    {urls.length > 0 && <div className="form-group multi-preview row">{displayUploadedFiles(urls)}</div>}
                                     <div className="input-group">
                                         <div className="custom-file">
                                             <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadMultipleFiles} multiple />
@@ -530,6 +524,23 @@ function AddProduct(props) {
         </section>
 
     )
+}
+
+const styles = {
+    buttonRemove: {
+        border: "1px solid #fff",
+        elevation: 5,
+        width: 30,
+        height: 30,
+        borderRadius: 30,
+        backgroundColor: "#fff",
+        position: "absolute",
+        top: 25,
+        marginLeft: -20
+    },
+    imagePosition: {
+        flexDirection: "row"
+    }
 }
 
 export default withRouter(AddProduct)

@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
-import toastr from 'toastr'
-import swal from 'sweetalert';
-
-import axiosConfig from '../../../utils/axiosConfig';
+import Axios from 'axios'
+import { Auth } from '../../../utils/auth';
 import Select from 'react-select';
 import { withRouter } from 'react-router-dom'
-import Loader from 'react-loader-spinner'
 
-const URL_POST = '/product'
-const URL_GET_CITIES = '/shipment/cities'
-const URL_GET_PROVINCE = '/shipment/provinces'
-const URL_GET_CITY = '/shipment/city/province'
-const URL_GET_CATEGORY = '/category';
+const URL_POST = '/v1/product'
+const URL_GET_CITY = '/v1/shipment/cities'
+const URL_GET_CATEGORY = '/v1/category';
 
 function AddProduct(props) {
+    let fileObj = [];
+    let fileArray = [];
     const [file, setFile] = useState([]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -37,15 +34,12 @@ function AddProduct(props) {
     const [nameThirdVariation, setNameThirdVariation] = useState('')
     const [getCity, setGetCity] = useState([])
     const [getCategory, setGetCategory] = useState([])
-    const [getProvince, setGetProvince] = useState([])
-    const [getCities, setGetCities] = useState([])
     const [urls, setUrls] = useState([])
-    const [loading, setLoading] = useState(false)
+    const [fucka, setFucka] = useState([])
 
     useEffect(() => {
         getDataCategory()
         getDataCity()
-        getDataProvinces()
         window.$(document).ready(function () {
             window.$('.textarea').summernote({
                 callbacks: {
@@ -62,37 +56,33 @@ function AddProduct(props) {
 
 
     const getDataCity = () => {
-        axiosConfig.get(`${URL_GET_CITIES}`)
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(`${URL_GET_CITY}`, config)
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
-                    label: data.type + ' ' + data.city_name,
+                    label: data.city_name,
                 }))
             )
             .then(data => {
-                setGetCities(data)
+                setGetCity(data)
             })
             .catch(error => console.log(error));
     }
-
-    const getDataProvinces = () => {
-        axiosConfig.get(`${URL_GET_PROVINCE}`)
-            .then(res =>
-                res.data.rajaongkir.results.map(data => ({
-                    value: data.province_id,
-                    label: 'Provinsi ' + data.province,
-                }))
-            )
-            .then(data => {
-                setGetProvince(data)
-            })
-            .catch(error => console.log(error));
-    }
-
 
     const getDataCategory = () => {
-
-        axiosConfig.get(`${URL_GET_CATEGORY}`)
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        Axios.get(`${URL_GET_CATEGORY}`, config)
             .then(res =>
                 res.data.data.map(data => ({
                     value: data.id,
@@ -106,31 +96,15 @@ function AddProduct(props) {
     }
 
     const optionsCategory = getCategory.map(i => i)
-    const optionsCity = getCity.map(i => i)
-    const options = getProvince.map(i => i)
-    const optionsCities = getCities.map(i => i)
-    const optionsCod = [{ value: 1, label: 'Iya' }, { value: 0, label: 'Tidak' }]
+    const options = getCity.map(i => i)
 
-    const handleChangeCodProvince = (data) => {
+    const optionsCod = [{ value: 0, label: 'Iya' }, { value: 1, label: 'Tidak' }]
 
-        axiosConfig.get(`${URL_GET_CITY}/${data.value}`)
-            .then(res =>
-                res.data.rajaongkir.results.map(data => ({
-                    value: data.city_id,
-                    label: data.type + ' ' + data.city_name,
-                }))
-            )
-            .then(data => {
-                setGetCity(data)
-            })
-            .catch(error => console.log(error));
-    }
-
-    const handleChangeCodCity = (data) => {
+    const handleChangeCodCities = (data) => {
         let catArray = [];
-        data && data.map(i =>
+        data.map(i =>
             catArray.push(i.value)
-        )
+        );
         setCodCityId(catArray)
     }
 
@@ -145,6 +119,23 @@ function AddProduct(props) {
     const handleChangeCategory = (id) => {
         setCategoryId(id.value);
     };
+
+    // const uploadMultipleFiles = (e) => {
+    //     fileObj.push(e.target.files)
+    //     for (let i = 0; i < fileObj[0].length; i++) {
+    //         fileArray.push(URL.createObjectURL(fileObj[0][i]))
+    //     }
+    //     setFile(fileArray)
+    // }
+
+    console.log('city', name, description, categoryId, brand, priceBasic, priceBenefit, priceCommission, stock, weight, cityId, source, cod, codCityId,
+        file, variation)
+
+
+    const uploadFiles = (e) => {
+        e.preventDefault()
+        console.log(file)
+    }
 
     function createInputs() {
         return (
@@ -297,14 +288,49 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
-    // handle untuk submit data
+    const handleVariation = async () => {
+        const shit = variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val)
+        setVariation(shit)
+    }
+
+    console.log(nameVariation);
+
+    const ya = () => {
+        const k = values.val
+        const j = secondValues.val
+        const l = thirdValues.val
+        if (nameSecondVariation && j) {
+             setFucka([nameVariation, [k], nameSecondVariation, [j]])
+        } else if (nameThirdVariation && l) {
+             setFucka([nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]])
+        } else {
+             setFucka([nameVariation, [k]])
+        }
+    }
+
+    const handleSecondSubmit = async () => {
+        await ya()
+        console.log('handle', variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val));
+        handleSubmit()
+    }
     const handleSubmit = async (e) => {
-        const dataLocal = localStorage.getItem('dataUser');
-        const dataUser = JSON.parse(dataLocal)
-        setLoading(true)
-        const test = [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
+        // await setVariation(variation.concat(nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val))
+        //     .then(i => console.log('uu', i))
+
+
+
+      
+
+        const k = values.val
+            const j = secondValues.val
+            const l = thirdValues.val
+        const test = [nameVariation, [k], nameSecondVariation, [j], nameThirdVariation, [l]]
+        console.log('testk', fucka);
+
+        // e.preventDefault();
         const formData = new FormData();
         file.forEach((file) => formData.append('images[]', file));
+        // formData.append('images', file);
         formData.append('name', name);
         formData.append('description', description);
         formData.append('category_id', parseInt(categoryId));
@@ -317,23 +343,33 @@ function AddProduct(props) {
         formData.append('city_id', parseInt(cityId));
         formData.append('source', source);
         formData.append('cod', parseInt(cod));
-        formData.append('cod_city_id', JSON.stringify(codCityId));
-        formData.append('user_id', dataUser.id);
-        formData.append('variation', JSON.stringify(test))
-        formData.append('_method', 'put');
+        formData.append('cod_city_id', parseInt(codCityId));
+        formData.append('user_id', 2);
+        test.forEach((item) => formData.append('variation[]', item));
 
-        axiosConfig.post(`${URL_POST}/${props.editData.id}`, formData)
+
+
+        const data = {
+            name, description, category_id: parseInt(categoryId), brand, price_basic: parseInt(priceBasic), price_benefit: parseInt(priceBenefit), price_commission: parseInt(priceCommission), stock: parseInt(stock), weight: parseInt(weight), city_id: parseInt(cityId), source, cod: parseInt(cod), cod_city_id: codCityId,
+            user_id: 2, images: formData, variation: variation
+        }
+
+        let config = {
+            headers: {
+                Authorization: `Bearer ${Auth()}`,
+                'Access-Control-Allow-Origin': '*',
+                "Content-Type": "multipart/form-data",
+
+            }
+        }
+        Axios.post(URL_POST, formData, config)
             .then(res => {
+                alert('success')
                 props.history.push('/product')
-                window.location.reload(false);
-                setLoading(false)
-                toastr.success('Produk berhasil ditambah')
                 console.log(res);
-            }).catch(error => toastr.error(error))
+            })
     }
 
-
-    // fungsi untuk setFileUrls image
     const setFileUrls = (files) => {
         const item = files.map((file) => URL.createObjectURL(file));
         if (urls.length > 0) {
@@ -342,31 +378,26 @@ function AddProduct(props) {
         setUrls(item);
     }
 
-    //fungsi untuk display image
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <div><img key={i} src={url} style={{ width: 100, height: 100, marginLeft: 10 }} /><button style={styles.buttonRemove} onClick={() => removeImage(i)}>X</button></div>);
+        return image.map((url, i) => <img key={i} src={url} style={{ width: 100, height: 100 }} />);
     }
 
-    //fungsi untuk hapus images
-    const removeImage = (value) => {
-        file.splice(value, 1)
-        setFile(file);
-        setFileUrls(file)
-    }
-
-    //fungsi untuk upload multiple image
     const uploadMultipleFiles = (e) => {
         const files = [...file]; // Spread syntax creates a shallow copy
         files.push(...e.target.files); // Spread again to push each selected file individually
         setFileUrls(files)
         setFile(files);
     }
+
+    console.log('jj', [nameVariation, values.val, nameSecondVariation, secondValues.val, nameThirdVariation, thirdValues.val]);
+
+
     return (
         <section class="content">
             <div class="container-fluid">
                 <div className="card card-default">
                     <div className="card-header">
-                        <h3 className="card-title">Edit Produk</h3>
+                        <h3 className="card-title">Tambah Produk</h3>
                         <div className="card-tools">
                             <button type="button" className="btn btn-tool" data-card-widget="collapse"><i className="fas fa-minus" /></button>
                             <button type="button" className="btn btn-tool" data-card-widget="remove"><i className="fas fa-times" /></button>
@@ -379,7 +410,13 @@ function AddProduct(props) {
                                 {/* <MultipleUpload/> */}
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Gambar Produk</label>
-                                    {urls.length ? <div className="form-group multi-preview row">{displayUploadedFiles(urls)}</div> : props.editData.images.map((item, i) => <div className="form-group multi-preview"><img key={i} src={item.image_url} style={{ width: 100, height: 100, marginRight: 10 }} /></div>)}
+                                    {urls.length > 0 && <div className="form-group multi-preview">{displayUploadedFiles(urls)}</div>}
+                                    {/* {file.length > 0 ?
+                                        <div className="form-group multi-preview">
+                                            {file.map(url => (
+                                                <img src={url} alt="..." style={{ width: 100, height: 100 }} />
+                                            ))}
+                                        </div> : null} */}
                                     <div className="input-group">
                                         <div className="custom-file">
                                             <input type="file" className="custom-file-input" id="exampleInputFile" onChange={uploadMultipleFiles} multiple />
@@ -389,12 +426,12 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.name} onChange={(e) => setName(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => setName(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label>Kategori</label>
                                     <Select
-                                        defaultValue={props.editData.category_id}
+                                        defaultValue={optionsCategory[0]}
                                         isMulti={false}
                                         options={optionsCategory}
                                         closeMenuOnSelect={true}
@@ -402,23 +439,23 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Brand</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.brand} onChange={(e) => setBrand(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setBrand(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Harga Pokok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_basic} onChange={(e) => setPriceBasic(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setPriceBasic(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Benefit Deplaza</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_benefit} onChange={(e) => setPriceBenefit(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceBenefit(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Komisi</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.price_commission} onChange={(e) => setPriceCommission(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setPriceCommission(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Stok Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.stock} onChange={(e) => setStock(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Tulis brand" onChange={(e) => setStock(e.target.value)} />
                                 </div>
                                 <label htmlFor="exampleInputEmail1">Variasi</label>
                                 <div style={{ marginLeft: 50 }}>
@@ -436,29 +473,29 @@ function AddProduct(props) {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Deskripsi Produk</label>
-                                    <textarea className="textarea" placeholder={props.editData.description} style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
+                                    <textarea className="textarea" placeholder="Place some text here" style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Berat Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.weight} onChange={(e) => setWeight(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setWeight(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Supplier (Sumber Produk)</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.source} onChange={(e) => setSource(e.target.value)} />
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="" onChange={(e) => setSource(e.target.value)} />
                                 </div>
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
                                     <Select
-                                        defaultValue={props.editData.city_id}
+                                        defaultValue={options[0]}
                                         isMulti={false}
-                                        options={optionsCities}
+                                        options={options}
                                         closeMenuOnSelect={true}
                                         onChange={handleChangeCities} />
                                 </div>
                                 <div className="form-group">
                                     <label>Bisa COD / Tidak</label>
                                     <Select
-                                        defaultValue={props.editData.cod}
+                                        defaultValue={optionsCod[0]}
                                         isMulti={false}
                                         options={optionsCod}
                                         closeMenuOnSelect={true}
@@ -467,20 +504,13 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        defaultValue={props.editData.cod_city_id}
+                                        defaultValue={options[0]}
                                         isMulti={true}
                                         options={options}
                                         closeMenuOnSelect={true}
-                                        onChange={handleChangeCodCity} />
+                                        onChange={handleChangeCodCities} />
                                 </div>
-                                {loading ? <button type="button" class="btn btn-block btn-primary"> <Loader
-                                    type="Oval"
-                                    color="#fff"
-                                    height={20}
-                                    width={20}
-                                /> </button> :
-                                    <button type="button" class="btn btn-block btn-primary" onClick={handleSubmit}>Simpan</button>
-                                }
+                                <button type="button" class="btn btn-block btn-primary" onClick={handleSecondSubmit} >Simpan</button>
                             </div>
                             {/* /.row */}
                         </div>
@@ -491,23 +521,6 @@ function AddProduct(props) {
         </section>
 
     )
-}
-
-const styles = {
-    buttonRemove: {
-        border: "1px solid #fff",
-        elevation: 5,
-        width: 30,
-        height: 30,
-        borderRadius: 30,
-        backgroundColor: "#fff",
-        position: "absolute",
-        top: 25,
-        marginLeft: -20
-    },
-    imagePosition: {
-        flexDirection: "row"
-    }
 }
 
 export default withRouter(AddProduct)

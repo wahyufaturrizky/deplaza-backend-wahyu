@@ -351,7 +351,7 @@ const DataTable = (props) => {
                                         />
                                         <tbody>
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => {
-                                                const getBank = bank.find(o => o.id === product.account.bank_id)
+                                                const getBank = bank && bank.find(o => o.id === product.account && product.account.bank_id)
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>

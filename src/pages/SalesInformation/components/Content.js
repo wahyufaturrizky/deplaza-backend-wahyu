@@ -19,7 +19,6 @@ const URL_DETAIL = '/orders'
 
 
 const DataTable = (props) => {
-    let initialState = { ...props };
     const [data, setData] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -147,10 +146,6 @@ const DataTable = (props) => {
     const handleError = (message) => {
         const errorMessage = message === 'Request failed with status code 422' ? 'No resi sudah di input / belum melakukan pembayaran' : message
         toastr.error(errorMessage)
-        setId({ ...initialState })
-        setTrackingId({ ...initialState })
-        setCourierId({ ...initialState })
-        setPackageCourier({ ...initialState })
     }
 
     // fungsi untuk input resi
@@ -161,10 +156,6 @@ const DataTable = (props) => {
             const data = { tracking_id: trackingId, courier_id: dataCourier.value, package_courier: detail.delivery.package_courier }
             axiosConfig.post(`orders/${id}/sent`, data)
                 .then(res => {
-                    setId({ ...initialState })
-                    setTrackingId({ ...initialState })
-                    setCourierId({ ...initialState })
-                    setPackageCourier({ ...initialState })
                     getData()
                     toastr.success('Berhasil input resi')
                     window.$('#modal-edit').modal('hide');
@@ -172,6 +163,7 @@ const DataTable = (props) => {
         }
     }
 
+    console.log( dataCourier && dataCourier.value, detail.delivery && detail.delivery.package_courier);
      // fungsi untuk edit resi
      const handleEditResi = () => {
         if (!trackingId) {
@@ -180,10 +172,6 @@ const DataTable = (props) => {
             const data = { tracking_id: trackingId, courier_id: dataCourier.value, package_courier: detail.delivery.package_courier }
             axiosConfig.post(`orders/${id}/change-delivery`, data)
                 .then(res => {
-                    setId({ ...initialState })
-                    setTrackingId({ ...initialState })
-                    setCourierId({ ...initialState })
-                    setPackageCourier({ ...initialState })
                     getData()
                     toastr.success('Berhasil edit resi')
                     window.$('#modal-edit').modal('hide');

@@ -66,6 +66,7 @@ function AddProduct(props) {
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
+                    province_id: data.province_id,
                     label: data.type + ' ' + data.city_name,
                 }))
             )
@@ -131,7 +132,14 @@ function AddProduct(props) {
         data && data.map(i =>
             catArray.push(i.value)
         )
-        setCodCityId(catArray)
+        const getCityId = getCities.filter(obj => {
+            if (catArray.indexOf(obj.province_id) === -1) {
+                return false;
+            }
+            return true;
+        });
+        const getDataCities = getCityId.map(id => id.value)
+        setCodCityId(getDataCities)
     }
 
     const handleChangeCod = (id) => {
@@ -327,7 +335,7 @@ function AddProduct(props) {
                 props.history.push('/product')
                 window.location.reload(false);
                 setLoading(false)
-                toastr.success('Produk berhasil ditambah')
+                toastr.success('Produk berhasil diubah')
                 console.log(res);
             }).catch(error => toastr.error(error))
     }

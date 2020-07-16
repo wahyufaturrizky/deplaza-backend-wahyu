@@ -67,6 +67,7 @@ function AddProduct(props) {
             .then(res =>
                 res.data.rajaongkir.results.map(data => ({
                     value: data.city_id,
+                    province_id: data.province_id,
                     label: data.type + ' ' + data.city_name,
                 }))
             )
@@ -104,6 +105,8 @@ function AddProduct(props) {
             .catch(error => console.log(error));
     }
 
+
+
     const optionsCategory = getCategory.map(i => i)
     const optionsCity = getCity.map(i => i)
     const options = getProvince.map(i => i)
@@ -122,20 +125,22 @@ function AddProduct(props) {
                 setGetCity(data)
             })
             .catch(error => console.log(error));
-
-        // let catArray = [];
-        // data && data.map(i =>
-        //     catArray.push(i.value)
-        // ) 
-        // setCodCityId(catArray)
     }
+
 
     const handleChangeCodCity = (data) => {
         let catArray = [];
         data && data.map(i =>
             catArray.push(i.value)
         )
-        setCodCityId(catArray)
+        const getCityId = getCities.filter(obj => {
+            if (catArray.indexOf(obj.province_id) === -1) {
+                return false;
+            }
+            return true;
+        });
+        const getDataCities = getCityId.map(id => id.value)
+        setCodCityId(getDataCities)
     }
 
     const handleChangeCod = (id) => {
@@ -373,7 +378,7 @@ function AddProduct(props) {
     }
 
     const displayUploadedFiles = (image) => {
-        return image.map((url, i) => <div><img key={i} src={url} style={{ width: 100, height: 100, marginLeft: 10}} /><button style={styles.buttonRemove} onClick={() => removeImage(i)}>X</button></div>);
+        return image.map((url, i) => <div><img key={i} src={url} style={{ width: 100, height: 100, marginLeft: 10 }} /><button style={styles.buttonRemove} onClick={() => removeImage(i)}>X</button></div>);
     }
 
     const removeImage = (value) => {

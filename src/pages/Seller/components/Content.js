@@ -9,7 +9,7 @@ import axiosConfig from '../../../utils/axiosConfig';
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/user';
-const URL_DETAIL = '/v1/product'
+const URL_DETAIL = '/user'
 const URL_POST = '/oauth/register'
 
 const DataTable = (props) => {
@@ -30,6 +30,10 @@ const DataTable = (props) => {
     const [name, setName] = useState("")
     const [phone, setPhone] = useState(0)
     const [username, setUsername] = useState("")
+    const [fullname, setFullname] = useState("")
+    const [birth, setBirth] = useState("")
+    const [gender, setGender] = useState("")
+    const [edu, setEdu] = useState("")
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -106,7 +110,7 @@ const DataTable = (props) => {
 
     // fungsi untuk menambah data
     const handleAddCategory = () => {
-        const data = {fullname: name, role: 0, email, phone, password, username  }
+        const data = { fullname: name, role: 0, email, phone, password, username }
         axiosConfig.post(URL_POST, data)
             .then(res => {
                 getProduct()
@@ -128,12 +132,21 @@ const DataTable = (props) => {
 
     // fungsi untuk ubah data
     const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('fullname', fullname);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('birth_date', birth);
+        formData.append('phone', phone);
+        formData.append('gender', gender);
+        formData.append('educational_stage', edu);
+        formData.append('role', 0);
+        formData.append('_method', 'put');
+        axiosConfig.post(`${URL_DETAIL}/${id}`, formData)
             .then(res => {
-                props.history.push('/category')
-                alert('success')
+                getProduct()
+                toastr.success('Berhasil ubah seller')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
             })
@@ -315,7 +328,7 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
                                                     <th scope="row" key={product.id}>
-                                                        {i+1}
+                                                        {i + 1}
                                                     </th>
                                                     <td>{product.fullname}</td>
                                                     <td>{product.phone}</td>
@@ -326,7 +339,7 @@ const DataTable = (props) => {
                                                     <td>{product.educational_stage}</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Ubah</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(product.id)}>Ubah</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/buyer', product)}>Daftar Buyer</button>
                                                         <button type="button" class="btn btn-block btn-danger btn-xs" >Hapus</button>
                                                     </td>
@@ -463,7 +476,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Ubah Produk</h4>
+                            <h4 className="modal-title">Ubah Data Seller</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -471,25 +484,58 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
-                                        setTitle(e.target.value)
+                                    <label htmlFor="exampleInputEmail1">Username</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.username} onChange={(e) => {
+                                        setUsername(e.target.value)
                                     }} />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
+                                    <label htmlFor="exampleInputEmail1">Fullname</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.fullname} onChange={(e) => {
+                                        setFullname(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Email</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.email} onChange={(e) => {
+                                        setEmail(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Phone</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.phone} onChange={(e) => {
+                                        setPhone(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Password</label>
+                                    <input type="password" className="form-control" id="exampleInputEmail1" placeholder={detail.password} onChange={(e) => {
+                                        setPassword(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Tanggal Lahir</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.birth_date} onChange={(e) => {
+                                        setBirth(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Gender</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.gender} onChange={(e) => {
+                                        setGender(e.target.value)
+                                    }} />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Educational Stage</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.educational_stage} onChange={(e) => {
+                                        setEdu(e.target.value)
+                                    }} />
                                 </div>
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
+                            <button type="button" className="btn btn-primary" onClick={changeData}>Ubah Seller</button>
                         </div>
                     </div>
                     {/* /.modal-content */}

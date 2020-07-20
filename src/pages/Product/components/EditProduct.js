@@ -24,10 +24,10 @@ function AddProduct(props) {
     const [priceCommission, setPriceCommission] = useState(0);
     const [stock, setStock] = useState(0);
     const [weight, setWeight] = useState(0);
-    const [cityId, setCityId] = useState(0);
+    const [cityId, setCityId] = useState(props.editData.city_id);
     const [source, setSource] = useState('');
     const [cod, setCod] = useState(1);
-    const [codCityId, setCodCityId] = useState([]);
+    const [codCityId, setCodCityId] = useState(props.editData.cod_city_id);
     const [variation, setVariation] = useState([]);
     const [values, setValues] = useState({ val: [] });
     const [secondValues, setSecondValues] = useState({ val: [] });
@@ -146,6 +146,16 @@ function AddProduct(props) {
         setCod(id.value);
     };
 
+    // addIsYoungerValue(value) {
+    //     this.setState({
+    //       currentObject: {
+    //         ...this.state.currentObject,
+    //         isYounger: value
+    //       }
+    //     });
+    //   }
+
+      
     const handleChangeCities = (id) => {
         setCityId(id.value);
     };
@@ -369,6 +379,13 @@ function AddProduct(props) {
         setFileUrls(files)
         setFile(files);
     }
+    const getCityFrom = getCities.find(o => o.value ===  cityId.toString())
+    const getListCod = getProvince.find(o => o.value ===  codCityId)
+
+    
+    const testGet = getCityFrom && {value: props.editData.city_id, label: getCityFrom.label}
+    const getCod = getListCod && {value: props.editData.codCityId, label: getListCod.label}
+    console.log('editData', getCod);
     return (
         <section class="content">
             <div class="container-fluid">
@@ -457,10 +474,11 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Kota Asal Produk</label>
                                     <Select
-                                        defaultValue={props.editData.city_id}
+                                        value={testGet}
                                         isMulti={false}
                                         options={optionsCities}
                                         closeMenuOnSelect={true}
+                                        onSelectResetsInput={true}
                                         onChange={handleChangeCities} />
                                 </div>
                                 <div className="form-group">
@@ -475,7 +493,7 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        defaultValue={props.editData.cod_city_id}
+                                        defaultValue={getCod}
                                         isMulti={true}
                                         options={options}
                                         closeMenuOnSelect={true}

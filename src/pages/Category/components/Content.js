@@ -61,8 +61,6 @@ const DataTable = (props) => {
             );
         }
 
-        setTotalItems(computedCategories.length);
-
         //Sorting comments
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;

@@ -2,18 +2,18 @@ import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Search } from "./DataTable";
 import toastr from 'toastr'
 import swal from 'sweetalert';
-
+import Select from 'react-select';
 import { Spinner } from '../../../components/spinner'
-import Axios from 'axios';
+
 import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/complaint';
-const URL_DETAIL = '/v1/product'
+const URL_DETAIL = '/complaint'
 
 const DataTable = (props) => {
-    const [products, setProducts] = useState([{ id: 1, name: 'test', image: 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png', description: 'test' }]);
+    const [products, setProducts] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
@@ -25,7 +25,7 @@ const DataTable = (props) => {
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
     const [checkedBoxes, setCheckedBoxes] = useState([])
-
+    const [status, setStatus] = useState(0)
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -58,6 +58,12 @@ const DataTable = (props) => {
             })
     }
 
+
+    const options = [{ value: 0, label: 'DItolak' }, { value: 1, label: 'Diterima' }]
+
+    const handleChange = (id) => {
+        setStatus(id.value);
+    };
 
     const productsData = useMemo(() => {
         let computedProducts = products;
@@ -129,7 +135,7 @@ const DataTable = (props) => {
 
     // fungsi untuk ubah data
     const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
+        const data = { status, _method: 'put' }
         axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
                 // let categoryData = [...comments]; // copying the old datas array
@@ -139,8 +145,8 @@ const DataTable = (props) => {
                 // let categoryData = comments.findIndex((obj => obj.id === id));
                 // categoryData = comments[categoryData] = res.data.data
                 // setComments([...comments, categoryData])
-                props.history.push('/category')
-                alert('success')
+                getProduct()
+                toastr.success('Berhasil merubah data')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
             })
@@ -168,14 +174,24 @@ const DataTable = (props) => {
 
     // fungsi untuk delete data
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    axiosConfig.delete(`${URL_STRING}/${id}/delete`)
+                        .then(() => {
+                            const categoryData = products.filter(category => category.id !== id)
+                            setProducts(categoryData)
+                            toastr.success('data berhasil dihapus')
+                        })
+                }
+            });
     }
+
 
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
@@ -358,7 +374,7 @@ const DataTable = (props) => {
                                                     <td>{product.order_id}</td>
                                                     <td>{product.reason_id}</td>
                                                     <td>{product.description}</td>
-                                                    {product.complaint_details && product.complaint_details.length > 0 ? getImage(product.complaint_details.map(image =>  image.file_url))
+                                                    {product.complaint_details && product.complaint_details.length > 0 ? getImage(product.complaint_details.map(image => image.file_url))
                                                         : <td><img style={{ width: 100, height: 100 }} src={'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
                                                     }
                                                     <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
@@ -366,7 +382,7 @@ const DataTable = (props) => {
                                                     <td>{product.address_id}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => props.history.push('/editProduct', product)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
                                                     </div>
                                                 </tr>
@@ -487,7 +503,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Ubah Produk</h4>
+                            <h4 className="modal-title">Ubah Status</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -495,19 +511,13 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
-                                        setTitle(e.target.value)
-                                    }} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
+                                    <label>Status</label>
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChange} />
                                 </div>
                             </div>
                         </div>

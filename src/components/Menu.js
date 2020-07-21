@@ -69,6 +69,14 @@ function Menu(props) {
                             </Link>
                         </li>
                         <li className="nav-item">
+                            <Link to="/address"  className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Data Alamat
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/salesInformation"  className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
@@ -81,6 +89,22 @@ function Menu(props) {
                                 <i className="nav-icon fas fa-th" />
                                 <p>
                                     Menu Kategori
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/bank"  className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Data Bank
+                                </p>
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link to="/accountInformation"  className="nav-link">
+                                <i className="nav-icon fas fa-th" />
+                                <p>
+                                    Data Rekening
                                 </p>
                             </Link>
                         </li>
@@ -128,7 +152,7 @@ function Menu(props) {
                             <Link to="/commissionReport" className="nav-link">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
-                                    Report Komisi Seller
+                                    Penarikan Saldo
                                 </p>
                             </Link>
                         </li>

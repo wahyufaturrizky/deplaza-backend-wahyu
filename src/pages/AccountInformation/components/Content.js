@@ -10,7 +10,7 @@ import axios from 'axios'
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/account';
-const URL_DETAIL = '/v1/product'
+const URL_DETAIL = '/account'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -25,6 +25,7 @@ const DataTable = (props) => {
     const [bank, setBank] = useState([])
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
+    const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
         { name: "No#", field: "id", sortable: false },
@@ -54,9 +55,6 @@ const DataTable = (props) => {
             )
     }
 
-    console.log('bank', bank);
-
-
     const productsData = useMemo(() => {
         let computedProducts = products;
 
@@ -67,8 +65,6 @@ const DataTable = (props) => {
                     product.slug.toLowerCase().includes(search.toLowerCase())
             );
         }
-
-        setTotalItems(computedProducts.length);
 
         //Sorting products
         if (sorting.field) {
@@ -133,26 +129,53 @@ const DataTable = (props) => {
 
     // fungsi untuk ubah data
     const changeData = () => {
-        const data = { main_id: 0, name: title, active: 1, _method: 'put' }
-
+        const data = { name: title, _method: 'put' }
         axiosConfig.post(`${URL_DETAIL}/${id}`, data)
             .then(res => {
-                props.history.push('/category')
-                alert('success')
+               getProduct()
+                toastr.success('Berhasil ubah data')
                 window.$('#modal-edit').modal('hide');
                 setId(0)
             })
     }
 
+    const modalDeleteMultiple = (id) => {
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    const data = {_method: 'delete', id: checkedBoxes }
+                    axiosConfig.post(`${URL_DETAIL}/delete-batch`, data)
+                        .then(() => {
+                            getProduct();
+                            toastr.success('Rekening berhasil dihapus')
+                        })
+                }
+            });
+    }
+
     // fungsi untuk delete data
     const deleteData = (id) => {
-        const data = { _method: 'delete' }
-        axiosConfig.post(`${URL_DETAIL}/${id}`, data)
-            .then(() => {
-                const categoryData = products.filter(category => category.id !== id)
-                setProducts(categoryData)
-                alert('success')
-            })
+        swal({
+            title: "Apakah anda yakin?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    axiosConfig.delete(`${URL_DETAIL}/${id}/delete`)
+                        .then(() => {
+                            const categoryData = products.filter(category => category.id !== id)
+                            setProducts(categoryData)
+                            toastr.success('Rekening berhasil dihapus')
+                        })
+                }
+            });
     }
 
     // fungsi untuk handle pagination
@@ -170,6 +193,21 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     };
 
+     // fungsi checkbox delete
+     const toggleCheckbox = (e, item) => {
+        if (e.target.checked) {
+            let arr = checkedBoxes;
+            arr.push(item.id);
+
+            setCheckedBoxes(arr);
+        } else {
+            let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+            setCheckedBoxes(items)
+        }
+        console.log(checkedBoxes);
+    }
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -180,7 +218,7 @@ const DataTable = (props) => {
                             <h4 className="m-0 text-dark" >Informasi Rekening</h4>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
                                 <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} >Tambah Seller</button>
-                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}>Hapus Sekaligus</button>
+                                <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}  onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
@@ -305,21 +343,22 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map(product => (
+                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
-                                                    <th scope="row" key={product.id}>
-                                                        {product.id}
+                                                     <th scope="row" key={product.id}>
+                                                        <input type="checkbox" className="selectsingle" value="{category.id}" checked={checkedBoxes.find((p) => p.id === product.id)} onChange={(e) => toggleCheckbox(e, product)} />
+									                         &nbsp;&nbsp;
+                                                        {i + 1}
                                                     </th>
-                                                    {bank.length > 0 ?
-                                                        <td>{bank.find(o => o.id === product.bank_id).name}</td> : null}
+                                                    <td>{product.bank.name}</td>
                                                     <td>{product.number}</td>
                                                     <td>{product.branch}</td>
                                                     <td>{product.name}</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Ubah</button>
+                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(product.id)}>Ubah</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" >Daftar Buyer</button>
-                                                        <button type="button" class="btn btn-block btn-danger btn-xs" >Hapus</button>
+                                                        <button type="button" class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -439,7 +478,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-edit">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Ubah Produk</h4>
+                            <h4 className="modal-title">Ubah Rekening</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -447,20 +486,17 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
+                                    <label htmlFor="exampleInputEmail1">Name</label>
                                     <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
                                         setTitle(e.target.value)
                                     }} />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Nama Bank</label>
+                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.name} onChange={(e) => {
+                                        setTitle(e.target.value)
+                                    }} />
+                                </div> */}
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">

@@ -155,7 +155,7 @@ function AddProduct(props) {
     //     });
     //   }
 
-      
+
     const handleChangeCities = (id) => {
         setCityId(id.value);
     };
@@ -379,13 +379,17 @@ function AddProduct(props) {
         setFileUrls(files)
         setFile(files);
     }
-    const getCityFrom = getCities.find(o => o.value ===  cityId.toString())
-    const getListCod = getProvince.find(o => o.value ===  codCityId)
+    const getCityFrom = getCities.find(o => o.value === cityId.toString())
 
-    
-    const testGet = getCityFrom && {value: props.editData.city_id, label: getCityFrom.label}
-    const getCod = getListCod && {value: props.editData.codCityId, label: getListCod.label}
-    console.log('editData', getCod);
+    const getListCod = getProvince.filter(el => codCityId.includes(el.value));
+    const getLabel = getListCod.map(item => item.label)
+    const arrCod = getListCod.map((item, i) => [{ value: props.editData.cod_city_data[i], label: item.label, index: i }])
+    const testGet = getCityFrom && { value: props.editData.city_id, label: getCityFrom.label }
+    const getCod = getListCod && [{ value: 1, label: arrCod }]
+    const getIndex = arrCod.map(item => item.index)
+
+    let listArr = []
+    listArr.push({arrCod})
     return (
         <section class="content">
             <div class="container-fluid">
@@ -493,7 +497,7 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        defaultValue={getCod}
+                                        value={arrCod[0]}
                                         isMulti={true}
                                         options={options}
                                         closeMenuOnSelect={true}

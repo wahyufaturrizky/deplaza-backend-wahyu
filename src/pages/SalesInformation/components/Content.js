@@ -16,7 +16,7 @@ moment.locale('id');
 
 const URL_STRING = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
 const URL_DETAIL = '/orders'
-
+const URL_TRACING = '/shipment/tracing'
 
 const DataTable = (props) => {
     const [data, setData] = useState([]);
@@ -30,6 +30,7 @@ const DataTable = (props) => {
     const [courierId, setCourierId] = useState(0)
     const [trackingId, setTrackingId] = useState(0)
     const [packageCourier, setPackageCourier] = useState("")
+    const [getTracing, setGetTracing] = useState([])
     const [detail, setDetail] = useState([])
     const [limit, setLimit] = useState(10)
 
@@ -41,10 +42,10 @@ const DataTable = (props) => {
         { name: "Tgl Transaksi", field: "name", sortable: true },
         { name: "Customer", field: "name", sortable: false },
         { name: "Barang", field: "email", sortable: true },
-        // { name: "Varian", field: "email", sortable: true },
         { name: "Alamat", field: "email", sortable: true },
         { name: "No Telepon", field: "email", sortable: true },
         { name: "Status", field: "status", sortable: true },
+        { name: "Status Pengiriman", field: "status", sortable: true },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -65,6 +66,18 @@ const DataTable = (props) => {
                 setLoading(false)
             }).catch(error => toastr.error(error))
     }
+
+     // fungsi untuk fetching data tracing
+     const tracingData = () => {
+        setLoading(true)
+        axiosConfig.get(URL_TRACING)
+            .then(res => {
+                setGetTracing(res.data.data)
+                setLoading(false)
+            }).catch(error => toastr.error(error))
+    }
+
+    console.log(getTracing);
 
     // fungsi untuk fecthing data kurir
     const getDataCourier = async () => {
@@ -394,6 +407,7 @@ const DataTable = (props) => {
                                                     {/* <td>{sale[0].variation ? sale[0].variation : '-'}</td> */}
                                                     <td>{sale.delivery.receiver_address}</td>
                                                     <td>{sale.customer ? sale.customer.phone : '-'}</td>
+                                                    <td>{sale.status_label}</td>
                                                     <td>{sale.status_label}</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>

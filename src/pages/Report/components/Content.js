@@ -225,13 +225,13 @@ const DataTable = (props) => {
                 <div className="container-fluid">
                     <div className="row mb-2">
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
-                            <h1 className="m-0 text-dark">Report Komisi Seller</h1>
+                            <h1 className="m-0 text-dark">Penarikan Saldo</h1>
                             <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                         </div>{/* /.col */}
                         <div className="col-sm-6">
                             <ol className="breadcrumb float-sm-right">
                                 <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Report Komisi Seller</li>
+                                <li className="breadcrumb-item active">Penarikan Saldo</li>
                             </ol>
                         </div>{/* /.col */}
                     </div>{/* /.row */}

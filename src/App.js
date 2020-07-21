@@ -26,6 +26,8 @@ import AccountInformation from './pages/AccountInformation'
 import Transaction from './pages/Report/Transaction'
 import Courier from './pages/Courier'
 import ComplaintReason from './pages/ComplaintReason'
+import Address from './pages/Address'
+import Bank from './pages/Bank'
 
 export default function App() {
   return (
@@ -53,6 +55,8 @@ export default function App() {
         <ProtectedRoute exact path="/transaction" component={Transaction} />
         <ProtectedRoute exact path="/courier" component={Courier} />
         <ProtectedRoute exact path="/complaintReason" component={ComplaintReason} />
+        <ProtectedRoute exact path="/address" component={Address} />
+        <ProtectedRoute exact path="/bank" component={Bank} />
         <Route path="*" component={() => "404 NOT FOUND"} />
       </Switch>
 

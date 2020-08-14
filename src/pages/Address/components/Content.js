@@ -42,8 +42,8 @@ const DataTable = (props) => {
     const [zip, setZip] = useState(0)
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama", field: "name", sortable: false },
         { name: "No Telepon", field: "name", sortable: false },
         { name: "Alamat", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
@@ -116,8 +116,8 @@ const DataTable = (props) => {
         if (search) {
             computedCategories = computedCategories.filter(
                 comment =>
-                    comment.name.toLowerCase().includes(search.toLowerCase()) ||
-                    comment.slug.toLowerCase().includes(search.toLowerCase())
+                    comment.receiver.toLowerCase().includes(search.toLowerCase()) ||
+                    comment.phone.toLowerCase().includes(search.toLowerCase())
             );
         }
 

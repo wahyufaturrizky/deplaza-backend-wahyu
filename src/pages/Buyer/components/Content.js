@@ -25,7 +25,7 @@ const DataTable = (props) => {
     const [id, setId] = useState(0)
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
+        { name: "No.", field: "id", sortable: false },
         { name: "Nama Lengkap", field: "name", sortable: true },
         { name: "Alamat Pengiriman", field: "name", sortable: true },
         { name: "Poduk yang Dipesan", field: "name", sortable: false },
@@ -68,8 +68,8 @@ const DataTable = (props) => {
         if (search) {
             computedProducts = computedProducts.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.customer.fullname.toLowerCase().includes(search.toLowerCase()) ||
+                    product[0].metadata_products.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -342,7 +342,7 @@ const DataTable = (props) => {
                                                         <td>{product.delivery.receiver_address}</td>
                                                         <td>{product[0].metadata_products}</td>
                                                         <td>{variationOne === 'null: null' ? '-' : variationOne} {variationTwo === 'null: null' ? null : variationTwo} {variationThree === 'null: null' ? null : variationThree}</td>
-                                                        <td>Rp.</td>
+                                                        <td>Rp.{product.total_price}</td>
                                                         <td>-</td>
                                                         <td>-</td>
                                                         {/* <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>

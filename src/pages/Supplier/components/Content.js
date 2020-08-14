@@ -23,13 +23,13 @@ const DataTable = (props) => {
     const ITEMS_PER_PAGE = 10;
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama", field: "name", sortable: true },
-        { name: "Alamat", field: "name", sortable: true },
-        { name: "Barang", field: "name", sortable: false },
-        { name: "Kategori", field: "name", sortable: false },
-        { name: "Harga", field: "name", sortable: false },
-        { name: "Stok", field: "name", sortable: false },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama", field: "name", sortable: false },
+        { name: "Gudang", field: "gudang", sortable: false },
+        { name: "Transaksi", field: "Transaksi", sortable: false },
+        { name: "Jumlah", field: "jumlah", sortable: false },
+        { name: "Tarik", field: "tarik", sortable: false },
+        { name: "Sisa", field: "sisa", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -69,7 +69,7 @@ const DataTable = (props) => {
             computedProducts = computedProducts.filter(
                 product =>
                     product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.detail.toLowerCase().includes(search.toLowerCase())
             );
         }
 

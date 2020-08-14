@@ -29,14 +29,16 @@ const DataTable = (props) => {
     const [id, setId] = useState(0)
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Gambar Produk", field: "name", sortable: false },
-        { name: "Nama Produk", field: "name", sortable: true },
-        { name: "Kategori", field: "name", sortable: false },
-        { name: "Brand", field: "brand", sortable: true },
-        { name: "Harga Pokok Produk", field: "price_basic", sortable: false },
-        { name: "Benefit Deplaza", field: "price_benefit", sortable: false },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Gambar", field: "garmbar", sortable: false },
+        { name: "Produk", field: "produk", sortable: false },
+        { name: "Stock", field: "stock", sortable: false },
+        { name: "Kategori", field: "kategori", sortable: false },
+        { name: "Supplier", field: "supplier", sortable: false },
+        { name: "Harga", field: "price_basic", sortable: false },
+        { name: "Benefit", field: "price_benefit", sortable: false },
         { name: "Komisi", field: "price_commission", sortable: false },
+        { name: "Diskon", field: "diskon", sortable: false },
         { name: "Total Harga", field: "totalHarga", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
@@ -320,12 +322,14 @@ const DataTable = (props) => {
                                                         {product.images.map(image =>
                                                             <td><img style={{ width: 100, height: 100 }} src={image ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>)}
                                                         <td>{product.name}</td>
+                                                        <td>{product.stock}</td>
                                                         {category.length > 0 ?
                                                             <td>{findCategory ? findCategory.name : '-'}</td> : null}
-                                                        <td>{product.brand ? product.brand : '-'}</td>
+                                                        <td>-</td>
                                                         <td>Rp. {product.price_basic}</td>
                                                         <td>Rp. {product.price_benefit}</td>
                                                         <td>Rp. {product.price_commission}</td>
+                                                        <td>-</td>
                                                         <td>Rp. {product.price_basic + product.price_benefit}</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                             <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button>
@@ -396,20 +400,22 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Variasi</label>
-                                    {/* {detail.variation_data && detail.variation_data.map(item => {
+                                    {detail.variation_data && detail.variation_data.map(item => {
+                                            let tvariant = Object.keys(item)[0]
+                                            console.log(item[tvariant]);
                                         return (
                                             <div>
                                                 <h4>{Object.keys(item)}</h4>
+                                                <h5>{`${item[tvariant]}`}</h5>
                                             </div>
                                         )
                                     }
 
-                                    )} */}
-                                    <h4>{detail.variation}</h4>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Deskripsi</label>
-                                    <h4>{detail.description}</h4>
+                                    <h6 dangerouslySetInnerHTML={{__html: detail.description}} />
                                 </div>
                             </div>
                         </div>

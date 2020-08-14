@@ -29,9 +29,9 @@ const DataTable = (props) => {
     const [limit, setLimit] = useState(10)
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "User", field: "name", sortable: true },
-        { name: "Masalah", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "User", field: "name", sortable: false },
+        { name: "Masalah", field: "name", sortable: false },
         { name: "Status", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
@@ -60,12 +60,9 @@ const DataTable = (props) => {
         if (search) {
             computedHelpdesk = computedHelpdesk.filter(
                 data =>
-                    data.name.toLowerCase().includes(search.toLowerCase()) ||
-                    data.slug.toLowerCase().includes(search.toLowerCase())
+                    data.problem.toLowerCase().includes(search.toLowerCase())
             );
         }
-
-        setTotalItems(computedHelpdesk.length);
 
         //Sorting helpdesk
         if (sorting.field) {

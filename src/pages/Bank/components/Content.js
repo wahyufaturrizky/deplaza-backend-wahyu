@@ -28,9 +28,9 @@ const DataTable = (props) => {
     const [desc, setDesc] = useState('')
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Logo", field: "email", sortable: true },
-        { name: "Nama", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Logo", field: "email", sortable: false },
+        { name: "Nama", field: "name", sortable: false },
         { name: "Deskripsi", field: "name", sortable: false },
         { name: "Status", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
@@ -59,7 +59,7 @@ const DataTable = (props) => {
             computedCategories = computedCategories.filter(
                 comment =>
                     comment.name.toLowerCase().includes(search.toLowerCase()) ||
-                    comment.slug.toLowerCase().includes(search.toLowerCase())
+                    comment.description.toLowerCase().includes(search.toLowerCase())
             );
         }
 

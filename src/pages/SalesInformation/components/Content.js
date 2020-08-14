@@ -37,15 +37,22 @@ const DataTable = (props) => {
 
     // header table
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama Seller", field: "name", sortable: true },
-        { name: "Tgl Transaksi", field: "name", sortable: true },
-        { name: "Customer", field: "name", sortable: false },
-        { name: "Barang", field: "email", sortable: true },
-        { name: "Alamat", field: "email", sortable: true },
-        { name: "No Telepon", field: "email", sortable: true },
-        { name: "Status", field: "status", sortable: true },
-        { name: "Status Pengiriman", field: "status", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Tanggal", field: "name", sortable: false },
+        { name: "Seller", field: "name", sortable: false },
+        { name: "Buyer", field: "name", sortable: false },
+        { name: "Produk", field: "email", sortable: false },
+        { name: "Varian", field: "email", sortable: false },
+        { name: "Jumlah", field: "email", sortable: false },
+        { name: "Komisi", field: "email", sortable: false },
+        { name: "Komisi Kustom", field: "email", sortable: false },
+        { name: "Benefit", field: "email", sortable: false },
+        { name: "Harga + Ongkir", field: "email", sortable: false },
+        { name: "Total", field: "email", sortable: false },
+        { name: "Alamat", field: "email", sortable: false },
+        { name: "No Hp", field: "email", sortable: false },
+        { name: "Status", field: "email", sortable: false },
+        { name: "Pembayaran", field: "email", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -67,8 +74,8 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
-     // fungsi untuk fetching data tracing
-     const tracingData = () => {
+    // fungsi untuk fetching data tracing
+    const tracingData = () => {
         setLoading(true)
         axiosConfig.get(URL_TRACING)
             .then(res => {
@@ -96,7 +103,7 @@ const DataTable = (props) => {
 
     // fungsi untuk map kurir untuk select option
     const optionsCourier = getCourier.map(i => i)
-    
+
     console.log(optionsCourier);
     const dataCourier = optionsCourier.find(o => o.value === detail.delivery ? detail.delivery.courier_id : 2)
     // fungsi untuk handle select option
@@ -115,8 +122,9 @@ const DataTable = (props) => {
         if (search) {
             computedSales = computedSales.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.seller.fullname.toLowerCase().includes(search.toLowerCase()) ||
+                    product.customer.fullname.toLowerCase().includes(search.toLowerCase()) ||
+                    product.customer.phone.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -176,9 +184,9 @@ const DataTable = (props) => {
         }
     }
 
-    console.log( dataCourier && dataCourier.value, detail.delivery && detail.delivery.package_courier);
-     // fungsi untuk edit resi
-     const handleEditResi = () => {
+    console.log(dataCourier && dataCourier.value, detail.delivery && detail.delivery.package_courier);
+    // fungsi untuk edit resi
+    const handleEditResi = () => {
         if (!trackingId) {
             toastr.warning('Mohon isi no resi')
         } else {
@@ -395,28 +403,77 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : salesData.map((sale, i) => (
-                                                <tr>
-                                                    <th scope="row" key={sale.id}>
-                                                        {i + 1}
-                                                    </th>
-                                                    <td>{sale.seller.fullname}</td>
-                                                    <td>{moment(sale.created_at).format('MMMM Do YYYY, h:mm')}</td>
-                                                    <td>{sale.customer ? sale.customer.fullname : '-'}</td>
-                                                    <td>{sale[0].metadata_products}</td>
-                                                    {/* <td>{sale[0].variation ? sale[0].variation : '-'}</td> */}
-                                                    <td>{sale.delivery.receiver_address}</td>
-                                                    <td>{sale.customer ? sale.customer.phone : '-'}</td>
-                                                    <td>{sale.status_label}</td>
-                                                    <td>{sale.status_label}</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan sedang dikirim, menunggu konfirmasi dari seller') : showModalStatus(sale.id)}>Rubah Status</button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {loading === true ? <Spinner /> : salesData.map((sale, i) => {
+                                                let variation = null;
+                                                let objKey = null;
+                                                let variationOne = null;
+                                                let variationTwo = null;
+                                                let variationThree = null;
+                                                let key2 = null;
+                                                let key3 = null;
+                                                let key4 = null;
+                                                try {
+                                                    // if plain js
+                                                    variation = JSON.parse(sale[0].variation);
+                                                    objKey = Object.keys(variation)
+                                                    key2 = Object.keys(variation[0])
+                                                    key3 = Object.keys(variation[1])
+                                                    key4 = Object.keys(variation[2])
+                                                    //  variationOne = `${variation}`
+                                                    variationOne = `${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`
+                                                    variationTwo = `${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`
+                                                    variationThree = `${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`
+                                                }
+                                                catch (e) {
+                                                    // forget about it :)
+                                                }
+
+                                                console.log(variationOne);
+
+                                                // const keyVarian = sale[0].product.variation_data && sale[0].product.variation_data.map((data,i) => {
+                                                //     let tvariant = Object.keys(data)[0]
+                                                //     if(tvariant!=""){
+                                                //        return tvariant
+                                                //  }})
+
+                                                //  const keyValue = sale[0].product.variation_data && sale[0].product.variation_data.map((data,i) => {
+                                                //     let tvariant = Object.keys(data)[0]
+                                                //     if(tvariant!=""){
+                                                //        return data[tvariant].map((val,j) => {
+                                                //            return `${tvariant}: ${val}`
+                                                //         })
+                                                //  }})
+
+                                                //  console.log(keyValue);
+                                                return (
+                                                    <tr>
+                                                        <th scope="row" key={sale.id}>
+                                                            {i + 1}
+                                                        </th>
+                                                        <td>{moment(sale.created_at).format('MMMM Do YYYY, h:mm')}</td>
+                                                        <td>{sale.seller.fullname}</td>
+                                                        <td>{sale.customer ? sale.customer.fullname : '-'}</td>
+                                                        <td>{sale[0].metadata_products}</td>
+                                                        <td>{`${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`}{'\n'}{`${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`}{'\n'}{`${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`}</td>
+                                                        <td>{sale[0].qty}</td>
+                                                        <td>{sale[0].commission}</td>
+                                                        <td>{sale[0].custom_commission}</td>
+                                                        <td>{sale[0].benefit}</td>
+                                                        <td>{sale[0].price+sale.delivery.sipping_cost}</td>
+                                                        <td>{sale[0].benefit+sale[0].commission+sale[0].custom_commission+sale.delivery.sipping_cost+sale[0].price}</td>
+                                                        <td>{sale.delivery.receiver_address}</td>
+                                                        <td>{sale.customer ? sale.customer.phone : '-'}</td>
+                                                        <td>{sale.status_label}</td>
+                                                        <td>{sale.is_cod ? 'COD' : 'TF'}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
+                                                            <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan sedang dikirim, menunggu konfirmasi dari seller') : showModalStatus(sale.id)}>Rubah Status</button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>

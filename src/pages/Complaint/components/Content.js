@@ -28,9 +28,9 @@ const DataTable = (props) => {
     const [status, setStatus] = useState(0)
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama Seller", field: "name", sortable: true },
-        { name: "Nama Buyer", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama Seller", field: "name", sortable: false },
+        { name: "Nama Buyer", field: "name", sortable: false },
         { name: "Id Transaksi", field: "name", sortable: false },
         { name: "Alasan", field: "name", sortable: false },
         { name: "Rincian Alasan", field: "name", sortable: false },
@@ -71,8 +71,7 @@ const DataTable = (props) => {
         if (search) {
             computedProducts = computedProducts.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.description.toLowerCase().includes(search.toLowerCase())
             );
         }
 

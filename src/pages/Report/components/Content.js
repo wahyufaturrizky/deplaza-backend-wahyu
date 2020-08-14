@@ -36,10 +36,10 @@ const DataTable = (props) => {
     const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama Seller", field: "name", sortable: true },
-        { name: "Withdrawal No", field: "name", sortable: true },
-        { name: "Rekening", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama Seller", field: "name", sortable: false },
+        { name: "Withdrawal No", field: "name", sortable: false },
+        { name: "Rekening", field: "name", sortable: false },
         { name: "Tgl Penarikan", field: "name", sortable: false },
         { name: "Jumlah yang ditarik", field: "name", sortable: false },
         { name: "Status", field: "name", sortable: false },
@@ -80,8 +80,8 @@ const DataTable = (props) => {
         if (search) {
             computedProducts = computedProducts.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.withdrawal_no.toLowerCase().includes(search.toLowerCase()) ||
+                    product.user.username.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -137,11 +137,11 @@ const DataTable = (props) => {
         window.$('#modal-detail').modal('show');
     }
 
-
+console.log(id);
     // fungsi untuk ubah data
     const changeData = () => {
         const data = { approval: status, _method: 'put' }
-        axiosConfig.put(`${URL_STRING}/${id}`, data)
+        axiosConfig.post(`${URL_STRING}/${id}/approve`, data)
             .then(res => {
                 getProduct()
                 toastr.success('Berhasil rubah status')

@@ -27,7 +27,7 @@ function AddProduct(props) {
     const [cityId, setCityId] = useState(props.editData.city_id);
     const [source, setSource] = useState('');
     const [cod, setCod] = useState(1);
-    const [codCityId, setCodCityId] = useState(props.editData.cod_city_id);
+    const [codCityId, setCodCityId] = useState([]);
     const [variation, setVariation] = useState([]);
     const [values, setValues] = useState({ val: [] });
     const [secondValues, setSecondValues] = useState({ val: [] });
@@ -141,6 +141,8 @@ function AddProduct(props) {
         const getDataCities = getCityId.map(id => id.value)
         setCodCityId(getDataCities)
     }
+
+
 
     const handleChangeCod = (id) => {
         setCod(id.value);
@@ -315,12 +317,21 @@ function AddProduct(props) {
         setThirdValues({ val: vals });
     }
 
+    console.log('ggg', props.editData.variation);
     // handle untuk submit data
     const handleSubmit = async (e) => {
         const dataLocal = localStorage.getItem('dataUser');
         const dataUser = JSON.parse(dataLocal)
         setLoading(true)
         const test = [{ [nameVariation]: values.val }, { [nameSecondVariation]: secondValues.val }, { [nameThirdVariation]: thirdValues.val }]
+        const getListCod = getProvince.filter(el => props.editData.cod_city_data.toString().includes(el.value));
+        let getLabel = getListCod.map(item => item.label)
+        const getValue = getListCod.map(item => item.value)
+        let results = getValue.map(function (x, i) {
+            return x
+        });
+        const getCod = await codCityId.length < 1 ? props.editData.cod_city_data : codCityId
+        const getVariation = await values.val.length < 1 ? props.editData.variation : JSON.stringify(test)
         const formData = new FormData();
         file.forEach((file) => formData.append('images[]', file));
         formData.append('name', name);
@@ -335,9 +346,9 @@ function AddProduct(props) {
         formData.append('city_id', parseInt(cityId));
         formData.append('source', source);
         formData.append('cod', parseInt(cod));
-        formData.append('cod_city_id', JSON.stringify(codCityId));
+        formData.append('cod_city_id', JSON.stringify(getCod));
         formData.append('user_id', dataUser.id);
-        formData.append('variation', JSON.stringify(test))
+        formData.append('variation', getVariation)
         formData.append('_method', 'put');
 
         axiosConfig.post(`${URL_POST}/${props.editData.id}`, formData)
@@ -381,15 +392,22 @@ function AddProduct(props) {
     }
     const getCityFrom = getCities.find(o => o.value === cityId.toString())
 
-    const getListCod = getProvince.filter(el => codCityId.includes(el.value));
-    const getLabel = getListCod.map(item => item.label)
-    const arrCod = getListCod.map((item, i) => [{ value: props.editData.cod_city_data[i], label: item.label, index: i }])
-    const testGet = getCityFrom && { value: props.editData.city_id, label: getCityFrom.label }
-    const getCod = getListCod && [{ value: 1, label: arrCod }]
-    const getIndex = arrCod.map(item => item.index)
 
-    let listArr = []
-    listArr.push({arrCod})
+    // const arrCod = getListCod.map((item, i) => [{ value: props.editData.cod_city_data[i], label: item.label, index: i }])
+    const testGet = getCityFrom && { value: props.editData.city_id, label: getCityFrom.label }
+    // const getCod = getListCod && [{ value: 1, label: arrCod }]
+    // const getIndex = arrCod.map(item => item.index)
+    // const getListCod = getProvince.filter(el => props.editData.cod_city_data.toString().includes(el.value));
+    // let getLabel = getListCod.map(item => item.label)
+    // const getValue = getListCod.map(item => item.value)
+    // let results = getValue.map(function (x, i) {
+    //     return { value: x, label: getLabel[i] }
+    // });
+
+ 
+        
+        
+
     return (
         <section class="content">
             <div class="container-fluid">
@@ -488,7 +506,7 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Bisa COD / Tidak</label>
                                     <Select
-                                        defaultValue={props.editData.cod}
+                                        defaultValue={[{ value: props.editData.cod, label: props.editData.cod === 1 ? 'Iya' : 'Tidak' }]}
                                         isMulti={false}
                                         options={optionsCod}
                                         closeMenuOnSelect={true}
@@ -497,7 +515,7 @@ function AddProduct(props) {
                                 <div className="form-group">
                                     <label>Daerah COD</label>
                                     <Select
-                                        value={arrCod[0]}
+                                        defaultValue={options[0]}
                                         isMulti={true}
                                         options={options}
                                         closeMenuOnSelect={true}

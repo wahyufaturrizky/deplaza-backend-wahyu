@@ -28,7 +28,7 @@ const DataTable = (props) => {
     const [description, setDescription] = useState("")
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
+        { name: "No.", field: "id", sortable: false },
         { name: "Gambar", field: "name", sortable: true },
         { name: "Nama", field: "email", sortable: true },
         { name: "Deskripsi", field: "name", sortable: false },

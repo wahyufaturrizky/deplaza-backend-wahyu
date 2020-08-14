@@ -27,7 +27,7 @@ const DataTable = (props) => {
     const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
+        { name: "No.", field: "id", sortable: false },
         { name: "Judul Kategori", field: "name", sortable: true },
         { name: "Gambar", field: "email", sortable: true },
         { name: "Kategori", field: "name", sortable: false },
@@ -52,7 +52,6 @@ const DataTable = (props) => {
 
     const categoriesData = useMemo(() => {
         let computedCategories = categories;
-
         if (search) {
             computedCategories = computedCategories.filter(
                 comment =>
@@ -72,7 +71,7 @@ const DataTable = (props) => {
 
         return computedCategories
     }, [categories, search, sorting.field, sorting.order]);
-    console.log(categoriesData)
+   
 
     const showModalEdit = async (idData) => {
         await axiosConfig.get(`${URL_POST}/${idData}`)
@@ -103,7 +102,7 @@ const DataTable = (props) => {
                 getData();
                 toastr.success('Berhasil menambahkan kategori')
                 hideModal()
-            }).catch(error => toastr.error(error))
+            }).catch(error => toastr.error(error.response.data.name.toString()))
     }
 
     // fungsi untuk menampilkan detail data
@@ -197,7 +196,7 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setCategories(json.data.data);
@@ -353,7 +352,7 @@ const DataTable = (props) => {
                                             }
                                         />
                                         <tbody>
-                                            {loading === true ? <Spinner /> : categoriesData.map((comment, i) => (
+                                            {loading === true ? <Spinner /> : categoriesData.reverse().map((comment, i) => (
                                                 <tr>
                                                     <th scope="row" key={comment.id}>
                                                         <input type="checkbox" className="selectsingle" value="{category.id}" checked={checkedBoxes.find((p) => p.id === comment.id)} onChange={(e) => toggleCheckbox(e, comment)} />

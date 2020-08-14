@@ -32,9 +32,9 @@ const DataTable = (props) => {
 
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Judul Notifikasi", field: "name", sortable: true },
-        { name: "Isi Notifikasi", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Judul Notifikasi", field: "name", sortable: false },
+        { name: "Isi Notifikasi", field: "name", sortable: false },
         { name: "Keterangan", field: "name", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
@@ -62,8 +62,9 @@ const DataTable = (props) => {
         if (search) {
             computedProducts = computedProducts.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.title.toLowerCase().includes(search.toLowerCase()) ||
+                    product.type.toLowerCase().includes(search.toLowerCase()) ||
+                    product.content.toLowerCase().includes(search.toLowerCase())
             );
         }
         //Sorting products

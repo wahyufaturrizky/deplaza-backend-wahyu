@@ -36,14 +36,19 @@ const DataTable = (props) => {
     const [edu, setEdu] = useState("")
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama Lengkap", field: "name", sortable: true },
-        { name: "No Hp", field: "name", sortable: true },
-        { name: "Email", field: "name", sortable: false },
-        { name: "Alamat", field: "email", sortable: true },
-        { name: "Tanggal Lahir", field: "email", sortable: true },
-        { name: "Jenis Kelamin", field: "email", sortable: true },
-        { name: "Pendidikan", field: "email", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama", field: "name", sortable: false },
+        { name: "Hp", field: "hp", sortable: false },
+        { name: "Email", field: "email", sortable: false },
+        { name: "Alamat", field: "alamat", sortable: false },
+        { name: "Tanggal Lahir", field: "tanggal", sortable: false },
+        { name: "Jenis Kelamin", field: "jenis", sortable: false },
+        { name: "Transaksi", field: "transaksi", sortable: false },
+        { name: "Komisi", field: "komisi", sortable: false },
+        { name: "Margin", field: "margin", sortable: false },
+        { name: "Total", field: "total", sortable: false },
+        { name: "Tarik", field: "tarik", sortable: false },
+        { name: "Sisa", field: "Sisa", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -71,8 +76,10 @@ const DataTable = (props) => {
         if (search) {
             computedProducts = computedProducts.filter(
                 product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.fullname.toLowerCase().includes(search.toLowerCase()) ||
+                    product.username.toLowerCase().includes(search.toLowerCase()) ||
+                    product.email.toLowerCase().includes(search.toLowerCase()) ||
+                    product.phone.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -336,7 +343,12 @@ const DataTable = (props) => {
                                                     <td>-</td>
                                                     <td>{product.birth_date}</td>
                                                     <td>{product.gender}</td>
-                                                    <td>{product.educational_stage}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(product.id)}>Ubah</button>

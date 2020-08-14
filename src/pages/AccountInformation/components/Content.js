@@ -28,11 +28,11 @@ const DataTable = (props) => {
     const [checkedBoxes, setCheckedBoxes] = useState([])
 
     const headers = [
-        { name: "No#", field: "id", sortable: false },
-        { name: "Nama Bank", field: "name", sortable: true },
-        { name: "No Rekening", field: "name", sortable: true },
+        { name: "No.", field: "id", sortable: false },
+        { name: "Nama Bank", field: "name", sortable: false },
+        { name: "No Rekening", field: "name", sortable: false },
         { name: "Branch", field: "name", sortable: false },
-        { name: "Nama", field: "email", sortable: true },
+        { name: "Nama", field: "email", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -62,7 +62,7 @@ const DataTable = (props) => {
             computedProducts = computedProducts.filter(
                 product =>
                     product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
+                    product.number.toLowerCase().includes(search.toLowerCase())
             );
         }
 
@@ -355,9 +355,6 @@ const DataTable = (props) => {
                                                     <td>{product.branch}</td>
                                                     <td>{product.name}</td>
                                                     <td>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(product.id)}>Ubah</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" >Daftar Buyer</button>
                                                         <button type="button" class="btn btn-block btn-danger btn-xs" onClick={() => deleteData(product.id)}>Hapus</button>
                                                     </td>
                                                 </tr>

@@ -6,11 +6,13 @@ import swal from 'sweetalert';
 import { TableHeader, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from './DataTable/Search/useDebounce';
 import axios from 'axios'
 
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/product?order_direction=desc';
+const URL_SEARCH = '/product?order_direction=desc&limit=50&keyword=';
 const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
@@ -23,10 +25,12 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [limit, setLimit] = useState(50)
+    const [start, setStart] = useState(1)
     const [activePage, setActivePage] = useState(0)
     const [category, setCategory] = useState([])
     const [checkedBoxes, setCheckedBoxes] = useState([])
     const [id, setId] = useState(0)
+    const debouncedSearch = useDebounce(search, 1000);
 
     const headers = [
         { name: "No.", field: "id", sortable: false },
@@ -47,7 +51,7 @@ const DataTable = (props) => {
 
     useEffect(() => {
         getProduct();
-    }, []);
+    }, [debouncedSearch]);
 
 
     const getProduct = async () => {
@@ -70,11 +74,8 @@ const DataTable = (props) => {
         let computedProducts = products;
 
         if (search) {
-            computedProducts = computedProducts.filter(
-                product =>
-                    product.name.toLowerCase().includes(search.toLowerCase()) ||
-                    product.slug.toLowerCase().includes(search.toLowerCase())
-            );
+            axiosConfig.get(`${URL_SEARCH}${search}`)
+            .then(res =>  setProducts(res.data.data))
         }
 
         //Sorting products
@@ -152,6 +153,7 @@ const DataTable = (props) => {
     //fungsi untuk handle pagination
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
+        setStart(page * 10 - 20 + 51)
         let nextPage = page;
         if (!nextPage || nextPage === 0) {
             nextPage = 1;

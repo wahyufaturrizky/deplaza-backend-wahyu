@@ -23,6 +23,7 @@ const DataTable = (props) => {
     const [image, setImage] = useState(null)
     const [urls, setUrls] = useState('')
     const [id, setId] = useState(0)
+    const [start, setStart] = useState(1)
     const [limit, setLimit] = useState(10)
     const [checkedBoxes, setCheckedBoxes] = useState([])
 
@@ -191,6 +192,7 @@ const DataTable = (props) => {
     // fungsi untuk handle pagination
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
+        setStart(page * 10 - 10 + 1)
         let nextPage = page;
         if (!nextPage || nextPage === 0) {
             nextPage = 1;
@@ -357,7 +359,7 @@ const DataTable = (props) => {
                                                     <th scope="row" key={comment.id}>
                                                         <input type="checkbox" className="selectsingle" value="{category.id}" checked={checkedBoxes.find((p) => p.id === comment.id)} onChange={(e) => toggleCheckbox(e, comment)} />
 									                         &nbsp;&nbsp;
-                                                        {i + 1}
+                                                        {i + start}
                                                     </th>
                                                     <td>{comment.name}</td>
                                                     <td><img src={comment.image_url ? comment.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} style={{ width: 100, height: 100 }} /></td>

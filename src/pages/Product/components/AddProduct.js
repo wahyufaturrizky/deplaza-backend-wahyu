@@ -11,7 +11,7 @@ const URL_POST = '/product'
 const URL_GET_CITIES = '/shipment/cities'
 const URL_GET_PROVINCE = '/shipment/provinces'
 const URL_GET_CITY = '/shipment/city/province'
-const URL_GET_CATEGORY = '/category';
+const URL_GET_CATEGORY = '/category?limit=1000';
 
 function AddProduct(props) {
     const [file, setFile] = useState([]);

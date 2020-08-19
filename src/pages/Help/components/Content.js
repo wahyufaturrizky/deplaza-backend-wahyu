@@ -23,6 +23,7 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState(0);
+    const [start, setStart] = useState(1)
     const [problem, setProblem] = useState("");
     const [status, setStatus] = useState(0);
     const [id, setId] = useState(0)
@@ -150,12 +151,13 @@ const DataTable = (props) => {
     // fungsi untuk handle pagination
     const handlePageChange = (page, e) => {
         setCurrentPage(page)
+        setStart(page * 10 - 10 + 1)
         let nextPage = page;
         if (!nextPage || nextPage === 0) {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setHelpdesk(json.data.data);
@@ -298,7 +300,7 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : helpdeskData.map((helpdesk, i) => (
                                                 <tr>
                                                     <th scope="row" key={helpdesk.id}>
-                                                        {i + 1}
+                                                        {i + start}
                                                     </th>
                                                     <td>{helpdesk.user_id}</td>
                                                     <td>{helpdesk.problem}</td>

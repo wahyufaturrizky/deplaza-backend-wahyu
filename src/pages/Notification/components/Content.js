@@ -5,6 +5,8 @@ import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from '../../../components/useDebounce'
+
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
@@ -30,6 +32,8 @@ const DataTable = (props) => {
     const [limit, setLimit] = useState(10)
     const [checkedBoxes, setCheckedBoxes] = useState([])
 
+    const debouncedSearch = useDebounce(search, 1000);
+
 
     const headers = [
         { name: "No.", field: "id", sortable: false },
@@ -40,10 +44,18 @@ const DataTable = (props) => {
     ];
 
 
-
     useEffect(() => {
-        getProduct()
-    }, []);
+        if (search) {
+            axiosConfig.get(`${URL_STRING}?keyword=${debouncedSearch}`)
+            .then(res => {
+                setLimit(res.data.meta.limit)
+                setTotalItems(res.data.meta.total_result);
+                setProducts(res.data.data)
+            })
+        } else {
+            getProduct();
+        }
+    }, [debouncedSearch]);
 
     const getProduct = () => {
         setLoading(true)
@@ -59,14 +71,7 @@ const DataTable = (props) => {
     const productsData = useMemo(() => {
         let computedProducts = products;
 
-        if (search) {
-            computedProducts = computedProducts.filter(
-                product =>
-                    product.title.toLowerCase().includes(search.toLowerCase()) ||
-                    product.type.toLowerCase().includes(search.toLowerCase()) ||
-                    product.content.toLowerCase().includes(search.toLowerCase())
-            );
-        }
+    
         //Sorting products
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
@@ -181,11 +186,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_STRING}?keyword=${debouncedSearch}&limit=10&offset=${offset}`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setProducts(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     // fungsi checkbox delete

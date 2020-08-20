@@ -6,6 +6,8 @@ import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from '../../../components/useDebounce'
+
 import { withRouter } from 'react-router'
 import Pagination from 'react-paginating';
 
@@ -41,6 +43,7 @@ const DataTable = (props) => {
     const [label, setLabel] = useState("")
     const [zip, setZip] = useState(0)
 
+    const debouncedSearch = useDebounce(search, 1000);
     const headers = [
         { name: "No.", field: "id", sortable: false },
         { name: "Nama", field: "name", sortable: false },
@@ -50,10 +53,20 @@ const DataTable = (props) => {
     ];
 
     useEffect(() => {
-        getData();
-        getDataCity();
-        getDataProvinces()
-    }, []);
+        if (search) {
+            axiosConfig.get(`${URL_STRING}?limit=10&keyword=${debouncedSearch}`)
+                .then(res => {
+                    setLimit(res.data.meta.limit)
+                    setTotalItems(res.data.meta.total_result);
+                    setCategories(res.data.data)
+                })
+        } else {
+            getData();
+            getDataCity();
+            getDataProvinces()
+        }
+    }, [debouncedSearch]);
+
 
 
 
@@ -112,16 +125,6 @@ const DataTable = (props) => {
 
     const categoriesData = useMemo(() => {
         let computedCategories = categories;
-
-        if (search) {
-            computedCategories = computedCategories.filter(
-                comment =>
-                    comment.receiver.toLowerCase().includes(search.toLowerCase()) ||
-                    comment.phone.toLowerCase().includes(search.toLowerCase())
-            );
-        }
-
-
         //Sorting comments
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
@@ -264,11 +267,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_STRING}?keyword=${debouncedSearch}&limit=10&offset=${offset}`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setCategories(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setCategories(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     // fungsi checkbox delete

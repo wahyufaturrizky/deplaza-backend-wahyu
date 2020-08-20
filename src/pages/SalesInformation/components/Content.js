@@ -6,6 +6,8 @@ import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from '../../../components/useDebounce'
+
 import { withRouter } from 'react-router';
 import Select from 'react-select';
 import moment from 'moment'
@@ -34,6 +36,7 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([])
     const [limit, setLimit] = useState(10)
 
+    const debouncedSearch = useDebounce(search, 1000);
 
     // header table
     const headers = [
@@ -56,12 +59,21 @@ const DataTable = (props) => {
         { name: "Aksi", field: "body", sortable: false }
     ];
 
-
-
     useEffect(() => {
-        getData();
-        getDataCourier()
-    }, []);
+        if (search) {
+            axiosConfig.get(`${URL_STRING}&keyword=${debouncedSearch}`)
+                .then(res => {
+                    setLimit(res.data.meta.limit)
+                    setTotalItems(res.data.meta.total_result);
+                    setData(res.data.data)
+                })
+        } else {
+            getData();
+            getDataCourier()
+        }
+    }, [debouncedSearch]);
+
+
 
     // fungsi untuk fetching data
     const getData = () => {
@@ -118,15 +130,6 @@ const DataTable = (props) => {
             const object = Object.assign({ ...x }, x.details);
             return object
         })
-
-        if (search) {
-            computedSales = computedSales.filter(
-                product =>
-                    product.seller.fullname.toLowerCase().includes(search.toLowerCase()) ||
-                    product.customer.fullname.toLowerCase().includes(search.toLowerCase()) ||
-                    product.customer.phone.toLowerCase().includes(search.toLowerCase())
-            );
-        }
 
         //Sorting products
         if (sorting.field) {
@@ -219,11 +222,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_STRING}&keyword=${debouncedSearch}&limit=10&offset=${offset}`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setData(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setData(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     // fungsi untuk menampilkan detail data
@@ -428,7 +439,7 @@ const DataTable = (props) => {
                                                     // forget about it :)
                                                 }
 
-                                                console.log(variationOne);
+                                                console.log(JSON.parse(sale[0].variation));
 
                                                 // const keyVarian = sale[0].product.variation_data && sale[0].product.variation_data.map((data,i) => {
                                                 //     let tvariant = Object.keys(data)[0]
@@ -454,13 +465,13 @@ const DataTable = (props) => {
                                                         <td>{sale.seller.fullname}</td>
                                                         <td>{sale.customer ? sale.customer.fullname : '-'}</td>
                                                         <td>{sale[0].metadata_products}</td>
-                                                        <td>{`${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`}{'\n'}{`${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`}{'\n'}{`${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`}</td>
+                                                        <td>{objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}</td>
                                                         <td>{sale[0].qty}</td>
                                                         <td>{sale[0].commission}</td>
                                                         <td>{sale[0].custom_commission}</td>
                                                         <td>{sale[0].benefit}</td>
-                                                        <td>{sale[0].price+sale.delivery.sipping_cost}</td>
-                                                        <td>{sale[0].benefit+sale[0].commission+sale[0].custom_commission+sale.delivery.sipping_cost+sale[0].price}</td>
+                                                        <td>{sale[0].price + sale.delivery.sipping_cost}</td>
+                                                        <td>{sale[0].benefit + sale[0].commission + sale[0].custom_commission + sale.delivery.sipping_cost + sale[0].price}</td>
                                                         <td>{sale.delivery.receiver_address}</td>
                                                         <td>{sale.customer ? sale.customer.phone : '-'}</td>
                                                         <td>{sale.status_label}</td>

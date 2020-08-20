@@ -5,10 +5,12 @@ import swal from 'sweetalert';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from '../../../components/useDebounce'
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
+const URL_SEARCH = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
 const URL_DETAIL = '/product'
 
 const DataTable = (props) => {
@@ -24,6 +26,7 @@ const DataTable = (props) => {
     const [limit, setLimit] = useState(10)
     const [id, setId] = useState(0)
 
+    const debouncedSearch = useDebounce(search, 1000);
     const headers = [
         { name: "No.", field: "id", sortable: false },
         { name: "Nama Lengkap", field: "name", sortable: true },
@@ -38,8 +41,17 @@ const DataTable = (props) => {
 
 
     useEffect(() => {
-        getProduct();
-    }, []);
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}&keyword=${debouncedSearch}`)
+            .then(res => {
+                setLimit(res.data.meta.limit)
+                setTotalItems(res.data.meta.total_result);
+                setProducts(res.data.data)
+            })
+        } else {
+            getProduct();
+        }
+    }, [debouncedSearch]);
 
     const getProduct = () => {
         setLoading(true)
@@ -64,14 +76,6 @@ const DataTable = (props) => {
             const object = Object.assign({ ...x }, x.details, { variationTest: v });
             return object
         })
-
-        if (search) {
-            computedProducts = computedProducts.filter(
-                product =>
-                    product.customer.fullname.toLowerCase().includes(search.toLowerCase()) ||
-                    product[0].metadata_products.toLowerCase().includes(search.toLowerCase())
-            );
-        }
 
         //Sorting products
         if (sorting.field) {
@@ -169,11 +173,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}&keyword=${debouncedSearch}&limit=10&offset=${offset}`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setProducts(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     const formatNumber = (num) => {

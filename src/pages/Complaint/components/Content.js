@@ -9,7 +9,7 @@ import axiosConfig from '../../../utils/axiosConfig';
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
-const URL_STRING = '/complaint';
+const URL_STRING = '/complaint?order_direction=desc';
 const URL_DETAIL = '/complaint'
 
 const DataTable = (props) => {

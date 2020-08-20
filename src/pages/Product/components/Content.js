@@ -50,7 +50,18 @@ const DataTable = (props) => {
 
 
     useEffect(() => {
-        getProduct();
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}${debouncedSearch}`)
+            .then(res => {
+                setActivePage(res.data.meta.current_page);
+                setLimit(res.data.meta.limit)
+                setTotalItems(res.data.meta.total_result);
+                setProducts(res.data.data)
+            
+            })
+        } else {
+            getProduct();
+        }
     }, [debouncedSearch]);
 
 
@@ -61,7 +72,7 @@ const DataTable = (props) => {
                 axios.spread((product, category) => {
                     setActivePage(product.data.meta.current_page);
                     setLimit(product.data.meta.limit)
-                    setTotalItems(product.data.meta.total_data);
+                    setTotalItems(product.data.meta.total_result);
                     setProducts(product.data.data);
                     setCategory(category.data.data)
                     setLoading(false)
@@ -73,10 +84,7 @@ const DataTable = (props) => {
     const productsData = useMemo(() => {
         let computedProducts = products;
 
-        if (search) {
-            axiosConfig.get(`${URL_SEARCH}${search}`)
-            .then(res =>  setProducts(res.data.data))
-        }
+       
 
         //Sorting products
         if (sorting.field) {
@@ -159,11 +167,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}${debouncedSearch}&offset=${offset}`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setProducts(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}&limit=50&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     // fungsi checkbox delete

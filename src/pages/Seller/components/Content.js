@@ -6,10 +6,13 @@ import swal from 'sweetalert';
 import { TableHeader, Search } from "./DataTable";
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
+import useDebounce from './DataTable/Search/useDebounce';
+
 import Pagination from 'react-paginating';
 
 const URL_STRING = '/user';
 const URL_DETAIL = '/user'
+const URL_SEARCH = '/user?role=0&order_direction=desc&limit=10&keyword=';
 const URL_POST = '/oauth/register'
 
 const DataTable = (props) => {
@@ -35,6 +38,8 @@ const DataTable = (props) => {
     const [gender, setGender] = useState("")
     const [edu, setEdu] = useState("")
 
+    const debouncedSearch = useDebounce(search, 1000);
+
     const headers = [
         { name: "No.", field: "id", sortable: false },
         { name: "Nama", field: "name", sortable: false },
@@ -52,11 +57,18 @@ const DataTable = (props) => {
         { name: "Aksi", field: "body", sortable: false }
     ];
 
-
-
     useEffect(() => {
-        getProduct();
-    }, []);
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}${debouncedSearch}`)
+            .then(res => {
+                setLimit(res.data.meta.limit)
+                setTotalItems(res.data.meta.total_result);
+                setProducts(res.data.data)
+            })
+        } else {
+            getProduct();
+        }
+    }, [debouncedSearch]);
 
     const getProduct = () => {
         setLoading(true)
@@ -72,16 +84,6 @@ const DataTable = (props) => {
     // fungsi untuk search
     const productsData = useMemo(() => {
         let computedProducts = products;
-
-        if (search) {
-            computedProducts = computedProducts.filter(
-                product =>
-                    product.fullname.toLowerCase().includes(search.toLowerCase()) ||
-                    product.username.toLowerCase().includes(search.toLowerCase()) ||
-                    product.email.toLowerCase().includes(search.toLowerCase()) ||
-                    product.phone.toLowerCase().includes(search.toLowerCase())
-            );
-        }
 
         //Sorting products
         if (sorting.field) {
@@ -188,11 +190,19 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
+        if (search) {
+            axiosConfig.get(`${URL_SEARCH}${debouncedSearch}&offset=${offset}&role=0`)
+            .then(res =>  {
+                setCurrentPage(res.data.meta.current_page)
+                setProducts(res.data.data)
+            }).catch(error => toastr.error(error))
+        } else {
         axiosConfig.get(`${URL_STRING}?role=0&limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
+        }
     };
 
     return (

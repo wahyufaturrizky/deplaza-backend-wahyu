@@ -125,7 +125,7 @@ const DataTable = (props) => {
                 getProduct()
                 toastr.success('Berhasil tambah seller')
                 hideModal()
-            }).catch(error => toastr.error(error))
+            }).catch(error => toastr.error(error.response.data.data.email))
     }
 
     // fungsi untuk menampilkan detail data

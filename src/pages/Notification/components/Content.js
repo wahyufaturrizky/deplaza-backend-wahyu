@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Search } from "./DataTable";
 import toastr from 'toastr'
 import swal from 'sweetalert';
+import Select from 'react-select';
 
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
@@ -31,6 +32,8 @@ const DataTable = (props) => {
     const [status, setStatus] = useState(0)
     const [limit, setLimit] = useState(10)
     const [checkedBoxes, setCheckedBoxes] = useState([])
+    const [getData, setData] = useState([])
+
 
     const debouncedSearch = useDebounce(search, 1000);
 
@@ -47,13 +50,14 @@ const DataTable = (props) => {
     useEffect(() => {
         if (search) {
             axiosConfig.get(`${URL_STRING}?keyword=${debouncedSearch}`)
-            .then(res => {
-                setLimit(res.data.meta.limit)
-                setTotalItems(res.data.meta.total_result);
-                setProducts(res.data.data)
-            })
+                .then(res => {
+                    setLimit(res.data.meta.limit)
+                    setTotalItems(res.data.meta.total_result);
+                    setProducts(res.data.data)
+                })
         } else {
             getProduct();
+            getUser()
         }
     }, [debouncedSearch]);
 
@@ -67,11 +71,29 @@ const DataTable = (props) => {
             })
     }
 
+    const getUser = () => {
+        axiosConfig.get('/user?limit=1000000')
+            .then(res =>
+                res.data.data.map(data => ({
+                    value: data.id,
+                    label: data.fullname,
+                }))
+            )
+            .then(json => {
+                setData(json);
+            }).catch(error => toastr.error(error))
+    }
+
+    const options = getData.map(i => i)
+
+    const handleChange = (id) => {
+        setUser(id.value);
+    };
 
     const productsData = useMemo(() => {
         let computedProducts = products;
 
-    
+
         //Sorting products
         if (sorting.field) {
             const reversed = sorting.order === "asc" ? 1 : -1;
@@ -94,6 +116,15 @@ const DataTable = (props) => {
         setId(idData)
         window.$('#modal-edit').modal('show');
     }
+
+
+    // $('#reservationtime').datetimepicker({
+    //     timePicker: true,
+    //     timePickerIncrement: 30,
+    //     locale: {
+    //         format: 'MM/DD/YYYY hh:mm A'
+    //     }
+    // });
 
     const hideModal = hideModalInfo => {
         window.$('#modal-lg').modal('hide');
@@ -188,16 +219,16 @@ const DataTable = (props) => {
         const offset = (nextPage - 1) * limit;
         if (search) {
             axiosConfig.get(`${URL_STRING}?keyword=${debouncedSearch}&limit=10&offset=${offset}`)
-            .then(res =>  {
-                setCurrentPage(res.data.meta.current_page)
-                setProducts(res.data.data)
-            }).catch(error => toastr.error(error))
+                .then(res => {
+                    setCurrentPage(res.data.meta.current_page)
+                    setProducts(res.data.data)
+                }).catch(error => toastr.error(error))
         } else {
-        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
-            .then(json => {
-                setCurrentPage(json.data.meta.current_page)
-                setProducts(json.data.data);
-            }).catch(error => toastr.error(error))
+            axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
+                .then(json => {
+                    setCurrentPage(json.data.meta.current_page)
+                    setProducts(json.data.data);
+                }).catch(error => toastr.error(error))
         }
     };
 
@@ -386,9 +417,12 @@ const DataTable = (props) => {
                             <div className="card-body">
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">User ID</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="User ID" onChange={(e) => {
-                                        setUser(e.target.value)
-                                    }} />
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Judul</label>
@@ -410,9 +444,14 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Waktu Kirim</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="2020-07-06" onChange={(e) => {
-                                        setDate(e.target.value)
-                                    }} />
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control float-right" id="reservationtime" onChange={(e) => {
+                                            setDate(e.target.value)
+                                        }} />
+                                    </div>
                                 </div>
                             </div>
                         </div>

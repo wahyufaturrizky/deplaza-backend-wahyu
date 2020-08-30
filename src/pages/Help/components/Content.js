@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { TableHeader, Search } from "./DataTable";
 import toastr from 'toastr'
 import swal from 'sweetalert';
+import Select from 'react-select';
 
 import { Spinner } from '../../../components/spinner'
 
@@ -28,6 +29,7 @@ const DataTable = (props) => {
     const [status, setStatus] = useState(0);
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
+    const [getData, setData] = useState([])
 
     const headers = [
         { name: "No.", field: "id", sortable: false },
@@ -41,12 +43,13 @@ const DataTable = (props) => {
 
     useEffect(() => {
         getHelpdesk()
+        getUser()
     }, []);
 
 
     const getHelpdesk = () => {
         setLoading(true)
-        axiosConfig.get(URL_STRING)
+        axiosConfig.get(`${URL_STRING}?order_direction=desc`)
             .then(json => {
                 setTotalItems(json.data.meta.total_data);
                 setHelpdesk(json.data.data);
@@ -54,6 +57,29 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
+    const getUser = () => {
+        axiosConfig.get('/user?limit=1000000')
+            .then(res =>
+                res.data.data.map(data => ({
+                    value: data.id,
+                    label: data.fullname,
+                }))
+            )
+            .then(json => {
+                setData(json);
+            }).catch(error => toastr.error(error))
+    }
+
+    const options = getData.map(i => i)
+    const optionStatus = [{ value: 1, label: 'Selesai' }, { value: 0, label: 'Proses' }]
+
+    const handleChange = (id) => {
+        setUser(id.value);
+    };
+
+    const handleStatus = (id) => {
+        setStatus(id.value);
+    };
 
     const helpdeskData = useMemo(() => {
         let computedHelpdesk = helpdesk;
@@ -302,9 +328,9 @@ const DataTable = (props) => {
                                                     <th scope="row" key={helpdesk.id}>
                                                         {i + start}
                                                     </th>
-                                                    <td>{helpdesk.user_id}</td>
+                                                    <td>{getData.filter(x => x.value === helpdesk.user_id).map(x => x.label)}</td>
                                                     <td>{helpdesk.problem}</td>
-                                                    <td>{helpdesk.status}</td>
+                                                    <td>{helpdesk.status === 0 ? 'Proses' : 'Selesai'}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(helpdesk.id)}>Ubah</button>
@@ -333,9 +359,12 @@ const DataTable = (props) => {
                             <div className="card-body">
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">User</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="User" onChange={(e) => {
-                                        setUser(e.target.value)
-                                    }} />
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Problem</label>
@@ -434,9 +463,12 @@ const DataTable = (props) => {
                             <div className="card-body">
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">User</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.user_id} onChange={(e) => {
-                                        setUser(e.target.value)
-                                    }} />
+                                    <Select
+                                        defaultValue={options[0]}
+                                        isMulti={false}
+                                        options={options}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Problem</label>
@@ -446,9 +478,12 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Status</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder={detail.status} onChange={(e) => {
-                                        setStatus(e.target.value)
-                                    }} />
+                                    <Select
+                                        defaultValue={optionStatus[0]}
+                                        isMulti={false}
+                                        options={optionStatus}
+                                        closeMenuOnSelect={true}
+                                        onChange={handleStatus} />
                                 </div>
                             </div>
                         </div>

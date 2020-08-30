@@ -67,7 +67,7 @@ const DataTable = (props) => {
 
     const getProduct = async () => {
         setLoading(true)
-        axios.all([axiosConfig.get(`${URL_STRING}&limit=50`), axiosConfig.get('/category')])
+        axios.all([axiosConfig.get(`${URL_STRING}&limit=50`), axiosConfig.get('/category?limit=1000')])
             .then(
                 axios.spread((product, category) => {
                     setActivePage(product.data.meta.current_page);
@@ -194,8 +194,11 @@ const DataTable = (props) => {
 
             setCheckedBoxes(items)
         }
-        console.log(checkedBoxes);
     }
+
+    const uu = category.filter(x => x.id === 22).map(x => x);
+    console.log('sdasd', uu);
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -329,7 +332,6 @@ const DataTable = (props) => {
                                         />
                                         <tbody>
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => {
-                                                const findCategory = category.find(o => o.id === product.category_id)
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
@@ -341,8 +343,7 @@ const DataTable = (props) => {
                                                             <td><img style={{ width: 100, height: 100 }} src={image ? image.image_url : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>)}
                                                         <td>{product.name}</td>
                                                         <td>{product.stock}</td>
-                                                        {category.length > 0 ?
-                                                            <td>{findCategory ? findCategory.name : '-'}</td> : null}
+                                                            <td>{category.filter(x => x.id === product.category_id).map(x => x.name)}</td>
                                                         <td>-</td>
                                                         <td>Rp. {product.price_basic}</td>
                                                         <td>Rp. {product.price_benefit}</td>
@@ -394,7 +395,7 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Kategori</label>
-                                    <h4>{detail.category_id}</h4>
+                                    <h4>{detail && category.filter(x => x.id === detail.category_id).map(x => x.name)}</h4>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">Brand</label>

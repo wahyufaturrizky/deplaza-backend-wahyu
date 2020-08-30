@@ -224,16 +224,16 @@ const DataTable = (props) => {
         const offset = (nextPage - 1) * limit;
         if (search) {
             axiosConfig.get(`${URL_STRING}&keyword=${debouncedSearch}&limit=10&offset=${offset}`)
-            .then(res =>  {
-                setCurrentPage(res.data.meta.current_page)
-                setData(res.data.data)
-            }).catch(error => toastr.error(error))
+                .then(res => {
+                    setCurrentPage(res.data.meta.current_page)
+                    setData(res.data.data)
+                }).catch(error => toastr.error(error))
         } else {
-        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
-            .then(json => {
-                setCurrentPage(json.data.meta.current_page)
-                setData(json.data.data);
-            }).catch(error => toastr.error(error))
+            axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
+                .then(json => {
+                    setCurrentPage(json.data.meta.current_page)
+                    setData(json.data.data);
+                }).catch(error => toastr.error(error))
         }
     };
 
@@ -282,6 +282,8 @@ const DataTable = (props) => {
             console.log('error')
         }
     }
+
+    console.log(detail.details && detail.details[0]);
 
     return (
         <div className="content-wrapper">
@@ -503,27 +505,31 @@ const DataTable = (props) => {
                             </button>
                         </div>
                         <div className="modal-body">
-                            {detail.status_label === "Verifikasi Pembayaran" ?
-                                <div className="card-body">
-                                    <div className="form-group">
-                                        <label htmlFor="exampleInputEmail1">Bukti Transfer</label>
-                                        <div>
-                                            <td>
-                                                {detail.payment.metadata_decode.map(image =>
-                                                    <img style={{ width: 725, height: 350, marginRight: 10 }} src={image.bukti_bayar} />)}
-                                            </td>
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="exampleInputEmail1">No. Invoice</label>
-                                        <h4>{detail.invoice}</h4>
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="exampleInputEmail1">Total</label>
-                                        <h4>{detail.payment.ammount}</h4>
+
+                            <div className="card-body">
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Bukti Transfer</label>
+                                    <div>
+                                        {detail.payment && detail.payment.metadata_decode.length > 0 ? 
+                                        <td>
+                                            {detail.payment && detail.payment.metadata_decode.map(image =>
+                                                <img style={{ width: 725, height: 350, marginRight: 10 }} src={image.bukti_bayar} />)}
+                                        </td> : <td>Bukti transfer belum di upload atau metode pembayaran cod</td>}
                                     </div>
                                 </div>
-                                : <div>Belum ada bukti pembayaran / sudah diverifikasi</div>}
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">No. Invoice</label>
+                                    <h4>{detail.invoice}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Produk</label>
+                                    <h4>{detail.details && detail.details[0].metadata_products}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Total</label>
+                                    <h4>{detail.payment && detail.payment.ammount}</h4>
+                                </div>
+                            </div>
                         </div>
                         <div className="modal-footer justify-content-between">
                             <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>

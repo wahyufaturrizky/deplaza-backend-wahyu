@@ -126,8 +126,8 @@ const DataTable = (props) => {
 
     // fungsi untuk search
     const salesData = useMemo(() => {
-        let computedSales = data.map(x => {
-            const object = Object.assign({ ...x }, x.details);
+        let computedSales = data && data.map(x => {
+            const object = x.length > 1 ? Object.assign({ ...x }, x.details) : null
             return object
         })
 
@@ -441,8 +441,6 @@ const DataTable = (props) => {
                                                     // forget about it :)
                                                 }
 
-                                                console.log(JSON.parse(sale[0].variation));
-
                                                 // const keyVarian = sale[0].product.variation_data && sale[0].product.variation_data.map((data,i) => {
                                                 //     let tvariant = Object.keys(data)[0]
                                                 //     if(tvariant!=""){
@@ -460,24 +458,26 @@ const DataTable = (props) => {
                                                 //  console.log(keyValue);
                                                 return (
                                                     <tr>
-                                                        <th scope="row" key={sale.id}>
+                                                        <th scope="row" key={sale && sale.id}>
                                                             {i + 1}
                                                         </th>
-                                                        <td>{moment(sale.created_at).format('MMMM Do YYYY, h:mm')}</td>
-                                                        <td>{sale.seller.fullname}</td>
-                                                        <td>{sale.customer ? sale.customer.fullname : '-'}</td>
-                                                        <td>{sale[0].metadata_products}</td>
+                                                        <td>{moment(sale && sale.created_at).format('MMMM Do YYYY, h:mm')}</td>
+                                                        <td>{sale && sale.seller.fullname}</td>
+                                                        <td>{sale && sale.customer ? sale.customer.fullname : '-'}</td>
+                                                        <td>{sale && sale[0].metadata_products}</td>
+                                                        {sale === null ? <td>-</td> : 
                                                         <td>{objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}</td>
-                                                        <td>{sale[0].qty}</td>
-                                                        <td>{sale[0].commission}</td>
-                                                        <td>{sale[0].custom_commission}</td>
-                                                        <td>{sale[0].benefit}</td>
-                                                        <td>{sale[0].price + sale.delivery.sipping_cost}</td>
-                                                        <td>{sale[0].benefit + sale[0].commission + sale[0].custom_commission + sale.delivery.sipping_cost + sale[0].price}</td>
-                                                        <td>{sale.delivery.receiver_address}</td>
-                                                        <td>{sale.customer ? sale.customer.phone : '-'}</td>
-                                                        <td>{sale.status_label}</td>
-                                                        <td>{sale.is_cod ? 'COD' : 'TF'}</td>
+                                                       }
+                                                        <td>{sale && sale[0].qty}</td>
+                                                        <td>{sale && sale[0].commission}</td>
+                                                        <td>{sale && sale[0].custom_commission}</td>
+                                                        <td>{sale && sale[0].benefit}</td>
+                                                        <td>{sale && sale[0].price + sale.delivery.sipping_cost}</td>
+                                                        <td>{sale && sale[0].benefit + sale[0].commission + sale[0].custom_commission + sale.delivery.sipping_cost + sale[0].price}</td>
+                                                        <td>{sale && sale.delivery.receiver_address}</td>
+                                                        <td>{sale && sale.customer ? sale.customer.phone : '-'}</td>
+                                                        <td>{sale && sale.status_label}</td>
+                                                        <td>{sale && sale.is_cod ? 'COD' : 'TF'}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>

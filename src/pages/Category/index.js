@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../../components/Header'
-import Menu from './components/Menu'
+import Menu from '../../components/Menu'
 import Content from './components/Content'
 import Footer from '../../components/Footer'
 
@@ -9,7 +9,7 @@ export default class Category extends React.Component {
         return (
             <div>
                 <Header name="Menu Kategori" />
-                <Menu />
+                <Menu active="category" />
                 <Content />
                 <Footer />
             </div>

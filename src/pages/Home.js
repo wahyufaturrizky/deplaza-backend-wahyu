@@ -8,7 +8,7 @@ export default function App() {
   return (
     <div>
       <Header name="Home"/>
-      <Menu/>
+      <Menu active="dashboard"/>
       <Content/>
       <Footer/>
     </div>

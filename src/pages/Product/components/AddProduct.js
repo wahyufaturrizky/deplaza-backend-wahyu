@@ -102,7 +102,7 @@ function AddProduct(props) {
             .then(data => {
                 setGetCategory(data)
             })
-            .catch(error => console.log(error));
+            .catch(error => console.log(error.response));
     }
 
 

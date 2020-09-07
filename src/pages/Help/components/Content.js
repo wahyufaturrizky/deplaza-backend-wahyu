@@ -332,8 +332,7 @@ const DataTable = (props) => {
                                                     <td>{helpdesk.problem}</td>
                                                     <td>{helpdesk.status === 0 ? 'Proses' : 'Selesai'}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(helpdesk.id)}>Ubah</button>
+                                                        <button type="button" style={{ marginLeft: 5, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => showModalEdit(helpdesk.id)}>Ubah</button>
                                                         <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" >Hapus</button>
                                                     </div>
                                                 </tr>

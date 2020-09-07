@@ -111,7 +111,7 @@ const {active} = props
                     </li>
                 </ul>
             </nav>
-                : dataUser.role === '1' ? <nav className="mt-2">
+                : dataUser.role === '1' || dataUser.role === '3'  ? <nav className="mt-2">
                 <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                     {/* Add icons to the links using the .nav-icon class
            with font-awesome or any other icon font library */}
@@ -205,6 +205,14 @@ const {active} = props
                         </Link>
                     </li>
                     <li className="nav-item">
+                        <Link to="/notification" className={active === 'notification' ? "nav-link active" : "nav-link"}>
+                            <i className="nav-icon fas fa-th" />
+                            <p>
+                                Menu Notifikasi Seller
+                            </p>
+                        </Link>
+                    </li>
+                    <li className="nav-item">
                         <Link to="/supplier" className={active === 'supplier' ? "nav-link active" : "nav-link"}>
                             <i className="nav-icon fas fa-th" />
                             <p>
@@ -270,6 +278,14 @@ const {active} = props
                             <i className="nav-icon fas fa-th" />
                             <p>
                                 Menu Produk
+                            </p>
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/category" className={active === 'category' ? "nav-link active" : "nav-link"}>
+                            <i className="nav-icon fas fa-th" />
+                            <p>
+                                Menu Kategori
                             </p>
                         </Link>
                     </li>

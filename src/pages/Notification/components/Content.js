@@ -25,7 +25,7 @@ const DataTable = (props) => {
     const [detail, setDetail] = useState([]);
     const [loading, setLoading] = useState(false);
     const [id, setId] = useState(0)
-    const [user, setUser] = useState(0)
+    const [user, setUser] = useState("0")
     const [type, setType] = useState("")
     const [content, setContent] = useState("")
     const [date, setDate] = useState("")
@@ -84,9 +84,12 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
+    console.log('user', getData);
+
     const options = getData.map(i => i)
 
     const handleChange = (id) => {
+        console.log('id', id.value);
         setUser(id.value);
     };
 

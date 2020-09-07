@@ -162,7 +162,7 @@ const DataTable = (props) => {
             .then((willDelete) => {
                 if (willDelete) {
                     const data = { _method: 'delete', id: checkedBoxes }
-                    axiosConfig.post(`${URL_STRING}/delete-batch`, data)
+                    axiosConfig.post(`${URL_DETAIL}/delete-batch`, data)
                         .then(() => {
                             getProduct()
                             toastr.success('Berhasil dihapus')
@@ -181,7 +181,7 @@ const DataTable = (props) => {
         })
             .then((willDelete) => {
                 if (willDelete) {
-                    axiosConfig.delete(`${URL_STRING}/${id}/delete`)
+                    axiosConfig.delete(`${URL_DETAIL}/${id}/delete`)
                         .then(() => {
                             const categoryData = products.filter(category => category.id !== id)
                             setProducts(categoryData)
@@ -521,7 +521,7 @@ const DataTable = (props) => {
                             </div>
                         </div>
                         <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
+                            <button type="button" className="btn btn-default" data-dismiss="modal" >Close</button>
                             <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
                         </div>
                     </div>

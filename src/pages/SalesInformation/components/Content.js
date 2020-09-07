@@ -86,6 +86,7 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     }
 
+    console.log('daa', data);
     // fungsi untuk fetching data tracing
     const tracingData = () => {
         setLoading(true)
@@ -126,8 +127,8 @@ const DataTable = (props) => {
 
     // fungsi untuk search
     const salesData = useMemo(() => {
-        let computedSales = data && data.map(x => {
-            const object = x.length > 1 ? Object.assign({ ...x }, x.details) : null
+        let computedSales =  data.map(x => {
+            const object =  Object.assign({ ...x }, x.details)
             return object
         })
 
@@ -142,7 +143,7 @@ const DataTable = (props) => {
 
         return computedSales
     }, [data, search, sorting.field, sorting.order]);
-    console.log(salesData)
+    console.log('salesData', salesData)
 
     const showModalEdit = async (idData) => {
         await setId(idData)
@@ -187,7 +188,6 @@ const DataTable = (props) => {
         }
     }
 
-    console.log(dataCourier && dataCourier.value, detail.delivery && detail.delivery.package_courier);
     // fungsi untuk edit resi
     const handleEditResi = () => {
         if (!trackingId) {
@@ -473,7 +473,7 @@ const DataTable = (props) => {
                                                         <td>{sale && sale[0].custom_commission}</td>
                                                         <td>{sale && sale[0].benefit}</td>
                                                         <td>{sale && sale[0].price + sale.delivery.sipping_cost}</td>
-                                                        <td>{sale && sale[0].benefit + sale[0].commission + sale[0].custom_commission + sale.delivery.sipping_cost + sale[0].price}</td>
+                                                        <td>{sale && sale[0].benefit + sale[0].commission + sale[0].custom_commission + sale.delivery.sipping_cost + sale[0].price * sale[0].qty}</td>
                                                         <td>{sale && sale.delivery.receiver_address}</td>
                                                         <td>{sale && sale.customer ? sale.customer.phone : '-'}</td>
                                                         <td>{sale && sale.status_label}</td>

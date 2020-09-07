@@ -110,7 +110,7 @@ const DataTable = (props) => {
                 getData();
                 toastr.success('Berhasil menambahkan kategori')
                 hideModal()
-            }).catch(error => toastr.error(error.response.data.name.toString()))
+            }).catch(error => toastr.error(error.response.data.message))
     }
 
     // fungsi untuk menampilkan detail data

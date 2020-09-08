@@ -6,6 +6,7 @@ import swal from 'sweetalert';
 import { Spinner } from '../../../components/spinner'
 import axiosConfig from '../../../utils/axiosConfig';
 import useDebounce from '../../../components/useDebounce'
+import generatePDF from "./GeneratePdf";
 import { withRouter } from 'react-router';
 import Pagination from 'react-paginating';
 
@@ -333,18 +334,24 @@ const DataTable = (props) => {
                                                 let variationOne = null;
                                                 let variationTwo = null;
                                                 let variationThree = null;
+                                                let key2 = null;
+                                                let key3 = null;
+                                                let key4 = null;
                                                 try {
                                                     // if plain js
                                                     variation = JSON.parse(product.variationTest);
                                                     objKey = Object.keys(variation)
-                                                    variationOne = `${objKey[0] ? objKey[0] : null}: ${variation[objKey[0]] ? variation[objKey[0]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[0]] : null}`
-                                                    variationTwo = `${objKey[1] ? objKey[1] : null}: ${variation[objKey[1]] ? variation[objKey[1]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[1]] : null}`
-                                                    variationThree = `${objKey[2] ? objKey[2] : null}: ${variation[objKey[2]] ? variation[objKey[2]].filter(str => str.trim().length < 0) ? '-' : variation[objKey[2]] : null}`
+                                                    key2 = Object.keys(variation[0])
+                                                    key3 = Object.keys(variation[1])
+                                                    key4 = Object.keys(variation[2])
+                                                    //  variationOne = `${variation}`
+                                                    variationOne = `${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`
+                                                    variationTwo = `${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`
+                                                    variationThree = `${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`
                                                 }
                                                 catch (e) {
                                                     // forget about it :)
                                                 }
-                                                console.log(objKey);
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
@@ -353,14 +360,16 @@ const DataTable = (props) => {
                                                         <td>{product.customer ? product.customer.fullname : '-'}</td>
                                                         <td>{product.delivery.receiver_address}</td>
                                                         <td>{product[0].metadata_products}</td>
-                                                        <td>{variationOne === 'null: null' ? '-' : variationOne} {variationTwo === 'null: null' ? null : variationTwo} {variationThree === 'null: null' ? null : variationThree}</td>
+                                                        {product === null ? <td>-</td> : 
+                                                        <td>{objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}</td>
+                                                       }
                                                         <td>Rp.{product.total_price}</td>
                                                         <td>-</td>
                                                         <td>-</td>
-                                                        {/* <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm">Ubah</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button>
-                                                    </div> */}
+                                                        <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
+                                                        <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => generatePDF(product)}>Download Pdf</button>
+                                                        {/* <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button> */}
+                                                    </div> 
                                                     </tr>
                                                 )
                                             }

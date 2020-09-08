@@ -350,7 +350,7 @@ const DataTable = (props) => {
 									                         &nbsp;&nbsp;
                                                         {i + 1}
                                                     </th>
-                                                    <td>{product.bank.name}</td>
+                                                    <td>{product.bank ? product.bank.name : '-'}</td>
                                                     <td>{product.number}</td>
                                                     <td>{product.branch}</td>
                                                     <td>{product.name}</td>

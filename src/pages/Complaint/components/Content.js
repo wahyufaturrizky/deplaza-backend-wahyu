@@ -199,7 +199,7 @@ const DataTable = (props) => {
             nextPage = 1;
         }
         const offset = (nextPage - 1) * limit;
-        axiosConfig.get(`${URL_STRING}?limit=10&offset=${offset}`)
+        axiosConfig.get(`${URL_STRING}&limit=10&offset=${offset}`)
             .then(json => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);

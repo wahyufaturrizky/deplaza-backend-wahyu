@@ -12,7 +12,7 @@ import Pagination from 'react-paginating';
 
 const URL_STRING = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
 const URL_SEARCH = '/orders?order_by=id&order_direction=desc&invoice=&start_date=&end_date=&status=&details=1';
-const URL_DETAIL = '/product'
+const URL_DETAIL = '/orders'
 
 const DataTable = (props) => {
     const [products, setProducts] = useState([]);
@@ -33,7 +33,7 @@ const DataTable = (props) => {
         { name: "Nama Lengkap", field: "name", sortable: true },
         { name: "Alamat Pengiriman", field: "name", sortable: true },
         { name: "Poduk yang Dipesan", field: "name", sortable: false },
-        { name: "Spesifikasi Produk (warna, size, dll)", field: "email", sortable: true },
+        // { name: "Spesifikasi Produk (warna, size, dll)", field: "email", sortable: true },
         { name: "Harga Barang Total", field: "email", sortable: true },
         { name: "Supplier", field: "email", sortable: true },
         { name: "Alamat Supplier", field: "email", sortable: true },
@@ -134,6 +134,8 @@ const DataTable = (props) => {
             })
         window.$('#modal-detail').modal('show');
     }
+
+    console.log(detail);
 
 
     // fungsi untuk ubah data
@@ -328,30 +330,32 @@ const DataTable = (props) => {
                                         />
                                         <tbody>
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => {
-                                                // console.log(typeof product.variationTest);
-                                                let variation = null;
-                                                let objKey = null;
-                                                let variationOne = null;
-                                                let variationTwo = null;
-                                                let variationThree = null;
-                                                let key2 = null;
-                                                let key3 = null;
-                                                let key4 = null;
-                                                try {
-                                                    // if plain js
-                                                    variation = JSON.parse(product.variationTest);
-                                                    objKey = Object.keys(variation)
-                                                    key2 = Object.keys(variation[0])
-                                                    key3 = Object.keys(variation[1])
-                                                    key4 = Object.keys(variation[2])
-                                                    //  variationOne = `${variation}`
-                                                    variationOne = `${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`
-                                                    variationTwo = `${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`
-                                                    variationThree = `${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`
-                                                }
-                                                catch (e) {
-                                                    // forget about it :)
-                                                }
+                                                // // console.log(typeof product.variationTest);
+                                                // let variation = null;
+                                                // let objKey = null;
+                                                // let variationOne = null;
+                                                // let variationTwo = null;
+                                                // let variationThree = null;
+                                                // let key2 = null;
+                                                // let key3 = null;
+                                                // let key4 = null;
+                                                // try {
+                                                //     // if plain js
+                                                //     variation = JSON.parse(product.variationTest);
+                                                //     objKey = Object.keys(variation)
+                                                //     key2 = Object.keys(variation[0])
+                                                //     key3 = Object.keys(variation[1])
+                                                //     key4 = Object.keys(variation[2])
+                                                //     //  variationOne = `${variation}`
+                                                //     variationOne = `${objKey[0] && Object.keys(variation[0])}: ${variation[0] && variation[0][key2]}`
+                                                //     variationTwo = `${objKey[1] && Object.keys(variation[1])}: ${variation[1] && variation[1][key3]}`
+                                                //     variationThree = `${objKey[2] && Object.keys(variation[2])}: ${variation[2] && variation[2][key4]}`
+                                                // }
+                                                // catch (e) {
+                                                //     // forget about it :)
+                                                // }
+                                                //const getVariation = `${objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}`
+
                                                 return (
                                                     <tr>
                                                         <th scope="row" key={product.id}>
@@ -360,15 +364,15 @@ const DataTable = (props) => {
                                                         <td>{product.customer ? product.customer.fullname : '-'}</td>
                                                         <td>{product.delivery.receiver_address}</td>
                                                         <td>{product[0].metadata_products}</td>
-                                                        {product === null ? <td>-</td> : 
+                                                        {/* {product === null ? <td>-</td> : 
                                                         <td>{objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}</td>
-                                                       }
+                                                       } */}
                                                         <td>Rp.{product.total_price}</td>
                                                         <td>-</td>
                                                         <td>-</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginLeft: 5, marginTop: 9 }} class="btn btn-block btn-success btn-sm" onClick={() => generatePDF(product)}>Download Pdf</button>
-                                                        {/* <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger btn-sm">Hapus</button> */}
+                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success btn-sm" onClick={() => categoryDetail(product.id)}>Lihat</button> 
                                                     </div> 
                                                     </tr>
                                                 )
@@ -423,7 +427,7 @@ const DataTable = (props) => {
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h4 className="modal-title">Detail Produk</h4>
+                            <h4 className="modal-title">Detail Order</h4>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -431,50 +435,24 @@ const DataTable = (props) => {
                         <div className="modal-body">
                             <div className="card-body">
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Gambar Produk</label>
-                                    <div>
-                                        {detail.images && detail.images.map(image =>
-                                            <td>
-                                                <img style={{ width: 100, height: 100 }} src={image.file_upload ? image.file_upload : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Nama Produk</label>
-                                    <h4>{detail.name}</h4>
+                                    <h4>{detail.details && detail.details[0].metadata_products}</h4>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Kategori</label>
-                                    <h4>{detail.category_id}</h4>
+                                    <label htmlFor="exampleInputFile">Total Harga</label>
+                                    <h4>{detail.total_price}</h4>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Brand</label>
-                                    <h4>{detail.brand}</h4>
+                                    <label htmlFor="exampleInputFile">Nama</label>
+                                    <h4>{detail.customer ? detail.customer.fullname : '-'}</h4>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Harga Pokok Produk</label>
-                                    <h4>{detail.price_basic}</h4>
+                                    <label htmlFor="exampleInputFile">Alamat</label>
+                                    <h4>{detail.delivery ? detail.delivery.receiver_address : '-'}</h4>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Benefit Deplaza</label>
-                                    <h4>{detail.price_benefit}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Komisi</label>
-                                    <h4>{detail.price_commission}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Stock</label>
-                                    <h4>{detail.stock}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Variasi</label>
-                                    <h4>{detail.variation}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Deskripsi</label>
-                                    <h4>{detail.description}</h4>
+                                    <label htmlFor="exampleInputFile">Status</label>
+                                    <h4>{detail.status_label}</h4>
                                 </div>
                             </div>
                         </div>

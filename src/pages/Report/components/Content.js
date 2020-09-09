@@ -366,8 +366,8 @@ console.log(id);
                                                         <td>Rp.{product.amount}</td>
                                                         <td>{product.approval === 0 ? 'Belum disetujui' : `Telah disetujui pada ${moment(product.approval_at).format('MMMM Do YYYY, h:mm')}`}</td>
                                                         <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                            <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
-                                                            <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
+                                                            {/* <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button> */}
+                                                            <button type="button" style={{ marginTop: 10}} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
                                                             <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
                                                         </div>
                                                     </tr>

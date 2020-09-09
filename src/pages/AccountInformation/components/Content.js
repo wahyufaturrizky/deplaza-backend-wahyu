@@ -217,7 +217,7 @@ const DataTable = (props) => {
                         <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
                             <h4 className="m-0 text-dark" >Informasi Rekening</h4>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} >Tambah Seller</button>
+                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} >Tambah Rekening</button>
                                 <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}  onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}

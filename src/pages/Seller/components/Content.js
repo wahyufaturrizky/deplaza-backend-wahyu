@@ -125,7 +125,7 @@ const DataTable = (props) => {
                 getProduct()
                 toastr.success('Berhasil tambah seller')
                 hideModal()
-            }).catch(error => toastr.error(error.response.data.data.email))
+            }).catch(error => toastr.error('Username / Email / No hp Telah digunakan'))
     }
 
     // fungsi untuk menampilkan detail data
@@ -215,7 +215,6 @@ const DataTable = (props) => {
                             <h1 className="m-0 text-dark" >Menu Seller</h1>
                             <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', }}>
                                 <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} data-toggle="modal" data-target="#modal-lg">Tambah Seller</button>
-                                <button type="button" class="btn btn-block btn-success btn-xs" style={{ height: 40, marginTop: 7, marginRight: 10 }} onClick={() => props.history.push('/accountInformation')}>Informasi Rekening</button>
                                 <button type="button" class="btn btn-block btn-danger btn-xs" style={{ marginTop: 7 }}>Hapus Sekaligus</button>
                             </div>
                         </div>{/* /.col */}
@@ -345,6 +344,8 @@ const DataTable = (props) => {
                                             {loading === true ? <Spinner /> : productsData.map((product, i) => (
                                                 <tr>
                                                     <th scope="row" key={product.id}>
+                                                    <input type="checkbox" className="selectsingle" value="{category.id}"/>
+									                         &nbsp;&nbsp;
                                                         {i + 1}
                                                     </th>
                                                     <td>{product.fullname}</td>
@@ -362,7 +363,7 @@ const DataTable = (props) => {
                                                     <td>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" >Lihat</button>
                                                         <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(product.id)}>Ubah</button>
-                                                        <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/buyer', product)}>Daftar Buyer</button>
+                                                        {/* <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/buyer', product)}>Daftar Buyer</button> */}
                                                         <button type="button" class="btn btn-block btn-danger btn-xs" >Hapus</button>
                                                     </td>
                                                 </tr>

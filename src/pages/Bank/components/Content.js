@@ -367,8 +367,8 @@ const DataTable = (props) => {
                                                     <td>{comment.description}</td>
                                                     <td>{comment.active === 1 ? 'Aktif' : 'Tidak Aktif'}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success">Lihat</button>
-                                                        <button type="button" style={{ width: 80 }} class="btn btn-block btn-success" onClick={() => showModalEdit(comment.id)}>Ubah</button>
+                                                        {/* <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success">Lihat</button> */}
+                                                        <button type="button" style={{ width: 80, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => showModalEdit(comment.id)}>Ubah</button>
                                                         <button type="button" style={{ width: 80 }} class="btn btn-block btn-danger" onClick={() => deleteData(comment.id)}>Hapus</button>
                                                     </div>
                                                 </tr>

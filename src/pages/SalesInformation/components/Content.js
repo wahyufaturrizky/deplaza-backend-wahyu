@@ -283,7 +283,7 @@ const DataTable = (props) => {
         }
     }
 
-    console.log(detail.details && detail.details[0]);
+    console.log(detail.details && detail.details[0].benefit);
 
     return (
         <div className="content-wrapper">
@@ -527,7 +527,7 @@ const DataTable = (props) => {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Total</label>
-                                    <h4>{detail.payment && detail.payment.ammount}</h4>
+                                    <h4>{detail.details && detail.details[0].benefit + detail.details[0].commission + detail.details[0].custom_commission + detail.delivery.sipping_cost + detail.details[0].price * detail.details[0].qty}</h4>
                                 </div>
                             </div>
                         </div>

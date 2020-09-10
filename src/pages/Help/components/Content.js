@@ -30,6 +30,7 @@ const DataTable = (props) => {
     const [id, setId] = useState(0)
     const [limit, setLimit] = useState(10)
     const [getData, setData] = useState([])
+    const [show, setShow] = useState(false)
 
     const headers = [
         { name: "No.", field: "id", sortable: false },
@@ -190,6 +191,9 @@ const DataTable = (props) => {
             }).catch(error => toastr.error(error))
     };
 
+   const showMore = () => setShow(true); 
+   const showLess = () => setShow(false); 
+
     return (
         <div className="content-wrapper">
             {/* Content Header (Page header) */}
@@ -329,7 +333,10 @@ const DataTable = (props) => {
                                                         {i + start}
                                                     </th>
                                                     <td>{getData.filter(x => x.value === helpdesk.user_id).map(x => x.label)}</td>
-                                                    <td>{helpdesk.problem}</td>
+                                                    {helpdesk.problem.length > 100 && show === false ? 
+                                                    <div>
+                                                    <td>{helpdesk.problem.substring(0, 100)}</td>
+                                                    <span onClick={() => setShow(true)}>Read More</span></div> : <div><td>{helpdesk.problem}</td>{helpdesk.problem.length < 100 ? null : <span onClick={() => setShow(false)}>Less More</span>}</div>}
                                                     <td>{helpdesk.status === 0 ? 'Proses' : 'Selesai'}</td>
                                                     <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
                                                         <button type="button" style={{ marginLeft: 5, marginTop: 10 }} class="btn btn-block btn-success" onClick={() => showModalEdit(helpdesk.id)}>Ubah</button>

@@ -72,7 +72,7 @@ function Menu(props) {
                             <Link to="/address"  className="nav-link active">
                                 <i className="nav-icon fas fa-th" />
                                 <p>
-                                    Data Alamat
+                                    Data Alamat Seller
                                 </p>
                             </Link>
                         </li>

@@ -486,7 +486,7 @@ function AddProduct(props) {
                                     <textarea className="textarea" placeholder={props.editData.description} style={{ width: '100%', height: 200, fontSize: 14, lineHeight: 18, border: '1px solid #dddddd', padding: 10 }} defaultValue={""} />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Berat Produk</label>
+                                    <label htmlFor="exampleInputEmail1">Berat Produk (gram)</label>
                                     <input type="text" className="form-control" id="exampleInputEmail1" placeholder={props.editData.weight} onChange={(e) => setWeight(e.target.value)} />
                                 </div>
                                 <div className="form-group">

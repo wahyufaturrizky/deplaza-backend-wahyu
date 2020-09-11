@@ -152,7 +152,7 @@ const {active} = props
                         <Link to="/address"  className={active === 'address' ? "nav-link active" : "nav-link"}>
                             <i className="nav-icon fas fa-th" />
                             <p>
-                                Data Alamat
+                                Data Alamat Seller
                             </p>
                         </Link>
                     </li>

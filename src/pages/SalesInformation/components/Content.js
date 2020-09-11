@@ -517,17 +517,50 @@ const DataTable = (props) => {
                                         </td> : <td>Bukti transfer belum di upload atau metode pembayaran cod</td>}
                                     </div>
                                 </div>
+                                {
+                                   console.log("data detail", detail)
+                                }
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">No. Invoice</label>
                                     <h4>{detail.invoice}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Seller</label>
+                                    <h4>{detail.seller && detail.seller.fullname}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Buyer</label>
+                                    <h4>{detail.customer && detail.customer.fullname}</h4>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Produk</label>
                                     <h4>{detail.details && detail.details[0].metadata_products}</h4>
                                 </div>
                                 <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Varian</label>
+                                    {
+                                        detail.details ? 
+                                            JSON.parse(detail.details[0].variation).map((data,i) => {
+                                                let tvariant = Object.keys(data)[0]
+                                                console.log(data[tvariant])
+                                                return(
+                                                <h4>{tvariant} : {data[tvariant]}</h4>)
+                                            })
+                                        : 
+                                        console.log("data_varian", "kosong")
+                                    }
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Jumlah</label>
+                                    <h4>{detail.details && detail.details[0].qty}</h4>
+                                </div>
+                                <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Total</label>
                                     <h4>{detail.details && detail.details[0].benefit + detail.details[0].commission + detail.details[0].custom_commission + detail.delivery.sipping_cost + detail.details[0].price * detail.details[0].qty}</h4>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputEmail1">Alamat Pengiriman</label>
+                                    <h4>{detail.delivery && detail.delivery.receiver_address}</h4>
                                 </div>
                             </div>
                         </div>

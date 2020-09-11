@@ -48,12 +48,10 @@ const DataTable = (props) => {
         { name: "Alamat", field: "alamat", sortable: false },
         { name: "Tanggal Lahir", field: "tanggal", sortable: false },
         { name: "Jenis Kelamin", field: "jenis", sortable: false },
-        { name: "Transaksi", field: "transaksi", sortable: false },
-        { name: "Komisi", field: "komisi", sortable: false },
-        { name: "Margin", field: "margin", sortable: false },
+        { name: "Total Transaksi", field: "transaksi", sortable: false },
+        { name: "Total Komisi", field: "komisi", sortable: false },
+        { name: "Total Margin", field: "margin", sortable: false },
         { name: "Total", field: "total", sortable: false },
-        { name: "Tarik", field: "tarik", sortable: false },
-        { name: "Sisa", field: "Sisa", sortable: false },
         { name: "Aksi", field: "body", sortable: false }
     ];
 
@@ -354,8 +352,6 @@ const DataTable = (props) => {
                                                     <td>-</td>
                                                     <td>{product.birth_date}</td>
                                                     <td>{product.gender}</td>
-                                                    <td>-</td>
-                                                    <td>-</td>
                                                     <td>-</td>
                                                     <td>-</td>
                                                     <td>-</td>

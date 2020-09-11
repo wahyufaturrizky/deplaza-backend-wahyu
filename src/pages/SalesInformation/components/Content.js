@@ -481,7 +481,6 @@ const DataTable = (props) => {
                                                         <td>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => salesDetail(sale.id)}>Lihat</button>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => showModalEdit(sale.id)}>Input Resi</button>
-                                                            <button type="button" class="btn btn-block btn-success btn-xs">Kirim Data</button>
                                                             <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => sale.status_label === 'Sedang di Dikirim' ? toastr.success('Pesanan sedang dikirim, menunggu konfirmasi dari seller') : showModalStatus(sale.id)}>Rubah Status</button>
                                                         </td>
                                                     </tr>

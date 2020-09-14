@@ -26,6 +26,8 @@ const DataTable = (props) => {
     const [limit, setLimit] = useState(10)
     const [checkedBoxes, setCheckedBoxes] = useState([])
     const [status, setStatus] = useState(0)
+    const [indexingNumber, setIndexingNumber] = useState(null);
+    const [indexingNumberDisplay, setIndexingNumberDisplay] = useState(false);
 
     const headers = [
         { name: "No.", field: "id", sortable: false },
@@ -204,6 +206,16 @@ const DataTable = (props) => {
                 setCurrentPage(json.data.meta.current_page)
                 setProducts(json.data.data);
             }).catch(error => toastr.error(error))
+
+        if (page === 2) {
+          setIndexingNumberDisplay(true);
+          setIndexingNumber(11);
+        } else if (page > 2) {
+          setIndexingNumberDisplay(true);
+          setIndexingNumber((page - 1) * 10);
+        } else {
+          setIndexingNumberDisplay(false);
+        }
     };
 
     // fungsi checkbox delete
@@ -229,307 +241,469 @@ const DataTable = (props) => {
     }
 
     return (
-        <div className="content-wrapper">
-            {/* Content Header (Page header) */}
-            <div className="content-header">
-                <div className="container-fluid">
-                    <div className="row mb-2">
-                        <div className="col-sm-6" style={{ flexDirection: 'row', display: "flex", justifyContent: 'space-around', alignItems: 'center' }}>
-                            <h1 className="m-0 text-dark">Menu Komplain</h1>
-                            <button type="button" class="btn btn-block btn-success btn-sm" style={{ width: 130, height: 40, marginTop: 7 }}>Lihat Data Buyer</button>
-                            <button type="button" class="btn btn-block btn-danger btn-sm" style={{ width: 130, height: 40, }} onClick={modalDeleteMultiple}>Hapus Sekaligus</button>
-                        </div>{/* /.col */}
-                        <div className="col-sm-6">
-                            <ol className="breadcrumb float-sm-right">
-                                <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Menu Komplain</li>
-                            </ol>
-                        </div>{/* /.col */}
-                    </div>{/* /.row */}
-                </div>{/* /.container-fluid */}
+      <div className='content-wrapper'>
+        {/* Content Header (Page header) */}
+        <div className='content-header'>
+          <div className='container-fluid'>
+            <div className='row mb-2'>
+              <div
+                className='col-sm-6'
+                style={{
+                  flexDirection: "row",
+                  display: "flex",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                }}
+              >
+                <h1 className='m-0 text-dark'>Menu Komplain</h1>
+                <button
+                  type='button'
+                  class='btn btn-block btn-success btn-sm'
+                  style={{ width: 130, height: 40, marginTop: 7 }}
+                >
+                  Lihat Data Buyer
+                </button>
+                <button
+                  type='button'
+                  class='btn btn-block btn-danger btn-sm'
+                  style={{ width: 130, height: 40 }}
+                  onClick={modalDeleteMultiple}
+                >
+                  Hapus Sekaligus
+                </button>
+              </div>
+              {/* /.col */}
+              <div className='col-sm-6'>
+                <ol className='breadcrumb float-sm-right'>
+                  <li className='breadcrumb-item'>
+                    <a href='#'>Home</a>
+                  </li>
+                  <li className='breadcrumb-item active'>Menu Komplain</li>
+                </ol>
+              </div>
+              {/* /.col */}
             </div>
-            {/* Main content */}
-            <section className="content">
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-12">
-                            <div className="row w-100">
-                                <div className="col mb-3 col-12 text-center">
-                                    <div className="row">
-                                        <div class="col-md-12 d-flex justify-content-between">
-                                            <Pagination
-                                                total={totalItems}
-                                                limit={limit}
-                                                pageCount={5}
-                                                currentPage={currentPage}
-                                            >
-                                                {({
-                                                    pages,
-                                                    currentPage,
-                                                    hasNextPage,
-                                                    hasPreviousPage,
-                                                    previousPage,
-                                                    nextPage,
-                                                    totalPages,
-                                                    getPageItemProps
-                                                }) => (
-                                                        <div>
-                                                            <button
-                                                                {...getPageItemProps({
-                                                                    pageValue: 1,
-                                                                    onPageChange: handlePageChange,
-                                                                    style: style.pageItem,
-                                                                    className: "page-link"
-                                                                })}
-
-                                                            >
-                                                                {'❮❮'}
-                                                            </button>
-                                                            {hasPreviousPage && (
-                                                                <button
-                                                                    {...getPageItemProps({
-                                                                        pageValue: previousPage,
-                                                                        onPageChange: handlePageChange,
-                                                                        style: style.pageItem,
-                                                                        className: "page-link"
-                                                                    })}
-                                                                >
-                                                                    {'❮'}
-                                                                </button>
-                                                            )}
-
-                                                            {pages.map(page => {
-                                                                let activePage = null;
-                                                                if (currentPage === page) {
-                                                                    activePage = style.pageItemActive;
-                                                                }
-                                                                return (
-                                                                    <button
-                                                                        {...getPageItemProps({
-                                                                            pageValue: page,
-                                                                            key: page,
-                                                                            onPageChange: handlePageChange,
-                                                                            className: "page-link",
-                                                                            style: { ...style.pageItem, ...activePage }
-                                                                        })}
-                                                                    >
-                                                                        {page}
-                                                                    </button>
-                                                                );
-                                                            })}
-
-                                                            {hasNextPage && (
-                                                                <button
-                                                                    {...getPageItemProps({
-                                                                        pageValue: nextPage,
-                                                                        onPageChange: handlePageChange,
-                                                                        style: style.pageItem,
-                                                                        className: "page-link"
-                                                                    })}
-                                                                >
-                                                                    {'❯'}
-                                                                </button>
-                                                            )}
-
-                                                            <button
-                                                                {...getPageItemProps({
-                                                                    pageValue: totalPages,
-                                                                    onPageChange: handlePageChange,
-                                                                    style: style.pageItem,
-                                                                    className: "page-link"
-                                                                })}
-                                                            >
-                                                                {'❯❯'}
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                            </Pagination>
-                                            <Search
-                                                onSearch={value => {
-                                                    setSearch(value);
-                                                    setCurrentPage(1);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <table className="table table-striped">
-                                        <TableHeader
-                                            headers={headers}
-                                            onSorting={(field, order) =>
-                                                setSorting({ field, order })
-                                            }
-                                        />
-                                        <tbody>
-                                            {loading === true ? <Spinner /> : productsData.map((product, i) => (
-                                                <tr>
-                                                    <th scope="row" key={product.id}>
-                                                        <input type="checkbox" className="selectsingle" value="{product.id}" checked={checkedBoxes.find((p) => p.id === product.id)} onChange={(e) => toggleCheckbox(e, product)} />
-									                         &nbsp;&nbsp;
-                                                        {i + 1}
-                                                    </th>
-                                                    <td>-</td>
-                                                    <td>-</td>
-                                                    <td>{product.order_id}</td>
-                                                    <td>{product.reason_id}</td>
-                                                    <td>{product.description}</td>
-                                                    {product.complaint_details && product.complaint_details.length > 0 ? getImage(product.complaint_details.map(image => image.file_url))
-                                                        : <td><img style={{ width: 100, height: 100 }} src={'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                    }
-                                                    <td><img style={{ width: 100, height: 100 }} src={product.image > 0 ? product.image : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-                                                    <td>{product.qty}</td>
-                                                    <td>{product.address_id}</td>
-                                                    <div style={{ flexDirection: 'row', display: 'flex', alignItems: 'center', justifyContent: 'space-around', marginBottom: 10 }}>
-                                                        <button type="button" style={{ marginTop: 9 }} class="btn btn-block btn-success">Lihat</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-success" onClick={() => showModalEdit(product.id)}>Ubah</button>
-                                                        <button type="button" style={{ marginLeft: 5 }} class="btn btn-block btn-danger" onClick={() => deleteData(product.id)}>Hapus</button>
-                                                    </div>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <div className="modal fade" id="modal-lg">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Tambah Produk</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Judul Produk</label>
-                                    <input type="text" className="form-control" id="exampleInputEmail1" placeholder="Judul Produk" onChange={(e) => {
-                                        setTitle(e.target.value)
-                                    }} />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">File input</label>
-                                    <div className="input-group">
-                                        <div className="custom-file">
-                                            <input type="file" className="custom-file-input" id="exampleInputFile" />
-                                            <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" onClick={hideModal}>Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleAddCategory}>Save changes</button>
-                        </div>
-                    </div>
-                    {/* /.modal-content */}
-                </div>
-                {/* /.modal-dialog */}
-            </div>
-            <div className="modal fade" id="modal-detail">
-                <div className="modal-dialog modal-lg">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Detail Produk</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Gambar Produk</label>
-                                    <div>
-                                        {detail.images && detail.images.map(image =>
-                                            <td>
-                                                <img style={{ width: 100, height: 100 }} src={image.file_upload ? image.file_upload : 'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png'} /></td>
-
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputEmail1">Nama Produk</label>
-                                    <h4>{detail.name}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Kategori</label>
-                                    <h4>{detail.category_id}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Brand</label>
-                                    <h4>{detail.brand}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Harga Pokok Produk</label>
-                                    <h4>{detail.price_basic}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Benefit Deplaza</label>
-                                    <h4>{detail.price_benefit}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Komisi</label>
-                                    <h4>{detail.price_commission}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Stock</label>
-                                    <h4>{detail.stock}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Variasi</label>
-                                    <h4>{detail.variation}</h4>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="exampleInputFile">Deskripsi</label>
-                                    <h4>{detail.description}</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-                {/* /.modal-content */}
-            </div>
-            {/* /.modal-dialog */}
-            <div className="modal fade" id="modal-edit">
-                <div className="modal-dialog modal-edit">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h4 className="modal-title">Ubah Status</h4>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label>Status</label>
-                                    <Select
-                                        defaultValue={options[0]}
-                                        isMulti={false}
-                                        options={options}
-                                        closeMenuOnSelect={true}
-                                        onChange={handleChange} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-footer justify-content-between">
-                            <button type="button" className="btn btn-default" data-dismiss="modal" >Close</button>
-                            <button type="button" className="btn btn-primary" onClick={changeData}>Save changes</button>
-                        </div>
-                    </div>
-                    {/* /.modal-content */}
-                </div>
-            </div>
+            {/* /.row */}
+          </div>
+          {/* /.container-fluid */}
         </div>
+        {/* Main content */}
+        <section className='content'>
+          <div className='container-fluid'>
+            <div className='row'>
+              <div className='col-12'>
+                <div className='row w-100'>
+                  <div className='col mb-3 col-12 text-center'>
+                    <div className='row'>
+                      <div class='col-md-12 d-flex justify-content-between'>
+                        <Pagination
+                          total={totalItems}
+                          limit={limit}
+                          pageCount={5}
+                          currentPage={currentPage}
+                        >
+                          {({
+                            pages,
+                            currentPage,
+                            hasNextPage,
+                            hasPreviousPage,
+                            previousPage,
+                            nextPage,
+                            totalPages,
+                            getPageItemProps,
+                          }) => (
+                            <div>
+                              <button
+                                {...getPageItemProps({
+                                  pageValue: 1,
+                                  onPageChange: handlePageChange,
+                                  style: style.pageItem,
+                                  className: "page-link",
+                                })}
+                              >
+                                {"❮❮"}
+                              </button>
+                              {hasPreviousPage && (
+                                <button
+                                  {...getPageItemProps({
+                                    pageValue: previousPage,
+                                    onPageChange: handlePageChange,
+                                    style: style.pageItem,
+                                    className: "page-link",
+                                  })}
+                                >
+                                  {"❮"}
+                                </button>
+                              )}
 
+                              {pages.map((page) => {
+                                let activePage = null;
+                                if (currentPage === page) {
+                                  activePage = style.pageItemActive;
+                                }
+                                return (
+                                  <button
+                                    {...getPageItemProps({
+                                      pageValue: page,
+                                      key: page,
+                                      onPageChange: handlePageChange,
+                                      className: "page-link",
+                                      style: {
+                                        ...style.pageItem,
+                                        ...activePage,
+                                      },
+                                    })}
+                                  >
+                                    {page}
+                                  </button>
+                                );
+                              })}
+
+                              {hasNextPage && (
+                                <button
+                                  {...getPageItemProps({
+                                    pageValue: nextPage,
+                                    onPageChange: handlePageChange,
+                                    style: style.pageItem,
+                                    className: "page-link",
+                                  })}
+                                >
+                                  {"❯"}
+                                </button>
+                              )}
+
+                              <button
+                                {...getPageItemProps({
+                                  pageValue: totalPages,
+                                  onPageChange: handlePageChange,
+                                  style: style.pageItem,
+                                  className: "page-link",
+                                })}
+                              >
+                                {"❯❯"}
+                              </button>
+                            </div>
+                          )}
+                        </Pagination>
+                        <Search
+                          onSearch={(value) => {
+                            setSearch(value);
+                            setCurrentPage(1);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <table className='table table-striped'>
+                      <TableHeader
+                        headers={headers}
+                        onSorting={(field, order) =>
+                          setSorting({ field, order })
+                        }
+                      />
+                      <tbody>
+                        {loading === true ? (
+                          <Spinner />
+                        ) : (
+                          productsData.map((product, i) => (
+                            <tr>
+                              <th scope='row' key={product.id}>
+                                <input
+                                  type='checkbox'
+                                  className='selectsingle'
+                                  value='{product.id}'
+                                  checked={checkedBoxes.find(
+                                    (p) => p.id === product.id
+                                  )}
+                                  onChange={(e) => toggleCheckbox(e, product)}
+                                />
+                                &nbsp;&nbsp;
+                                {indexingNumberDisplay
+                                  ? indexingNumber + i
+                                  : i + 1}
+                              </th>
+                              <td>-</td>
+                              <td>-</td>
+                              <td>{product.order_id}</td>
+                              <td>{product.reason_id}</td>
+                              <td>{product.description}</td>
+                              {product.complaint_details &&
+                              product.complaint_details.length > 0 ? (
+                                getImage(
+                                  product.complaint_details.map(
+                                    (image) => image.file_url
+                                  )
+                                )
+                              ) : (
+                                <td>
+                                  <img
+                                    style={{ width: 100, height: 100 }}
+                                    src={
+                                      "https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png"
+                                    }
+                                  />
+                                </td>
+                              )}
+                              <td>
+                                <img
+                                  style={{ width: 100, height: 100 }}
+                                  src={
+                                    product.image > 0
+                                      ? product.image
+                                      : "https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png"
+                                  }
+                                />
+                              </td>
+                              <td>{product.qty}</td>
+                              <td>{product.address_id}</td>
+                              <div
+                                style={{
+                                  flexDirection: "row",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-around",
+                                  marginBottom: 10,
+                                }}
+                              >
+                                <button
+                                  type='button'
+                                  style={{ marginTop: 9 }}
+                                  class='btn btn-block btn-success'
+                                >
+                                  Lihat
+                                </button>
+                                <button
+                                  type='button'
+                                  style={{ marginLeft: 5 }}
+                                  class='btn btn-block btn-success'
+                                  onClick={() => showModalEdit(product.id)}
+                                >
+                                  Ubah
+                                </button>
+                                <button
+                                  type='button'
+                                  style={{ marginLeft: 5 }}
+                                  class='btn btn-block btn-danger'
+                                  onClick={() => deleteData(product.id)}
+                                >
+                                  Hapus
+                                </button>
+                              </div>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className='modal fade' id='modal-lg'>
+          <div className='modal-dialog modal-lg'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h4 className='modal-title'>Tambah Produk</h4>
+                <button
+                  type='button'
+                  className='close'
+                  data-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <span aria-hidden='true'>×</span>
+                </button>
+              </div>
+              <div className='modal-body'>
+                <div className='card-body'>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputEmail1'>Judul Produk</label>
+                    <input
+                      type='text'
+                      className='form-control'
+                      id='exampleInputEmail1'
+                      placeholder='Judul Produk'
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>File input</label>
+                    <div className='input-group'>
+                      <div className='custom-file'>
+                        <input
+                          type='file'
+                          className='custom-file-input'
+                          id='exampleInputFile'
+                        />
+                        <label
+                          className='custom-file-label'
+                          htmlFor='exampleInputFile'
+                        >
+                          Choose file
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='modal-footer justify-content-between'>
+                <button
+                  type='button'
+                  className='btn btn-default'
+                  onClick={hideModal}
+                >
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  onClick={handleAddCategory}
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+            {/* /.modal-content */}
+          </div>
+          {/* /.modal-dialog */}
+        </div>
+        <div className='modal fade' id='modal-detail'>
+          <div className='modal-dialog modal-lg'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h4 className='modal-title'>Detail Produk</h4>
+                <button
+                  type='button'
+                  className='close'
+                  data-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <span aria-hidden='true'>×</span>
+                </button>
+              </div>
+              <div className='modal-body'>
+                <div className='card-body'>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputEmail1'>Gambar Produk</label>
+                    <div>
+                      {detail.images &&
+                        detail.images.map((image) => (
+                          <td>
+                            <img
+                              style={{ width: 100, height: 100 }}
+                              src={
+                                image.file_upload
+                                  ? image.file_upload
+                                  : "https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png"
+                              }
+                            />
+                          </td>
+                        ))}
+                    </div>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputEmail1'>Nama Produk</label>
+                    <h4>{detail.name}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Kategori</label>
+                    <h4>{detail.category_id}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Brand</label>
+                    <h4>{detail.brand}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Harga Pokok Produk</label>
+                    <h4>{detail.price_basic}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Benefit Deplaza</label>
+                    <h4>{detail.price_benefit}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Komisi</label>
+                    <h4>{detail.price_commission}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Stock</label>
+                    <h4>{detail.stock}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Variasi</label>
+                    <h4>{detail.variation}</h4>
+                  </div>
+                  <div className='form-group'>
+                    <label htmlFor='exampleInputFile'>Deskripsi</label>
+                    <h4>{detail.description}</h4>
+                  </div>
+                </div>
+              </div>
+              <div className='modal-footer justify-content-between'>
+                <button
+                  type='button'
+                  className='btn btn-default'
+                  data-dismiss='modal'
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* /.modal-content */}
+        </div>
+        {/* /.modal-dialog */}
+        <div className='modal fade' id='modal-edit'>
+          <div className='modal-dialog modal-edit'>
+            <div className='modal-content'>
+              <div className='modal-header'>
+                <h4 className='modal-title'>Ubah Status</h4>
+                <button
+                  type='button'
+                  className='close'
+                  data-dismiss='modal'
+                  aria-label='Close'
+                >
+                  <span aria-hidden='true'>×</span>
+                </button>
+              </div>
+              <div className='modal-body'>
+                <div className='card-body'>
+                  <div className='form-group'>
+                    <label>Status</label>
+                    <Select
+                      defaultValue={options[0]}
+                      isMulti={false}
+                      options={options}
+                      closeMenuOnSelect={true}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='modal-footer justify-content-between'>
+                <button
+                  type='button'
+                  className='btn btn-default'
+                  data-dismiss='modal'
+                >
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  onClick={changeData}
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+            {/* /.modal-content */}
+          </div>
+        </div>
+      </div>
     );
 };
 

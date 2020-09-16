@@ -54,6 +54,7 @@ const DataTable = (props) => {
     { name: "Total Komisi", field: "komisi", sortable: false },
     { name: "Total Margin", field: "margin", sortable: false },
     { name: "Total", field: "total", sortable: false },
+    { name: "Status", field: "status", sortable: false },
     { name: "Aksi", field: "body", sortable: false },
   ];
 
@@ -78,7 +79,7 @@ const DataTable = (props) => {
         setProducts(res.data.data);
         setLoading(false);
       })
-      .catch((error) => toastr.error(error));
+      .catch((error) => console.log(error.response));
   };
 
   // fungsi untuk search
@@ -217,13 +218,13 @@ const DataTable = (props) => {
   };
 
   return (
-    <div className='content-wrapper'>
+    <div className="content-wrapper">
       {/* Content Header (Page header) */}
-      <div className='content-header'>
-        <div className='container-fluid'>
-          <div className='row mb-2'>
+      <div className="content-header">
+        <div className="container-fluid">
+          <div className="row mb-2">
             <div
-              className='col-sm-6'
+              className="col-sm-6"
               style={{
                 flexDirection: "row",
                 display: "flex",
@@ -231,7 +232,7 @@ const DataTable = (props) => {
                 alignItems: "center",
               }}
             >
-              <h1 className='m-0 text-dark'>Menu Seller</h1>
+              <h1 className="m-0 text-dark">Menu Seller</h1>
               <div
                 style={{
                   display: "flex",
@@ -240,17 +241,17 @@ const DataTable = (props) => {
                 }}
               >
                 <button
-                  type='button'
-                  class='btn btn-block btn-success btn-xs'
+                  type="button"
+                  class="btn btn-block btn-success btn-xs"
                   style={{ height: 40, marginTop: 7, marginRight: 10 }}
-                  data-toggle='modal'
-                  data-target='#modal-lg'
+                  data-toggle="modal"
+                  data-target="#modal-lg"
                 >
                   Tambah Seller
                 </button>
                 <button
-                  type='button'
-                  class='btn btn-block btn-danger btn-xs'
+                  type="button"
+                  class="btn btn-block btn-danger btn-xs"
                   style={{ marginTop: 7 }}
                 >
                   Hapus Sekaligus
@@ -258,12 +259,12 @@ const DataTable = (props) => {
               </div>
             </div>
             {/* /.col */}
-            <div className='col-sm-6'>
-              <ol className='breadcrumb float-sm-right'>
-                <li className='breadcrumb-item'>
-                  <a href='#'>Home</a>
+            <div className="col-sm-6">
+              <ol className="breadcrumb float-sm-right">
+                <li className="breadcrumb-item">
+                  <a href="#">Home</a>
                 </li>
-                <li className='breadcrumb-item active'>Menu Seller</li>
+                <li className="breadcrumb-item active">Menu Seller</li>
               </ol>
             </div>
             {/* /.col */}
@@ -274,14 +275,14 @@ const DataTable = (props) => {
       </div>
       {/* Main content */}
 
-      <section className='content'>
-        <div className='container-fluid'>
-          <div className='row'>
-            <div className='col-12'>
-              <div className='row w-100'>
-                <div className='col mb-3 col-12 text-center'>
-                  <div className='row'>
-                    <div class='col-md-12 d-flex justify-content-between'>
+      <section className="content">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div className="row w-100">
+                <div className="col mb-3 col-12 text-center">
+                  <div className="row">
+                    <div class="col-md-12 d-flex justify-content-between">
                       <Pagination
                         total={totalItems}
                         limit={limit}
@@ -380,7 +381,7 @@ const DataTable = (props) => {
                     </div>
                   </div>
 
-                  <table className='table table-striped'>
+                  <table className="table table-striped">
                     <TableHeader
                       headers={headers}
                       onSorting={(field, order) => setSorting({ field, order })}
@@ -391,11 +392,11 @@ const DataTable = (props) => {
                       ) : (
                         productsData.map((product, i) => (
                           <tr>
-                            <th scope='row' key={product.id}>
+                            <th scope="row" key={product.id}>
                               <input
-                                type='checkbox'
-                                className='selectsingle'
-                                value='{category.id}'
+                                type="checkbox"
+                                className="selectsingle"
+                                value="{category.id}"
                               />
                               &nbsp;&nbsp;
                               {indexingNumberDisplay
@@ -412,24 +413,19 @@ const DataTable = (props) => {
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
+                            <td>-</td>
                             <td>
                               <button
-                                type='button'
-                                class='btn btn-block btn-success btn-xs'
-                              >
-                                Lihat
-                              </button>
-                              <button
-                                type='button'
-                                class='btn btn-block btn-success btn-xs'
+                                type="button"
+                                class="btn btn-block btn-success btn-xs"
                                 onClick={() => showModalEdit(product.id)}
                               >
                                 Ubah
                               </button>
                               {/* <button type="button" class="btn btn-block btn-success btn-xs" onClick={() => props.history.push('/buyer', product)}>Daftar Buyer</button> */}
                               <button
-                                type='button'
-                                class='btn btn-block btn-danger btn-xs'
+                                type="button"
+                                class="btn btn-block btn-danger btn-xs"
                               >
                                 Hapus
                               </button>
@@ -445,77 +441,77 @@ const DataTable = (props) => {
           </div>
         </div>
       </section>
-      <div className='modal fade' id='modal-lg'>
-        <div className='modal-dialog modal-lg'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Tambah Seller</h4>
+      <div className="modal fade" id="modal-lg">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Tambah Seller</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Email</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Email</label>
                   <input
-                    type='email'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Email'
+                    type="email"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Email"
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Password</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Password</label>
                   <input
-                    type='password'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Password'
+                    type="password"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Password"
                     onChange={(e) => {
                       setPassword(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Fullname</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Fullname</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Fullname'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Fullname"
                     onChange={(e) => {
                       setName(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Phone</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Phone</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Phone'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Phone"
                     onChange={(e) => {
                       setPhone(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Username</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Username</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Username'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Username"
                     onChange={(e) => {
                       setUsername(e.target.value);
                     }}
@@ -523,17 +519,17 @@ const DataTable = (props) => {
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close
               </button>
               <button
-                type='button'
-                className='btn btn-primary'
+                type="button"
+                className="btn btn-primary"
                 onClick={handleAddCategory}
               >
                 Tambah Seller
@@ -544,24 +540,24 @@ const DataTable = (props) => {
         </div>
         {/* /.modal-dialog */}
       </div>
-      <div className='modal fade' id='modal-detail'>
-        <div className='modal-dialog modal-lg'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Detail Produk</h4>
+      <div className="modal fade" id="modal-detail">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Detail Produk</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Gambar Produk</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Gambar Produk</label>
                   <div>
                     {detail.images &&
                       detail.images.map((image) => (
@@ -578,49 +574,49 @@ const DataTable = (props) => {
                       ))}
                   </div>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Nama Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Nama Produk</label>
                   <h4>{detail.name}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Kategori</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Kategori</label>
                   <h4>{detail.category_id}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Brand</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Brand</label>
                   <h4>{detail.brand}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Harga Pokok Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Harga Pokok Produk</label>
                   <h4>{detail.price_basic}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Benefit Deplaza</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Benefit Deplaza</label>
                   <h4>{detail.price_benefit}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Komisi</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Komisi</label>
                   <h4>{detail.price_commission}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Stock</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Stock</label>
                   <h4>{detail.stock}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Variasi</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Variasi</label>
                   <h4>{detail.variation}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Deskripsi</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Deskripsi</label>
                   <h4>{detail.description}</h4>
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
-                data-dismiss='modal'
+                type="button"
+                className="btn btn-default"
+                data-dismiss="modal"
               >
                 Close
               </button>
@@ -630,112 +626,112 @@ const DataTable = (props) => {
         {/* /.modal-content */}
       </div>
       {/* /.modal-dialog */}
-      <div className='modal fade' id='modal-edit'>
-        <div className='modal-dialog modal-edit'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Ubah Data Seller</h4>
+      <div className="modal fade" id="modal-edit">
+        <div className="modal-dialog modal-edit">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Ubah Data Seller</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Username</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Username</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.username}
                     onChange={(e) => {
                       setUsername(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Fullname</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Fullname</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.fullname}
                     onChange={(e) => {
                       setFullname(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Email</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Email</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.email}
                     onChange={(e) => {
                       setEmail(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Phone</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Phone</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.phone}
                     onChange={(e) => {
                       setPhone(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Password</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Password</label>
                   <input
-                    type='password'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="password"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.password}
                     onChange={(e) => {
                       setPassword(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Tanggal Lahir</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Tanggal Lahir</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.birth_date}
                     onChange={(e) => {
                       setBirth(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Gender</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Gender</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.gender}
                     onChange={(e) => {
                       setGender(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Educational Stage</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Educational Stage</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.educational_stage}
                     onChange={(e) => {
                       setEdu(e.target.value);
@@ -744,17 +740,17 @@ const DataTable = (props) => {
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close
               </button>
               <button
-                type='button'
-                className='btn btn-primary'
+                type="button"
+                className="btn btn-primary"
                 onClick={changeData}
               >
                 Ubah Seller

@@ -23,7 +23,7 @@ const URL_TRACING = "/shipment/tracing";
 
 const DataTable = (props) => {
   const [data, setData] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(6);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -329,24 +329,24 @@ const DataTable = (props) => {
     }
   };
 
-  console.log(detail.details && detail.details[0].benefit);
+  console.log(salesData);
 
   return (
-    <div className='content-wrapper'>
+    <div className="content-wrapper">
       {/* Content Header (Page header) */}
-      <div className='content-header'>
-        <div className='container-fluid'>
-          <div className='row mb-2'>
-            <div className='col-sm-6'>
-              <h1 className='m-0 text-dark'>Informasi Penjualan</h1>
+      <div className="content-header">
+        <div className="container-fluid">
+          <div className="row mb-2">
+            <div className="col-sm-6">
+              <h1 className="m-0 text-dark">Informasi Penjualan</h1>
             </div>
             {/* /.col */}
-            <div className='col-sm-6'>
-              <ol className='breadcrumb float-sm-right'>
-                <li className='breadcrumb-item'>
-                  <a href='#'>Home</a>
+            <div className="col-sm-6">
+              <ol className="breadcrumb float-sm-right">
+                <li className="breadcrumb-item">
+                  <a href="#">Home</a>
                 </li>
-                <li className='breadcrumb-item active'>Informasi Penjualan</li>
+                <li className="breadcrumb-item active">Informasi Penjualan</li>
               </ol>
             </div>
             {/* /.col */}
@@ -356,14 +356,14 @@ const DataTable = (props) => {
         {/* /.container-fluid */}
       </div>
       {/* Main content */}
-      <section className='content'>
-        <div className='container-fluid'>
-          <div className='row'>
-            <div className='col-12'>
-              <div className='row w-100'>
-                <div className='col mb-3 col-12 text-center'>
-                  <div className='row'>
-                    <div class='col-md-12 d-flex justify-content-between'>
+      <section className="content">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div className="row w-100">
+                <div className="col mb-3 col-12 text-center">
+                  <div className="row">
+                    <div class="col-md-12 d-flex justify-content-between">
                       <Pagination
                         total={totalItems}
                         limit={limit}
@@ -459,7 +459,7 @@ const DataTable = (props) => {
                     </div>
                   </div>
 
-                  <table className='table table-striped'>
+                  <table className="table table-striped">
                     <TableHeader
                       headers={headers}
                       onSorting={(field, order) => setSorting({ field, order })}
@@ -515,7 +515,7 @@ const DataTable = (props) => {
                           //  console.log(keyValue);
                           return (
                             <tr>
-                              <th scope='row' key={sale && sale.id}>
+                              <th scope="row" key={sale && sale.id}>
                                 {indexingNumberDisplay
                                   ? indexingNumber + i
                                   : i + 1}
@@ -532,7 +532,7 @@ const DataTable = (props) => {
                                   : "-"}
                               </td>
                               <td>{sale && sale[0].metadata_products}</td>
-                              {sale === null ? (
+                              {sale && sale !== null ? (
                                 <td>-</td>
                               ) : (
                                 <td>
@@ -578,22 +578,22 @@ const DataTable = (props) => {
                               <td>{sale && sale.is_cod ? "COD" : "TF"}</td>
                               <td>
                                 <button
-                                  type='button'
-                                  class='btn btn-block btn-success btn-xs'
+                                  type="button"
+                                  class="btn btn-block btn-success btn-xs"
                                   onClick={() => salesDetail(sale.id)}
                                 >
                                   Lihat
                                 </button>
                                 <button
-                                  type='button'
-                                  class='btn btn-block btn-success btn-xs'
+                                  type="button"
+                                  class="btn btn-block btn-success btn-xs"
                                   onClick={() => showModalEdit(sale.id)}
                                 >
                                   Input Resi
                                 </button>
                                 <button
-                                  type='button'
-                                  class='btn btn-block btn-success btn-xs'
+                                  type="button"
+                                  class="btn btn-block btn-success btn-xs"
                                   onClick={() =>
                                     sale.status_label === "Sedang di Dikirim"
                                       ? toastr.success(
@@ -617,24 +617,24 @@ const DataTable = (props) => {
           </div>
         </div>
       </section>
-      <div className='modal fade' id='modal-detail'>
-        <div className='modal-dialog modal-lg'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Detail Order</h4>
+      <div className="modal fade" id="modal-detail">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Detail Order</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Bukti Transfer</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Bukti Transfer</label>
                   <div>
                     {detail.payment &&
                     detail.payment.metadata_decode.length > 0 ? (
@@ -660,26 +660,26 @@ const DataTable = (props) => {
                   </div>
                 </div>
                 {console.log("data detail", detail)}
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>No. Invoice</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">No. Invoice</label>
                   <h4>{detail.invoice}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Seller</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Seller</label>
                   <h4>{detail.seller && detail.seller.fullname}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Buyer</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Buyer</label>
                   <h4>{detail.customer && detail.customer.fullname}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Produk</label>
                   <h4>
                     {detail.details && detail.details[0].metadata_products}
                   </h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Varian</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Varian</label>
                   {detail.details
                     ? JSON.parse(detail.details[0].variation).map((data, i) => {
                         let tvariant = Object.keys(data)[0];
@@ -692,12 +692,12 @@ const DataTable = (props) => {
                       })
                     : console.log("data_varian", "kosong")}
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Jumlah</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Jumlah</label>
                   <h4>{detail.details && detail.details[0].qty}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Total</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Total</label>
                   <h4>
                     {detail.details &&
                       detail.details[0].benefit +
@@ -707,17 +707,17 @@ const DataTable = (props) => {
                         detail.details[0].price * detail.details[0].qty}
                   </h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Alamat Pengiriman</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Alamat Pengiriman</label>
                   <h4>{detail.delivery && detail.delivery.receiver_address}</h4>
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
-                data-dismiss='modal'
+                type="button"
+                className="btn btn-default"
+                data-dismiss="modal"
               >
                 Close
               </button>
@@ -726,50 +726,50 @@ const DataTable = (props) => {
         </div>
         {/* /.modal-content */}
       </div>
-      <div className='modal fade' id='modal-edit'>
-        <div className='modal-dialog modal-edit'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Input Resi</h4>
+      <div className="modal fade" id="modal-edit">
+        <div className="modal-dialog modal-edit">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Input Resi</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>No. Resi</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">No. Resi</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='123456789'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="123456789"
                     onChange={(e) => {
                       setTrackingId(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Kurir</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Kurir</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={dataCourier && dataCourier.label}
                     value={dataCourier && dataCourier.label}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Jenis Layanan</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Jenis Layanan</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={
                       detail.delivery && detail.delivery.package_courier
                     }
@@ -778,17 +778,17 @@ const DataTable = (props) => {
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close
               </button>
               <button
-                type='button'
-                className='btn btn-primary'
+                type="button"
+                className="btn btn-primary"
                 onClick={
                   detail.status_label === "Sedang di Dikirim"
                     ? handleEditResi
@@ -804,33 +804,33 @@ const DataTable = (props) => {
           {/* /.modal-content */}
         </div>
       </div>
-      <div className='modal fade' id='modal-status'>
-        <div className='modal-dialog modal-status'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Rubah Status</h4>
+      <div className="modal fade" id="modal-status">
+        <div className="modal-dialog modal-status">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Rubah Status</h4>
               <button
-                type='button'
-                className='close'
+                type="button"
+                className="close"
                 onClick={hideModal}
-                aria-label='Close'
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
+            <div className="modal-body">
+              <div className="card-body">
                 {detail.available_status_label ? (
-                  <div className='form-group'>
+                  <div className="form-group">
                     {Object.keys(
                       detail.available_status_label
                         ? detail.available_status_label
                         : "null"
                     ).map((key, i) => (
                       <button
-                        type='button'
+                        type="button"
                         value={key}
-                        class='btn btn-block btn-success btn-sm'
+                        class="btn btn-block btn-success btn-sm"
                         onClick={() => changeStatus(key, detail.id)}
                       >
                         {detail.available_status_label[key] ===
@@ -845,10 +845,10 @@ const DataTable = (props) => {
                 )}
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close

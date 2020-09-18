@@ -98,7 +98,7 @@ const DataTable = (props) => {
   console.log(productsData);
 
   const showModalEdit = async (idData) => {
-    await axiosConfig.get(`${URL_STRING}/${idData}`).then((res) => {
+    await axiosConfig.get(`withdrawal/${idData}`).then((res) => {
       setDetail(res.data.data);
     });
     setId(idData);
@@ -137,7 +137,7 @@ const DataTable = (props) => {
   const changeData = () => {
     const data = { approval: status, _method: "put" };
     axiosConfig
-      .post(`${URL_STRING}/${id}/approve`, data)
+      .post(`withdrawal/${id}/approve`, data)
       .then((res) => {
         getProduct();
         toastr.success("Berhasil rubah status");
@@ -157,7 +157,7 @@ const DataTable = (props) => {
     }).then((willDelete) => {
       if (willDelete) {
         const data = { _method: "delete", id: checkedBoxes };
-        axiosConfig.post(`${URL_STRING}/delete-batch`, data).then(() => {
+        axiosConfig.post(`withdrawal/delete-batch`, data).then(() => {
           getProduct();
           toastr.success("Berhasil dihapus");
         });
@@ -174,7 +174,7 @@ const DataTable = (props) => {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        axiosConfig.delete(`${URL_STRING}/${id}/delete`).then(() => {
+        axiosConfig.delete(`withdrawal/${id}/delete`).then(() => {
           getProduct();
           toastr.success("berhasil menghapus");
         });

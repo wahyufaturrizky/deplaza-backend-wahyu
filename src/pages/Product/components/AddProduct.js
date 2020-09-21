@@ -159,51 +159,51 @@ function AddProduct(props) {
     return (
       <div>
         {values.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <label style={{ marginLeft: -55, marginTop: 10 }}>Variasi 1</label>
             <br />
             <label>Nama</label>
             <input
-              type='text'
-              className='form-control'
+              type="text"
+              className="form-control"
               onChange={(e) => setNameVariation(e.target.value)}
             />
           </div>
         ) : null}
         {values.val.length > 0 ? <label>Pilihan</label> : null}
         {values.val.map((el, i) => (
-          <div key={i} className='form-group'>
+          <div key={i} className="form-group">
             <div style={{ display: "flex", flexDirection: "row" }}>
               <input
-                type='text'
+                type="text"
                 value={el || ""}
                 onChange={handleChange.bind(i)}
-                className='form-control'
+                className="form-control"
               />
-              <button onClick={removeClick.bind(i)} class='btn btn-default'>
-                <i className='fas fa-trash' />
+              <button onClick={removeClick.bind(i)} class="btn btn-default">
+                <i className="fas fa-trash" />
               </button>
             </div>
           </div>
         ))}
         {values.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <button
-              type='button'
-              class='btn btn-block btn-primary btn-sm'
+              type="button"
+              class="btn btn-block btn-primary btn-sm"
               onClick={addClick}
             >
-              <i className='fas fa-plus' /> Tambahkan Pilihan
+              <i className="fas fa-plus" /> Tambahkan Pilihan
             </button>
             <label style={{ marginLeft: -55, marginTop: 10 }}>Variasi 2</label>
             <br />
             {secondValues.val.length > 0 ? null : (
               <button
-                type='button'
-                class='btn btn-block btn-primary btn-sm'
+                type="button"
+                class="btn btn-block btn-primary btn-sm"
                 onClick={addClick2}
               >
-                <i className='fas fa-plus' /> Tambah
+                <i className="fas fa-plus" /> Tambah
               </button>
             )}
           </div>
@@ -216,52 +216,52 @@ function AddProduct(props) {
     return (
       <div>
         {secondValues.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <label>Nama</label>
             <input
-              type='text'
-              className='form-control'
+              type="text"
+              className="form-control"
               onChange={(e) => setNameSecondVariation(e.target.value)}
             />
           </div>
         ) : null}
         {secondValues.val.length > 0 ? <label>Pilihan</label> : null}
         {secondValues.val.map((el, i) => (
-          <div key={i} className='form-group'>
+          <div key={i} className="form-group">
             <div style={{ display: "flex", flexDirection: "row" }}>
               <input
-                type='text'
+                type="text"
                 value={el || ""}
                 onChange={handleSecondChange.bind(i)}
-                className='form-control'
+                className="form-control"
               />
               <button
                 onClick={removeSecondClick.bind(i)}
-                class='btn btn-default'
+                class="btn btn-default"
               >
-                <i className='fas fa-trash' />
+                <i className="fas fa-trash" />
               </button>
             </div>
           </div>
         ))}
         {secondValues.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <button
-              type='button'
-              class='btn btn-block btn-primary btn-sm'
+              type="button"
+              class="btn btn-block btn-primary btn-sm"
               onClick={addClick2}
             >
-              <i className='fas fa-plus' /> Tambahkan Pilihan
+              <i className="fas fa-plus" /> Tambahkan Pilihan
             </button>
             <label style={{ marginLeft: -55, marginTop: 10 }}>Variasi 3</label>
             <br />
             {thirdValues.val.length > 0 ? null : (
               <button
-                type='button'
-                class='btn btn-block btn-primary btn-sm'
+                type="button"
+                class="btn btn-block btn-primary btn-sm"
                 onClick={addClick3}
               >
-                <i className='fas fa-plus' /> Tambah
+                <i className="fas fa-plus" /> Tambah
               </button>
             )}
           </div>
@@ -274,42 +274,42 @@ function AddProduct(props) {
     return (
       <div>
         {thirdValues.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <label>Nama</label>
             <input
-              type='text'
-              className='form-control'
+              type="text"
+              className="form-control"
               onChange={(e) => setNameThirdVariation(e.target.value)}
             />
           </div>
         ) : null}
         {thirdValues.val.length > 0 ? <label>Pilihan</label> : null}
         {thirdValues.val.map((el, i) => (
-          <div key={i} className='form-group'>
+          <div key={i} className="form-group">
             <div style={{ display: "flex", flexDirection: "row" }}>
               <input
-                type='text'
+                type="text"
                 value={el || ""}
                 onChange={handleThirdChange.bind(i)}
-                className='form-control'
+                className="form-control"
               />
               <button
                 onClick={removeThirdClick.bind(i)}
-                class='btn btn-default'
+                class="btn btn-default"
               >
-                <i className='fas fa-trash' />
+                <i className="fas fa-trash" />
               </button>
             </div>
           </div>
         ))}
         {thirdValues.val.length > 0 ? (
-          <div className='form-group'>
+          <div className="form-group">
             <button
-              type='button'
-              class='btn btn-block btn-primary btn-sm'
+              type="button"
+              class="btn btn-block btn-primary btn-sm"
               onClick={addClick3}
             >
-              <i className='fas fa-plus' /> Tambahkan Pilihan
+              <i className="fas fa-plus" /> Tambahkan Pilihan
             </button>
           </div>
         ) : null}
@@ -412,12 +412,6 @@ function AddProduct(props) {
       toastr.warning("Mohon isi kota asal produk");
     } else if (!codCityId) {
       toastr.warning("Mohon isi daerah cod");
-    } else if (!nameVariation) {
-      toastr.warning("Mohon isi Variasi Pertama");
-    } else if (!nameSecondVariation) {
-      toastr.warning("Mohon isi Variasi Kedua");
-    } else if (!nameThirdVariation) {
-      toastr.warning("Mohon isi Variasi Ketiga");
     } else {
       setLoading(true);
       const test = [
@@ -499,69 +493,69 @@ function AddProduct(props) {
   ]);
 
   return (
-    <section class='content'>
-      <div class='container-fluid'>
-        <div className='card card-default'>
-          <div className='card-header'>
-            <h3 className='card-title'>Tambah Produk</h3>
-            <div className='card-tools'>
+    <section class="content">
+      <div class="container-fluid">
+        <div className="card card-default">
+          <div className="card-header">
+            <h3 className="card-title">Tambah Produk</h3>
+            <div className="card-tools">
               <button
-                type='button'
-                className='btn btn-tool'
-                data-card-widget='collapse'
+                type="button"
+                className="btn btn-tool"
+                data-card-widget="collapse"
               >
-                <i className='fas fa-minus' />
+                <i className="fas fa-minus" />
               </button>
               <button
-                type='button'
-                className='btn btn-tool'
-                data-card-widget='remove'
+                type="button"
+                className="btn btn-tool"
+                data-card-widget="remove"
               >
-                <i className='fas fa-times' />
+                <i className="fas fa-times" />
               </button>
             </div>
           </div>
           {/* /.card-header */}
-          <div className='card-body'>
-            <div className='row'>
-              <div className='col-md-12'>
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-12">
                 {/* <MultipleUpload/> */}
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Gambar Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Gambar Produk</label>
                   {urls.length > 0 && (
-                    <div className='form-group multi-preview row'>
+                    <div className="form-group multi-preview row">
                       {displayUploadedFiles(urls)}
                     </div>
                   )}
-                  <div className='input-group'>
-                    <div className='custom-file'>
+                  <div className="input-group">
+                    <div className="custom-file">
                       <input
-                        type='file'
-                        className='custom-file-input'
-                        id='exampleInputFile'
+                        type="file"
+                        className="custom-file-input"
+                        id="exampleInputFile"
                         onChange={uploadMultipleFiles}
                         multiple
                       />
                       <label
-                        className='custom-file-label'
-                        htmlFor='exampleInputFile'
+                        className="custom-file-label"
+                        htmlFor="exampleInputFile"
                       >
                         Pilih gambar
                       </label>
                     </div>
                   </div>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Judul Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Judul Produk</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Judul Produk'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Judul Produk"
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
+                <div className="form-group">
                   <label>Kategori</label>
                   <Select
                     defaultValue={optionsCategory[0]}
@@ -571,80 +565,80 @@ function AddProduct(props) {
                     onChange={handleChangeCategory}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Brand</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Brand</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Tulis brand'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Tulis brand"
                     onChange={(e) => setBrand(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Harga Pokok Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Harga Pokok Produk</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='10000'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="10000"
                     onChange={(e) => setPriceBasic(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Benefit Deplaza</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Benefit Deplaza</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='10000'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="10000"
                     onChange={(e) => setPriceBenefit(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Komisi</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Komisi</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='10000'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="10000"
                     onChange={(e) => setPriceCommission(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Stok Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Stok Produk</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='100'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="100"
                     onChange={(e) => setStock(e.target.value)}
                   />
                 </div>
-                <label htmlFor='exampleInputEmail1'>Variasi</label>
+                <label htmlFor="exampleInputEmail1">Variasi</label>
                 <div style={{ marginLeft: 50 }}>
-                  <div className='col-md-6'>
-                    <div className='form-group'>
+                  <div className="col-md-6">
+                    <div className="form-group">
                       {createInputs()}
                       {createInputs2()}
                       {createInputs3()}
                       {values.val.length === 0 ? (
                         <button
-                          type='button'
-                          class='btn btn-block btn-primary btn-sm'
+                          type="button"
+                          class="btn btn-block btn-primary btn-sm"
                           onClick={addClick}
                         >
-                          <i className='fas fa-plus' /> Aktifkan Variasi
+                          <i className="fas fa-plus" /> Aktifkan Variasi
                         </button>
                       ) : null}
                     </div>
                   </div>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Deskripsi Produk</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Deskripsi Produk</label>
                   <textarea
-                    className='textarea'
-                    placeholder='Place some text here'
+                    className="textarea"
+                    placeholder="Place some text here"
                     style={{
                       width: "100%",
                       height: 200,
@@ -656,31 +650,31 @@ function AddProduct(props) {
                     defaultValue={""}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">
                     Berat Produk (gram)
                   </label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="1"
                     onChange={(e) => setWeight(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">
                     Supplier (Sumber Produk)
                   </label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='tokopedia.com'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="tokopedia.com"
                     onChange={(e) => setSource(e.target.value)}
                   />
                 </div>
-                <div className='form-group'>
+                <div className="form-group">
                   <label>Kota Asal Produk</label>
                   <Select
                     defaultValue={optionsCities[0]}
@@ -690,7 +684,7 @@ function AddProduct(props) {
                     onChange={handleChangeCities}
                   />
                 </div>
-                <div className='form-group'>
+                <div className="form-group">
                   <label>Bisa COD / Tidak</label>
                   <Select
                     defaultValue={optionsCod[0]}
@@ -700,7 +694,7 @@ function AddProduct(props) {
                     onChange={handleChangeCod}
                   />
                 </div>
-                <div className='form-group'>
+                <div className="form-group">
                   <label>Daerah COD</label>
                   <Select
                     defaultValue={options[0]}
@@ -711,19 +705,19 @@ function AddProduct(props) {
                   />
                 </div>
                 {loading ? (
-                  <button type='button' class='btn btn-block btn-primary'>
+                  <button type="button" class="btn btn-block btn-primary">
                     {" "}
                     <Loader
-                      type='Oval'
-                      color='#fff'
+                      type="Oval"
+                      color="#fff"
                       height={20}
                       width={20}
                     />{" "}
                   </button>
                 ) : (
                   <button
-                    type='button'
-                    class='btn btn-block btn-primary'
+                    type="button"
+                    class="btn btn-block btn-primary"
                     onClick={handleSubmit}
                   >
                     Simpan

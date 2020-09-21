@@ -680,7 +680,7 @@ const DataTable = (props) => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Varian</label>
-                  {detail.details
+                  {detail && detail.details
                     ? JSON.parse(detail.details[0].variation).map((data, i) => {
                         let tvariant = Object.keys(data)[0];
                         console.log(data[tvariant]);

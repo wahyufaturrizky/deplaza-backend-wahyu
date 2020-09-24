@@ -23,7 +23,7 @@ const URL_TRACING = "/shipment/tracing";
 
 const DataTable = (props) => {
   const [data, setData] = useState([]);
-  const [totalItems, setTotalItems] = useState(6);
+  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -329,7 +329,7 @@ const DataTable = (props) => {
     }
   };
 
-  console.log(salesData);
+  console.log(detail.details && detail.details[0].benefit);
 
   return (
     <div className="content-wrapper">
@@ -468,6 +468,7 @@ const DataTable = (props) => {
                       {loading === true ? (
                         <Spinner />
                       ) : (
+                        salesData &&
                         salesData.map((sale, i) => {
                           let variation = null;
                           let objKey = null;
@@ -532,25 +533,34 @@ const DataTable = (props) => {
                                   : "-"}
                               </td>
                               <td>{sale && sale[0].metadata_products}</td>
-                              {sale && sale !== null ? (
-                                <td>-</td>
-                              ) : (
+                              {sale && sale[0].variation ? (
                                 <td>
                                   {objKey[0] === undefined
                                     ? null
-                                    : `${Object.keys(variation[0])}:`}{" "}
+                                    : `${
+                                        variation[0] &&
+                                        Object.keys(variation[0])
+                                      }:`}{" "}
                                   {variation[0] && variation[0][key2]}
                                   {"\n"}
                                   {objKey[1] === undefined
                                     ? null
-                                    : `${Object.keys(variation[1])}:`}{" "}
+                                    : `${
+                                        variation[1] &&
+                                        Object.keys(variation[1])
+                                      }:`}{" "}
                                   {variation[1] && variation[1][key3]}
                                   {"\n"}
                                   {objKey[2] === undefined
                                     ? null
-                                    : `${Object.keys(variation[2])}:`}{" "}
+                                    : `${
+                                        variation[2] &&
+                                        Object.keys(variation[2])
+                                      }:`}{" "}
                                   {variation[2] && variation[2][key4]}
                                 </td>
+                              ) : (
+                                <td>-</td>
                               )}
                               <td>{sale && sale[0].qty}</td>
                               <td>{sale && sale[0].commission}</td>
@@ -680,7 +690,7 @@ const DataTable = (props) => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Varian</label>
-                  {detail && detail.details
+                  {detail.details
                     ? JSON.parse(detail.details[0].variation).map((data, i) => {
                         let tvariant = Object.keys(data)[0];
                         console.log(data[tvariant]);

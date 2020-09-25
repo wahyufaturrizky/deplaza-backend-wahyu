@@ -22,6 +22,7 @@ const URL_DETAIL = "/orders";
 const URL_TRACING = "/shipment/tracing";
 
 const DataTable = (props) => {
+  const initial = null;
   const [data, setData] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +32,7 @@ const DataTable = (props) => {
   const [id, setId] = useState(0);
   const [getCourier, setGetCourier] = useState([]);
   const [courierId, setCourierId] = useState(0);
-  const [trackingId, setTrackingId] = useState(0);
+  const [trackingId, setTrackingId] = useState(initial);
   const [packageCourier, setPackageCourier] = useState("");
   const [getTracing, setGetTracing] = useState([]);
   const [detail, setDetail] = useState([]);
@@ -182,7 +183,7 @@ const DataTable = (props) => {
   };
 
   // fungsi untuk input resi
-  const handleInputResi = () => {
+  const handleInputResi = (e) => {
     if (!trackingId) {
       toastr.warning("Mohon isi no resi");
     } else {
@@ -193,10 +194,11 @@ const DataTable = (props) => {
       };
       axiosConfig
         .post(`orders/${id}/sent`, data)
-        .then((res) => {
-          getData();
-          toastr.success("Berhasil input resi");
-          window.$("#modal-edit").modal("hide");
+        .then(async (res) => {
+          await setTrackingId(initial);
+          window.location.reload(false);
+          await toastr.success("Berhasil input resi");
+          await window.$("#modal-edit").modal("hide");
         })
         .catch((error) => handleError(error.message));
     }
@@ -214,10 +216,11 @@ const DataTable = (props) => {
       };
       axiosConfig
         .post(`orders/${id}/change-delivery`, data)
-        .then((res) => {
-          getData();
-          toastr.success("Berhasil edit resi");
-          window.$("#modal-edit").modal("hide");
+        .then(async (res) => {
+          await setTrackingId(initial);
+          await window.$("#modal-edit").modal("hide");
+          await toastr.success("Berhasil edit resi");
+          window.location.reload(false);
         })
         .catch((error) => handleError(error.message));
     }
@@ -329,7 +332,7 @@ const DataTable = (props) => {
     }
   };
 
-  console.log(detail.details && detail.details[0].benefit);
+  console.log(initial, trackingId);
 
   return (
     <div className="content-wrapper">
@@ -759,6 +762,7 @@ const DataTable = (props) => {
                     className="form-control"
                     id="exampleInputEmail1"
                     placeholder="123456789"
+                    value={trackingId}
                     onChange={(e) => {
                       setTrackingId(e.target.value);
                     }}

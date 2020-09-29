@@ -32,10 +32,11 @@ const DataTable = (props) => {
   const [id, setId] = useState(0);
   const [getCourier, setGetCourier] = useState([]);
   const [courierId, setCourierId] = useState(0);
+  const [detail, setDetail] = useState([]);
   const [trackingId, setTrackingId] = useState(initial);
   const [packageCourier, setPackageCourier] = useState("");
   const [getTracing, setGetTracing] = useState([]);
-  const [detail, setDetail] = useState([]);
+
   const [limit, setLimit] = useState(10);
   const [indexingNumber, setIndexingNumber] = useState(null);
   const [indexingNumberDisplay, setIndexingNumberDisplay] = useState(false);
@@ -761,8 +762,10 @@ const DataTable = (props) => {
                     type="text"
                     className="form-control"
                     id="exampleInputEmail1"
-                    placeholder="123456789"
-                    value={trackingId}
+                    placeholder={detail.delivery && detail.delivery.tracking_id}
+                    defaultValue={
+                      detail.delivery && detail.delivery.tracking_id
+                    }
                     onChange={(e) => {
                       setTrackingId(e.target.value);
                     }}

@@ -40,6 +40,8 @@ function AddProduct(props) {
   const [getCategory, setGetCategory] = useState([]);
   const [getCities, setGetCities] = useState([]);
   const [urls, setUrls] = useState([]);
+  const [getSubdistrict, setGetSubdistrict] = useState([]);
+  const [subdistrictId, setSubdistrictId] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -110,6 +112,7 @@ function AddProduct(props) {
   const optionsCity = getCity.map((i) => i);
   const options = getProvince.map((i) => i);
   const optionsCities = getCities.map((i) => i);
+  const optionsSub = getSubdistrict.map((i) => i);
   const optionsCod = [
     { value: 1, label: "Iya" },
     { value: 0, label: "Tidak" },
@@ -149,6 +152,22 @@ function AddProduct(props) {
 
   const handleChangeCities = (id) => {
     setCityId(id.value);
+    axiosConfig
+      .get(`shipment/subdistrict/city/${id.value}`)
+      .then((res) =>
+        res.data.rajaongkir.results.map((data) => ({
+          value: data.subdistrict_id,
+          label: "Kecamatan " + data.subdistrict_name,
+        }))
+      )
+      .then((data) => {
+        setGetSubdistrict(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleSubId = (id) => {
+    setSubdistrictId(id.value);
   };
 
   const handleChangeCategory = (id) => {
@@ -431,6 +450,7 @@ function AddProduct(props) {
       formData.append("stock", parseInt(stock));
       formData.append("weight", parseInt(weight));
       formData.append("city_id", parseInt(cityId));
+      formData.append("subdistrict_id", parseInt(subdistrictId));
       formData.append("source", source);
       formData.append("cod", parseInt(cod));
       formData.append("cod_city_id", JSON.stringify(codCityId));
@@ -682,6 +702,16 @@ function AddProduct(props) {
                     options={optionsCities}
                     closeMenuOnSelect={true}
                     onChange={handleChangeCities}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kecamatan Asal Produk</label>
+                  <Select
+                    defaultValue={optionsSub[0]}
+                    isMulti={false}
+                    options={optionsSub}
+                    closeMenuOnSelect={true}
+                    onChange={handleSubId}
                   />
                 </div>
                 <div className="form-group">

@@ -160,7 +160,7 @@ const DataTable = (props) => {
     });
   };
 
-  const deleteData = (id) => {
+  const modalDeleteMultiple = (id) => {
     swal({
       title: "Apakah anda yakin?",
       icon: "warning",
@@ -168,16 +168,43 @@ const DataTable = (props) => {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        const data = { _method: "delete" };
-        axiosConfig.post(`${URL_DETAIL}/${id}/delete`, data).then(() => {
-          const categoryData = products.filter(
-            (category) => category.id !== id
-          );
-          setProducts(categoryData);
+        const data = { id: checkedBoxes };
+        axiosConfig.delete(`user/delete-batch`, data).then(() => {
+          getProduct();
           toastr.success("Produk berhasil dihapus");
         });
       }
     });
+  };
+
+  const modalDelete = (id) => {
+    swal({
+      title: "Apakah anda yakin?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axiosConfig.delete(`user/${id}/delete`).then(() => {
+          getProduct();
+          toastr.success("Seller berhasil dihapus");
+        });
+      }
+    });
+  };
+
+  // fungsi checkbox delete
+  const toggleCheckbox = (e, item) => {
+    if (e.target.checked) {
+      let arr = checkedBoxes;
+      arr.push(item.id);
+
+      setCheckedBoxes(arr);
+    } else {
+      let items = checkedBoxes.splice(checkedBoxes.indexOf(item.id), 1);
+
+      setCheckedBoxes(items);
+    }
   };
 
   // fungsi untuk handle pagination
@@ -253,6 +280,7 @@ const DataTable = (props) => {
                   type="button"
                   class="btn btn-block btn-danger btn-xs"
                   style={{ marginTop: 7 }}
+                  onClick={modalDeleteMultiple}
                 >
                   Hapus Sekaligus
                 </button>
@@ -397,6 +425,10 @@ const DataTable = (props) => {
                                 type="checkbox"
                                 className="selectsingle"
                                 value="{category.id}"
+                                checked={checkedBoxes.find(
+                                  (p) => p.id === product.id
+                                )}
+                                onChange={(e) => toggleCheckbox(e, product)}
                               />
                               &nbsp;&nbsp;
                               {indexingNumberDisplay
@@ -426,6 +458,7 @@ const DataTable = (props) => {
                               <button
                                 type="button"
                                 class="btn btn-block btn-danger btn-xs"
+                                onClick={() => modalDelete(product.id)}
                               >
                                 Hapus
                               </button>

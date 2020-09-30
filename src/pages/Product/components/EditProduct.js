@@ -27,6 +27,7 @@ function AddProduct(props) {
   const [cityId, setCityId] = useState(props.editData.city_id);
   const [source, setSource] = useState("");
   const [cod, setCod] = useState(1);
+  const [awb, setAwb] = useState(0);
   const [codCityId, setCodCityId] = useState([]);
   const [variation, setVariation] = useState([]);
   const [values, setValues] = useState({ val: [] });
@@ -149,6 +150,10 @@ function AddProduct(props) {
 
   const handleChangeCod = (id) => {
     setCod(id.value);
+  };
+
+  const handleChangeAwb = (id) => {
+    setAwb(id.value);
   };
 
   const handleChangeCities = (id) => {
@@ -443,6 +448,7 @@ function AddProduct(props) {
     formData.append("subdistrict_id", parseInt(subdistrictId));
     formData.append("source", source);
     formData.append("cod", parseInt(cod));
+    formData.append("is_awb_auto", parseInt(awb));
     formData.append("cod_city_id", JSON.stringify(getCod));
     formData.append("user_id", dataUser.id);
     formData.append("variation", getVariation);
@@ -741,6 +747,22 @@ function AddProduct(props) {
                     options={optionsCod}
                     closeMenuOnSelect={true}
                     onChange={handleChangeCod}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Resi Otomatis / Tidak</label>
+                  <Select
+                    defaultValue={[
+                      {
+                        value: props.editData.is_awb_auto,
+                        label:
+                          props.editData.is_awb_auto === 1 ? "Iya" : "Tidak",
+                      },
+                    ]}
+                    isMulti={false}
+                    options={optionsCod}
+                    closeMenuOnSelect={true}
+                    onChange={handleChangeAwb}
                   />
                 </div>
                 <div className="form-group">

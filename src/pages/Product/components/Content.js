@@ -200,9 +200,6 @@ const DataTable = (props) => {
     }
   };
 
-  const uu = category.filter((x) => x.id === 22).map((x) => x);
-  console.log("sdasd", uu);
-
   return (
     <div className="content-wrapper">
       {/* Content Header (Page header) */}

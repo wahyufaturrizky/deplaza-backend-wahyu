@@ -36,7 +36,7 @@ const DataTable = (props) => {
   const [trackingId, setTrackingId] = useState(initial);
   const [packageCourier, setPackageCourier] = useState("");
   const [getTracing, setGetTracing] = useState([]);
-
+  const [service, setService] = useState("");
   const [limit, setLimit] = useState(10);
   const [indexingNumber, setIndexingNumber] = useState(null);
   const [indexingNumberDisplay, setIndexingNumberDisplay] = useState(false);
@@ -190,8 +190,9 @@ const DataTable = (props) => {
     } else {
       const data = {
         tracking_id: trackingId,
-        courier_id: dataCourier.value,
-        package_courier: detail.delivery.package_courier,
+        courier_id: courierId,
+        package_courier:
+          service === "" ? detail.delivery.package_courier : service,
       };
       axiosConfig
         .post(`orders/${id}/sent`, data)
@@ -212,8 +213,9 @@ const DataTable = (props) => {
     } else {
       const data = {
         tracking_id: trackingId,
-        courier_id: dataCourier.value,
-        package_courier: detail.delivery.package_courier,
+        courier_id: courierId,
+        package_courier:
+          service === "" ? detail.delivery.package_courier : service,
       };
       axiosConfig
         .post(`orders/${id}/change-delivery`, data)
@@ -725,6 +727,10 @@ const DataTable = (props) => {
                   <label htmlFor="exampleInputEmail1">Alamat Pengiriman</label>
                   <h4>{detail.delivery && detail.delivery.receiver_address}</h4>
                 </div>
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">No Resi</label>
+                  <h4>{detail.delivery ? detail.delivery.tracking_id : "-"}</h4>
+                </div>
               </div>
             </div>
             <div className="modal-footer justify-content-between">
@@ -773,13 +779,20 @@ const DataTable = (props) => {
                 </div>
                 <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Kurir</label>
-                  <input
+                  <Select
+                    defaultValue={optionsCourier[0]}
+                    isMulti={false}
+                    options={optionsCourier}
+                    closeMenuOnSelect={true}
+                    onChange={handleCourier}
+                  />
+                  {/* <input
                     type="text"
                     className="form-control"
                     id="exampleInputEmail1"
                     placeholder={dataCourier && dataCourier.label}
-                    value={dataCourier && dataCourier.label}
-                  />
+                    defaultValue={dataCourier && dataCourier.label}
+                  /> */}
                 </div>
                 <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Jenis Layanan</label>
@@ -787,10 +800,15 @@ const DataTable = (props) => {
                     type="text"
                     className="form-control"
                     id="exampleInputEmail1"
+                    onChange={(e) => {
+                      setService(e.target.value);
+                    }}
                     placeholder={
                       detail.delivery && detail.delivery.package_courier
                     }
-                    value={detail.delivery && detail.delivery.package_courier}
+                    defaultValue={
+                      detail.delivery && detail.delivery.package_courier
+                    }
                   />
                 </div>
               </div>

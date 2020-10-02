@@ -160,7 +160,7 @@ const DataTable = (props) => {
     });
   };
 
-  const modalDeleteMultiple = (id) => {
+  const modalDeleteMultiple = () => {
     swal({
       title: "Apakah anda yakin?",
       icon: "warning",
@@ -168,8 +168,9 @@ const DataTable = (props) => {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        const data = { id: checkedBoxes };
-        axiosConfig.delete(`user/delete-batch`, data).then(() => {
+        const data = { _method: "delete", id: checkedBoxes };
+        console.log(data);
+        axiosConfig.post(`user/delete-batch`, data).then(() => {
           getProduct();
           toastr.success("Produk berhasil dihapus");
         });

@@ -41,14 +41,20 @@ function AddProduct(props) {
   const [getCategory, setGetCategory] = useState([]);
   const [getCities, setGetCities] = useState([]);
   const [urls, setUrls] = useState([]);
+  const [length, setLength] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
   const [getSubdistrict, setGetSubdistrict] = useState([]);
   const [subdistrictId, setSubdistrictId] = useState(0);
+  const [getSupplier, setGetSupplier] = useState([]);
+  const [idSupplier, setIdSupplier] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getDataCategory();
     getDataProvinces();
     getDataCity();
+    getDataSupplier();
     window.$(document).ready(function () {
       window.$(".textarea").summernote({
         callbacks: {
@@ -75,6 +81,26 @@ function AddProduct(props) {
       )
       .then((data) => {
         setGetCities(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getDataSupplier = () => {
+    axiosConfig
+      .get(`supplier?limit=10000`)
+      .then((res) =>
+        res.data.data.map((data) => ({
+          value: data.id,
+          label:
+            data.name +
+            " Alamat: " +
+            data.alamat +
+            " Kode Pos: " +
+            data.post_code,
+        }))
+      )
+      .then((data) => {
+        setGetSupplier(data);
       })
       .catch((error) => console.log(error));
   };
@@ -113,6 +139,7 @@ function AddProduct(props) {
   const optionsCity = getCity.map((i) => i);
   const options = getProvince.map((i) => i);
   const optionsCities = getCities.map((i) => i);
+  const optionsSupplier = getSupplier.map((i) => i);
   const optionsSub = getSubdistrict.map((i) => i);
   const optionsCod = [
     { value: 1, label: "Iya" },
@@ -149,6 +176,10 @@ function AddProduct(props) {
 
   const handleChangeCod = (id) => {
     setCod(id.value);
+  };
+
+  const handleSupplier = (id) => {
+    setIdSupplier(id.value);
   };
 
   const handleChangeAwb = (id) => {
@@ -458,6 +489,10 @@ function AddProduct(props) {
       formData.append("subdistrict_id", parseInt(subdistrictId));
       formData.append("source", source);
       formData.append("cod", parseInt(cod));
+      formData.append("supplier_id", parseInt(idSupplier));
+      formData.append("length", parseInt(length));
+      formData.append("width", parseInt(width));
+      formData.append("height", parseInt(height));
       formData.append("is_awb_auto", parseInt(awb));
       formData.append("cod_city_id", JSON.stringify(codCityId));
       formData.append("user_id", dataUser.id);
@@ -731,16 +766,6 @@ function AddProduct(props) {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Resi Otomatis / Tidak</label>
-                  <Select
-                    defaultValue={optionsCod[0]}
-                    isMulti={false}
-                    options={optionsCod}
-                    closeMenuOnSelect={true}
-                    onChange={handleChangeAwb}
-                  />
-                </div>
-                <div className="form-group">
                   <label>Daerah COD</label>
                   <Select
                     defaultValue={options[0]}
@@ -750,6 +775,61 @@ function AddProduct(props) {
                     onChange={handleChangeCodCity}
                   />
                 </div>
+                <div className="form-group">
+                  <label>Resi Otomatis / Tidak</label>
+                  <Select
+                    defaultValue={optionsCod[1]}
+                    isMulti={false}
+                    options={optionsCod}
+                    closeMenuOnSelect={true}
+                    onChange={handleChangeAwb}
+                  />
+                </div>
+                {awb === 1 ? (
+                  <div>
+                    <div className="form-group">
+                      <label>Alamat Gudang Supplier </label>
+                      <Select
+                        defaultValue={optionsSupplier[0]}
+                        isMulti={false}
+                        options={optionsSupplier}
+                        closeMenuOnSelect={true}
+                        onChange={handleSupplier}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Panjang (Cm)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleInputEmail1"
+                        placeholder="0"
+                        onChange={(e) => setLength(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Lebar (Cm)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleInputEmail1"
+                        placeholder="0"
+                        onChange={(e) => setWidth(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Tinggi (Cm)</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleInputEmail1"
+                        placeholder="0"
+                        onChange={(e) => setHeight(e.target.value)}
+                      />
+                    </div>{" "}
+                  </div>
+                ) : null}
+
                 {loading ? (
                   <button type="button" class="btn btn-block btn-primary">
                     {" "}

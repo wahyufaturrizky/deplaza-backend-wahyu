@@ -313,13 +313,13 @@ const DataTable = (props) => {
                 >
                   Tambah Supplier
                 </button>
-                <button
+                {/* <button
                   type="button"
                   class="btn btn-block btn-success btn-xs"
                   style={{ height: 40, marginTop: 7, marginRight: 10 }}
                 >
                   Log Aktivitas
-                </button>
+                </button> */}
                 <button
                   type="button"
                   class="btn btn-block btn-danger btn-xs"

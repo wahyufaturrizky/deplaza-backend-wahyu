@@ -267,13 +267,13 @@ const DataTable = (props) => {
               }}
             >
               <h1 className="m-0 text-dark">Menu Komplain</h1>
-              <button
+              {/* <button
                 type="button"
                 class="btn btn-block btn-success btn-sm"
                 style={{ width: 130, height: 40, marginTop: 7 }}
               >
                 Lihat Data Buyer
-              </button>
+              </button> */}
               <button
                 type="button"
                 class="btn btn-block btn-danger btn-sm"

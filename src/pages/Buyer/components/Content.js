@@ -208,13 +208,13 @@ const DataTable = (props) => {
   };
 
   return (
-    <div className='content-wrapper'>
+    <div className="content-wrapper">
       {/* Content Header (Page header) */}
-      <div className='content-header'>
-        <div className='container-fluid'>
-          <div className='row mb-2'>
+      <div className="content-header">
+        <div className="container-fluid">
+          <div className="row mb-2">
             <div
-              className='col-sm-6'
+              className="col-sm-6"
               style={{
                 flexDirection: "row",
                 display: "flex",
@@ -222,29 +222,29 @@ const DataTable = (props) => {
                 alignItems: "center",
               }}
             >
-              <h1 className='m-0 text-dark'>Menu Buyer</h1>
-              <button
+              <h1 className="m-0 text-dark">Menu Buyer</h1>
+              {/* <button
                 type='button'
                 class='btn btn-block btn-success btn-sm'
                 style={{ width: 130, height: 40, marginTop: 7 }}
               >
                 Lihat Buyer
-              </button>
+              </button> */}
               <button
-                type='button'
-                class='btn btn-block btn-danger btn-sm'
+                type="button"
+                class="btn btn-block btn-danger btn-sm"
                 style={{ width: 130, height: 40 }}
               >
                 Hapus Sekaligus
               </button>
             </div>
             {/* /.col */}
-            <div className='col-sm-6'>
-              <ol className='breadcrumb float-sm-right'>
-                <li className='breadcrumb-item'>
-                  <a href='#'>Home</a>
+            <div className="col-sm-6">
+              <ol className="breadcrumb float-sm-right">
+                <li className="breadcrumb-item">
+                  <a href="#">Home</a>
                 </li>
-                <li className='breadcrumb-item active'>Menu Buyer</li>
+                <li className="breadcrumb-item active">Menu Buyer</li>
               </ol>
             </div>
             {/* /.col */}
@@ -254,14 +254,14 @@ const DataTable = (props) => {
         {/* /.container-fluid */}
       </div>
       {/* Main content */}
-      <section className='content'>
-        <div className='container-fluid'>
-          <div className='row'>
-            <div className='col-12'>
-              <div className='row w-100'>
-                <div className='col mb-3 col-12 text-center'>
-                  <div className='row'>
-                    <div class='col-md-12 d-flex justify-content-between'>
+      <section className="content">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div className="row w-100">
+                <div className="col mb-3 col-12 text-center">
+                  <div className="row">
+                    <div class="col-md-12 d-flex justify-content-between">
                       <Pagination
                         total={totalItems}
                         limit={limit}
@@ -357,7 +357,7 @@ const DataTable = (props) => {
                     </div>
                   </div>
 
-                  <table className='table table-striped'>
+                  <table className="table table-striped">
                     <TableHeader
                       headers={headers}
                       onSorting={(field, order) => setSorting({ field, order })}
@@ -395,7 +395,7 @@ const DataTable = (props) => {
 
                           return (
                             <tr>
-                              <th scope='row' key={product.id}>
+                              <th scope="row" key={product.id}>
                                 {indexingNumberDisplay
                                   ? indexingNumber + i
                                   : i + 1}
@@ -423,22 +423,22 @@ const DataTable = (props) => {
                                 }}
                               >
                                 <button
-                                  type='button'
+                                  type="button"
                                   style={{
                                     marginLeft: 5,
                                     marginTop: 9,
                                   }}
-                                  class='btn btn-block btn-success btn-sm'
+                                  class="btn btn-block btn-success btn-sm"
                                   onClick={() => generatePDF(product)}
                                 >
                                   Download Pdf
                                 </button>
                                 <button
-                                  type='button'
+                                  type="button"
                                   style={{
                                     marginLeft: 5,
                                   }}
-                                  class='btn btn-block btn-success btn-sm'
+                                  class="btn btn-block btn-success btn-sm"
                                   onClick={() => categoryDetail(product.id)}
                                 >
                                   Lihat
@@ -456,46 +456,46 @@ const DataTable = (props) => {
           </div>
         </div>
       </section>
-      <div className='modal fade' id='modal-lg'>
-        <div className='modal-dialog modal-lg'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Tambah Buyer</h4>
+      <div className="modal fade" id="modal-lg">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Tambah Buyer</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Judul Produk</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Judul Produk</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
-                    placeholder='Judul Produk'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
+                    placeholder="Judul Produk"
                     onChange={(e) => {
                       setTitle(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>File input</label>
-                  <div className='input-group'>
-                    <div className='custom-file'>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">File input</label>
+                  <div className="input-group">
+                    <div className="custom-file">
                       <input
-                        type='file'
-                        className='custom-file-input'
-                        id='exampleInputFile'
+                        type="file"
+                        className="custom-file-input"
+                        id="exampleInputFile"
                       />
                       <label
-                        className='custom-file-label'
-                        htmlFor='exampleInputFile'
+                        className="custom-file-label"
+                        htmlFor="exampleInputFile"
                       >
                         Choose file
                       </label>
@@ -504,17 +504,17 @@ const DataTable = (props) => {
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close
               </button>
               <button
-                type='button'
-                className='btn btn-primary'
+                type="button"
+                className="btn btn-primary"
                 onClick={handleAddCategory}
               >
                 Save changes
@@ -525,53 +525,53 @@ const DataTable = (props) => {
         </div>
         {/* /.modal-dialog */}
       </div>
-      <div className='modal fade' id='modal-detail'>
-        <div className='modal-dialog modal-lg'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Detail Order</h4>
+      <div className="modal fade" id="modal-detail">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Detail Order</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Nama Produk</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Nama Produk</label>
                   <h4>
                     {detail.details && detail.details[0].metadata_products}
                   </h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Total Harga</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Total Harga</label>
                   <h4>{detail.total_price}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Nama</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Nama</label>
                   <h4>{detail.customer ? detail.customer.fullname : "-"}</h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Alamat</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Alamat</label>
                   <h4>
                     {detail.delivery ? detail.delivery.receiver_address : "-"}
                   </h4>
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>Status</label>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">Status</label>
                   <h4>{detail.status_label}</h4>
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
-                data-dismiss='modal'
+                type="button"
+                className="btn btn-default"
+                data-dismiss="modal"
               >
                 Close
               </button>
@@ -581,46 +581,46 @@ const DataTable = (props) => {
         {/* /.modal-content */}
       </div>
       {/* /.modal-dialog */}
-      <div className='modal fade' id='modal-edit'>
-        <div className='modal-dialog modal-edit'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Ubah Produk</h4>
+      <div className="modal fade" id="modal-edit">
+        <div className="modal-dialog modal-edit">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title">Ubah Produk</h4>
               <button
-                type='button'
-                className='close'
-                data-dismiss='modal'
-                aria-label='Close'
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
               >
-                <span aria-hidden='true'>×</span>
+                <span aria-hidden="true">×</span>
               </button>
             </div>
-            <div className='modal-body'>
-              <div className='card-body'>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputEmail1'>Judul Produk</label>
+            <div className="modal-body">
+              <div className="card-body">
+                <div className="form-group">
+                  <label htmlFor="exampleInputEmail1">Judul Produk</label>
                   <input
-                    type='text'
-                    className='form-control'
-                    id='exampleInputEmail1'
+                    type="text"
+                    className="form-control"
+                    id="exampleInputEmail1"
                     placeholder={detail.name}
                     onChange={(e) => {
                       setTitle(e.target.value);
                     }}
                   />
                 </div>
-                <div className='form-group'>
-                  <label htmlFor='exampleInputFile'>File input</label>
-                  <div className='input-group'>
-                    <div className='custom-file'>
+                <div className="form-group">
+                  <label htmlFor="exampleInputFile">File input</label>
+                  <div className="input-group">
+                    <div className="custom-file">
                       <input
-                        type='file'
-                        className='custom-file-input'
-                        id='exampleInputFile'
+                        type="file"
+                        className="custom-file-input"
+                        id="exampleInputFile"
                       />
                       <label
-                        className='custom-file-label'
-                        htmlFor='exampleInputFile'
+                        className="custom-file-label"
+                        htmlFor="exampleInputFile"
                       >
                         Choose file
                       </label>
@@ -629,17 +629,17 @@ const DataTable = (props) => {
                 </div>
               </div>
             </div>
-            <div className='modal-footer justify-content-between'>
+            <div className="modal-footer justify-content-between">
               <button
-                type='button'
-                className='btn btn-default'
+                type="button"
+                className="btn btn-default"
                 onClick={hideModal}
               >
                 Close
               </button>
               <button
-                type='button'
-                className='btn btn-primary'
+                type="button"
+                className="btn btn-primary"
                 onClick={changeData}
               >
                 Save changes

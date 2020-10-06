@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "http://admin.deplaza.id/",
   "dependencies": {
+    "@createnextapp/react-barcode": "^1.1.1",
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.10",
@@ -15,6 +16,7 @@
     "date-fns": "^2.16.1",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.5.1",
+    "jsbarcode": "^3.11.3",
     "jspdf": "^2.1.1",
     "jspdf-autotable": "^3.5.12",
     "moment": "^2.27.0",

@@ -7,6 +7,7 @@ import swal from "sweetalert";
 import { Spinner } from "../../../components/spinner";
 import axiosConfig from "../../../utils/axiosConfig";
 import useDebounce from "../../../components/useDebounce";
+import generatePDF from "./GeneratePdf";
 
 import { withRouter } from "react-router";
 import Select from "react-select";
@@ -38,6 +39,7 @@ const DataTable = (props) => {
   const [getTracing, setGetTracing] = useState([]);
   const [service, setService] = useState("");
   const [limit, setLimit] = useState(10);
+  const [city, setCity] = useState([]);
   const [indexingNumber, setIndexingNumber] = useState(null);
   const [indexingNumberDisplay, setIndexingNumberDisplay] = useState(false);
 
@@ -92,7 +94,13 @@ const DataTable = (props) => {
       .catch((error) => toastr.error(error));
   };
 
-  console.log("daa", data);
+  const getCity = (idcity) => {
+    axiosConfig.get(`shipment/city/${idcity}`).then((res) => {
+      setCity(res.data.rajaongkir.results);
+    });
+  };
+
+  console.log("daa", city);
   // fungsi untuk fetching data tracing
   const tracingData = () => {
     setLoading(true);
@@ -288,12 +296,13 @@ const DataTable = (props) => {
 
   // fungsi untuk change status
   const changeStatus = (key, idOrder) => {
-    if (key.indexOf(1) !== -1) {
+    console.log("key", key.indexOf(10) !== -1);
+    if (key.indexOf(10) !== -1) {
       axiosConfig
-        .post(`/orders/${idOrder}/confirm`)
+        .post(`/orders/${idOrder}/ready-to-send`)
         .then((res) => {
           getData();
-          toastr.success("Berhasil Konfirmasi Pesanan");
+          toastr.success("Barang siap dikirim");
           window.$("#modal-status").modal("hide");
         })
         .catch((error) =>
@@ -330,12 +339,29 @@ const DataTable = (props) => {
           window.$("#modal-status").modal("hide");
         })
         .catch((error) => toastr.error(error));
+    } else if (key.indexOf(1) !== -1) {
+      axiosConfig
+        .post(`/orders/${idOrder}/confirm`)
+        .then((res) => {
+          getData();
+          toastr.success("Berhasil Konfirmasi Pembayaran");
+          window.$("#modal-status").modal("hide");
+        })
+        .catch((error) => toastr.error(error));
     } else {
       console.log("error");
     }
   };
 
-  console.log(initial, trackingId);
+  const handleGeneratePDF = async (pdfId, idcity) => {
+    await axiosConfig.get(`shipment/city/${idcity}`).then((res) => {
+      const kkk = res.data.rajaongkir.results;
+      axiosConfig
+        .post(`/orders/${pdfId}/cetak-resi`)
+        .then((res) => generatePDF(res.data.data, kkk))
+        .catch((error) => toastr.error(error));
+    });
+  };
 
   return (
     <div className="content-wrapper">
@@ -493,13 +519,13 @@ const DataTable = (props) => {
                             key4 = Object.keys(variation[2]);
                             //  variationOne = `${variation}`
                             variationOne = `${
-                              objKey[0] && Object.keys(variation[0])
+                              variation[0] && Object.keys(variation[0])
                             }: ${variation[0] && variation[0][key2]}`;
                             variationTwo = `${
-                              objKey[1] && Object.keys(variation[1])
+                              variation[1] && Object.keys(variation[1])
                             }: ${variation[1] && variation[1][key3]}`;
                             variationThree = `${
-                              objKey[2] && Object.keys(variation[2])
+                              variation[2] && Object.keys(variation[2])
                             }: ${variation[2] && variation[2][key4]}`;
                           } catch (e) {
                             // forget about it :)
@@ -600,13 +626,29 @@ const DataTable = (props) => {
                                 >
                                   Lihat
                                 </button>
-                                <button
-                                  type="button"
-                                  class="btn btn-block btn-success btn-xs"
-                                  onClick={() => showModalEdit(sale.id)}
-                                >
-                                  Input Resi
-                                </button>
+                                {sale[0].product.is_awb_auto === 1 ? null : (
+                                  <button
+                                    type="button"
+                                    class="btn btn-block btn-success btn-xs"
+                                    onClick={() => showModalEdit(sale.id)}
+                                  >
+                                    Input Resi
+                                  </button>
+                                )}
+                                {sale[0].product.is_awb_auto === 0 ? null : (
+                                  <button
+                                    type="button"
+                                    class="btn btn-block btn-success btn-xs"
+                                    onClick={() =>
+                                      handleGeneratePDF(
+                                        sale.id,
+                                        sale.delivery.receiver_city
+                                      )
+                                    }
+                                  >
+                                    Cetak Resi
+                                  </button>
+                                )}
                                 <button
                                   type="button"
                                   class="btn btn-block btn-success btn-xs"
@@ -694,7 +736,7 @@ const DataTable = (props) => {
                     {detail.details && detail.details[0].metadata_products}
                   </h4>
                 </div>
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Varian</label>
                   {detail.details
                     ? JSON.parse(detail.details[0].variation).map((data, i) => {
@@ -707,7 +749,7 @@ const DataTable = (props) => {
                         );
                       })
                     : console.log("data_varian", "kosong")}
-                </div>
+                </div> */}
                 <div className="form-group">
                   <label htmlFor="exampleInputEmail1">Jumlah</label>
                   <h4>{detail.details && detail.details[0].qty}</h4>

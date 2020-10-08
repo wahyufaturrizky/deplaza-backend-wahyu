@@ -305,9 +305,7 @@ const DataTable = (props) => {
           toastr.success("Barang siap dikirim");
           window.$("#modal-status").modal("hide");
         })
-        .catch((error) =>
-          toastr.error("Pesanan ini belum melakukan pembayaran")
-        );
+        .catch((error) => toastr.error(error.response.data.message));
     } else if (key.indexOf(2) !== -1) {
       axiosConfig
         .post(`/orders/${idOrder}/confirm`)

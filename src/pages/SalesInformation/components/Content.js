@@ -497,7 +497,7 @@ const DataTable = (props) => {
                       onSorting={(field, order) => setSorting({ field, order })}
                     />
                     <tbody>
-                      {loading === true ? (
+                      {loading ? (
                         <Spinner />
                       ) : (
                         salesData &&
@@ -558,37 +558,65 @@ const DataTable = (props) => {
                                   "MMMM Do YYYY, h:mm"
                                 )}
                               </td>
-                              <td>{sale && sale.seller.fullname}</td>
+                              <td>
+                                {sale && sale.seller.fullname}{" "}
+                                {sale[0].product.user_id !== 2 ? (
+                                  <button
+                                    type="button"
+                                    class="btn btn-block btn-warning btn-xs"
+                                    onClick={() =>
+                                      toastr.warning("Produk dari reseller")
+                                    }
+                                  >
+                                    Reseller
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    class="btn btn-block btn-success btn-xs"
+                                    onClick={() =>
+                                      toastr.warning(
+                                        "Produk dari Admin deplaza"
+                                      )
+                                    }
+                                  >
+                                    Admin
+                                  </button>
+                                )}{" "}
+                              </td>
                               <td>
                                 {sale && sale.customer
                                   ? sale.customer.fullname
                                   : "-"}
                               </td>
                               <td>{sale && sale[0].metadata_products}</td>
-                              {sale && sale[0].variation ? (
+                              {variation ? (
                                 <td>
-                                  {objKey[0] === undefined
-                                    ? null
-                                    : `${
-                                        variation[0] &&
-                                        Object.keys(variation[0])
-                                      }:`}{" "}
+                                  {objKey[0] === undefined ? (
+                                    <td>-</td>
+                                  ) : (
+                                    `${
+                                      variation[0] && Object.keys(variation[0])
+                                    }:`
+                                  )}{" "}
                                   {variation[0] && variation[0][key2]}
                                   {"\n"}
-                                  {objKey[1] === undefined
-                                    ? null
-                                    : `${
-                                        variation[1] &&
-                                        Object.keys(variation[1])
-                                      }:`}{" "}
+                                  {objKey[1] === undefined ? (
+                                    <td>-</td>
+                                  ) : (
+                                    `${
+                                      variation[1] && Object.keys(variation[1])
+                                    }:`
+                                  )}{" "}
                                   {variation[1] && variation[1][key3]}
                                   {"\n"}
-                                  {objKey[2] === undefined
-                                    ? null
-                                    : `${
-                                        variation[2] &&
-                                        Object.keys(variation[2])
-                                      }:`}{" "}
+                                  {objKey[2] === undefined ? (
+                                    <td>-</td>
+                                  ) : (
+                                    `${
+                                      variation[2] && Object.keys(variation[2])
+                                    }:`
+                                  )}{" "}
                                   {variation[2] && variation[2][key4]}
                                 </td>
                               ) : (
@@ -639,12 +667,16 @@ const DataTable = (props) => {
                                   <button
                                     type="button"
                                     class="btn btn-block btn-success btn-xs"
-                                    onClick={() =>
-                                      handleGeneratePDF(
-                                        sale.id,
-                                        sale.delivery.receiver_city
-                                      )
-                                    }
+                                    onClick={() => {
+                                      sale.delivery.tracking_id
+                                        ? handleGeneratePDF(
+                                            sale.id,
+                                            sale.delivery.receiver_city
+                                          )
+                                        : toastr.error(
+                                            "Silahkan rubah status terlebih dahulu"
+                                          );
+                                    }}
                                   >
                                     Cetak Resi
                                   </button>

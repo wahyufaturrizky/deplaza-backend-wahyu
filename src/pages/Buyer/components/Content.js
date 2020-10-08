@@ -411,8 +411,11 @@ const DataTable = (props) => {
                                                         <td>{objKey[0] === undefined ? null : `${Object.keys(variation[0])}:`} {variation[0] && variation[0][key2]}{'\n'}{objKey[1] === undefined ? null : `${Object.keys(variation[1])}:`} {variation[1] && variation[1][key3]}{'\n'}{objKey[2] === undefined ? null : `${Object.keys(variation[2])}:`} {variation[2] && variation[2][key4]}</td>
                                                        } */}
                               <td>Rp.{product.total_price}</td>
-                              <td>-</td>
-                              <td>-</td>
+                              <td>{product.meta_suppliers[0].name}</td>
+                              <td>
+                                {product.meta_suppliers[0].alamat} Kode Pos:{" "}
+                                {product.meta_suppliers[0].post_code}{" "}
+                              </td>
                               <div
                                 style={{
                                   flexDirection: "row",
